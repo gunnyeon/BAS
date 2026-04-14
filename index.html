@@ -208,8 +208,86 @@ button,input,select,textarea{font-family:inherit} /* LAYOUT */
 @media(max-width:768px){ .sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)} .main{margin-left:0}.mob-btn{display:flex} .sg{grid-template-columns:repeat(2,1fr)}.rg,.site-grid{grid-template-columns:1fr} .content{padding:14px 13px}.topbar{padding:0 13px}.fgrid{grid-template-columns:1fr}.cg{grid-template-columns:1fr}
 }
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}</style>
-</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div> <div class="fg"><label class="f-lbl">위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구"></div> <div class="fg"><label class="f-lbl">발주처</label><input class="fi" id="f-sCli" placeholder="예) ○○건설(주)"></div> <div class="fg"><label class="f-lbl">공사 시작일</label><input class="fi" id="f-sSt" type="date"></div> <div class="fg"><label class="f-lbl">공사 종료일</label><input class="fi" id="f-sEn" type="date"></div> <div class="fg"><label class="f-lbl">공사금액(억)</label><input class="fi" id="f-sAmt" type="number" placeholder="예) 320"></div> <div class="fg"><label class="f-lbl">상태</label><select class="fs" id="f-sStat"><option value="진행중">진행중</option><option value="예정">예정</option><option value="완료">완료</option><option value="일시중단">일시중단</option></select></div> <div class="fg"><label class="f-lbl">현장소장</label><input class="fi" id="f-sMgr" placeholder="예) 김현장"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-sOfc" placeholder="예) 이담당"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-sNote" rows="2" placeholder="특이사항 입력"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSite')">취소</button><button class="btn btn-primary" onclick="saveSite()">💾 저장</button></div> </div> </div> <!-- 공종 폼 --> <div class="ov" id="ovProc"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="procTitle">📅 공종 등록</div><button class="m-x" onclick="closeOv('ovProc')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장<span class="f-req">*</span></label><select class="fs" id="f-pSite"></select></div> <div class="fg"><label class="f-lbl">공종명<span class="f-req">*</span></label><input class="fi" id="f-pNm" placeholder="예) 방수공사"></div> <div class="fg"><label class="f-lbl">공종코드</label><select class="fs" id="f-pCode"></select></div> <div class="fg"><label class="f-lbl">시작일<span class="f-req">*</span></label><input class="fi" id="f-pSt" type="date"></div> <div class="fg"><label class="f-lbl">종료일<span class="f-req">*</span></label><input class="fi" id="f-pEn" type="date"></div> <div class="fg"><label class="f-lbl">진행률(%)</label><input class="fi" id="f-pProg" type="number" min="0" max="100" value="0"></div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-pRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">담당업체</label><input class="fi" id="f-pCo" placeholder="예) ○○방수(주)"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-pMgr" placeholder="예) 김방수"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-pNote" rows="2" placeholder="특이사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovProc')">취소</button><button class="btn btn-primary" onclick="saveProc()">💾 저장</button></div> </div> </div> <!-- 간트 CSV/엑셀 업로드 모달 --> <div class="ov" id="ovGanttUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 공정 데이터 업로드</div><button class="m-x" onclick="closeOv('ovGanttUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종명, 공종코드, 시작일(YYYY-MM-DD), 종료일(YYYY-MM-DD) &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadGanttTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('ganttFileInput').click()" ondrop="handleGanttDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📊</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV, XLSX 지원</div> </div> <input type="file" id="ganttFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleGanttFile(this)"> <div id="ganttUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearGanttUpload()">✕ 취소</button></div><div class="upload-preview" id="ganttPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovGanttUpload')">닫기</button><button class="btn btn-primary" id="ganttImportBtn" onclick="importGanttData()" style="display:none">✅ 간트에 반영</button></div> </div></div> <!-- 체크리스트 항목 폼 --> <div class="ov" id="ovCL"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="clTitle">✅ 체크항목 등록</div><button class="m-x" onclick="closeOv('ovCL')">✕</button></div> <div class="fg"><label class="f-lbl">공종코드<span class="f-req">*</span></label><select class="fs" id="f-clCode"></select></div> <div class="fg"><label class="f-lbl">관련 하자 ID</label><input class="fi" id="f-clDid" placeholder="예) D001"></div> <div class="fg"><label class="f-lbl">체크항목명<span class="f-req">*</span></label><input class="fi" id="f-clItem" placeholder="예) 바탕면 청소 및 이물질 제거"></div> <div class="fg"><label class="f-lbl">기준내용<span class="f-req">*</span></label><textarea class="fta" id="f-clStd" placeholder="예) 콘크리트 표면 레이턴스 제거, 이물질 없을 것"></textarea></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">검사방법</label><input class="fi" id="f-clMeth" placeholder="예) 육안검사"></div> <div class="fg"><label class="f-lbl">합격기준</label><input class="fi" id="f-clPass" placeholder="예) 완전 청소 상태"></div> </div> <div class="fg"><label class="f-lbl">필수여부</label><select class="fs" id="f-clReq"><option value="필수">필수</option><option value="권장">권장</option></select></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCL')">취소</button><button class="btn btn-primary" onclick="saveCL()">💾 저장</button></div> </div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 기본 코드(방수공사 등)는 삭제할 수 없습니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="number" placeholder="예) 500"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 --> <div class="ov" id="ovSync"> <div class="modal md"> <div class="m-hd"><div class="m-title">🔄 스프레드시트 동기화</div><button class="m-x" onclick="closeOv('ovSync')">✕</button></div> <div class="sync-log" id="syncLog">동기화 로그가 여기에 표시됩니다.</div> <div class="fgrid"> <div class="fg"><label class="f-lbl">동기화 대상</label><select class="fs" id="syncTarget"><option value="all">전체 데이터</option><option value="processes">공종(간트)</option><option value="checklists">체크리스트</option><option value="defects">하자유형</option><option value="sites">현장정보</option></select></div> <div class="fg"><label class="f-lbl">방향</label><select class="fs" id="syncDir"><option value="pull">시트 → 시스템 (불러오기)</option><option value="push">시스템 → 시트 (내보내기)</option></select></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSync')">닫기</button><button class="btn btn-primary" onclick="runSync()">🔄 동기화 실행</button></div> </div> </div> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content"> <!-- ===== DASHBOARD ===== --> <div class="panel on" id="panel-dashboard"> <div class="sg" id="statGrid"></div> <!-- 진행 중 하자 위험 배너 --> <div id="dashDefBanner"></div> <div class="two-col"> <div class="card"> <div class="card-hd"><div class="card-title">🔴 주요 하자 공종 TOP 5</div><button class="btn btn-ghost btn-sm" onclick="nav('risk')">전체 →</button></div> <div id="top5"></div> </div> <div class="card"> <div class="card-hd"><div class="card-title">🔔 미확인 알림</div><button class="btn btn-ghost btn-sm" onclick="nav('alerts')">전체 →</button></div> <div id="dashAlerts"></div> </div> </div> <div class="sec-title">🏗️ 현장별 현황</div> <div class="site-grid" id="dashSites"></div> </div> <!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
+</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div> <div class="fg"><label class="f-lbl">위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구"></div> <div class="fg"><label class="f-lbl">발주처</label><input class="fi" id="f-sCli" placeholder="예) ○○건설(주)"></div> <div class="fg"><label class="f-lbl">공사 시작일</label><input class="fi" id="f-sSt" type="date"></div> <div class="fg"><label class="f-lbl">공사 종료일</label><input class="fi" id="f-sEn" type="date"></div> <div class="fg"><label class="f-lbl">공사금액(억)</label><input class="fi" id="f-sAmt" type="number" placeholder="예) 320"></div> <div class="fg"><label class="f-lbl">상태</label><select class="fs" id="f-sStat"><option value="진행중">진행중</option><option value="예정">예정</option><option value="완료">완료</option><option value="일시중단">일시중단</option></select></div> <div class="fg"><label class="f-lbl">현장소장</label><input class="fi" id="f-sMgr" placeholder="예) 김현장"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-sOfc" placeholder="예) 이담당"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-sNote" rows="2" placeholder="특이사항 입력"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSite')">취소</button><button class="btn btn-primary" onclick="saveSite()">💾 저장</button></div> </div> </div> <!-- 공종 폼 --> <div class="ov" id="ovProc"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="procTitle">📅 공종 등록</div><button class="m-x" onclick="closeOv('ovProc')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장<span class="f-req">*</span></label><select class="fs" id="f-pSite"></select></div> <div class="fg"><label class="f-lbl">공종명<span class="f-req">*</span></label><input class="fi" id="f-pNm" placeholder="예) 방수공사"></div> <div class="fg"><label class="f-lbl">공종코드</label><select class="fs" id="f-pCode"></select></div> <div class="fg"><label class="f-lbl">시작일<span class="f-req">*</span></label><input class="fi" id="f-pSt" type="date"></div> <div class="fg"><label class="f-lbl">종료일<span class="f-req">*</span></label><input class="fi" id="f-pEn" type="date"></div> <div class="fg"><label class="f-lbl">진행률(%)</label><input class="fi" id="f-pProg" type="number" min="0" max="100" value="0"></div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-pRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">담당업체</label><input class="fi" id="f-pCo" placeholder="예) ○○방수(주)"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-pMgr" placeholder="예) 김방수"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-pNote" rows="2" placeholder="특이사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovProc')">취소</button><button class="btn btn-primary" onclick="saveProc()">💾 저장</button></div> </div> </div> <!-- 간트 CSV/엑셀 업로드 모달 --> <div class="ov" id="ovGanttUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 공정 데이터 업로드</div><button class="m-x" onclick="closeOv('ovGanttUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종명, 공종코드, 시작일(YYYY-MM-DD), 종료일(YYYY-MM-DD) &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadGanttTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('ganttFileInput').click()" ondrop="handleGanttDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📊</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV, XLSX 지원</div> </div> <input type="file" id="ganttFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleGanttFile(this)"> <div id="ganttUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearGanttUpload()">✕ 취소</button></div><div class="upload-preview" id="ganttPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovGanttUpload')">닫기</button><button class="btn btn-primary" id="ganttImportBtn" onclick="importGanttData()" style="display:none">✅ 간트에 반영</button></div> </div></div> <!-- 체크리스트 항목 폼 --> <div class="ov" id="ovCL"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="clTitle">✅ 체크항목 등록</div><button class="m-x" onclick="closeOv('ovCL')">✕</button></div> <div class="fg"><label class="f-lbl">공종코드<span class="f-req">*</span></label><select class="fs" id="f-clCode"></select></div> <div class="fg"><label class="f-lbl">관련 하자 ID</label><input class="fi" id="f-clDid" placeholder="예) D001"></div> <div class="fg"><label class="f-lbl">체크항목명<span class="f-req">*</span></label><input class="fi" id="f-clItem" placeholder="예) 바탕면 청소 및 이물질 제거"></div> <div class="fg"><label class="f-lbl">기준내용<span class="f-req">*</span></label><textarea class="fta" id="f-clStd" placeholder="예) 콘크리트 표면 레이턴스 제거, 이물질 없을 것"></textarea></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">검사방법</label><input class="fi" id="f-clMeth" placeholder="예) 육안검사"></div> <div class="fg"><label class="f-lbl">합격기준</label><input class="fi" id="f-clPass" placeholder="예) 완전 청소 상태"></div> </div> <div class="fg"><label class="f-lbl">필수여부</label><select class="fs" id="f-clReq"><option value="필수">필수</option><option value="권장">권장</option></select></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCL')">취소</button><button class="btn btn-primary" onclick="saveCL()">💾 저장</button></div> </div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 기본 코드(방수공사 등)는 삭제할 수 없습니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="number" placeholder="예) 500"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
+<div class="ov" id="ovSync">
+<div class="modal lg">
+<div class="m-hd">
+  <div class="m-title">🔄 구글 스프레드시트 연동</div>
+  <button class="m-x" onclick="closeOv('ovSync')">✕</button>
+</div>
+<!-- URL 설정 -->
+<div style="background:var(--blue-l);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
+  <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px">⚙️ Apps Script URL 설정</div>
+  <div class="fg" style="margin-bottom:8px">
+    <label class="f-lbl">Apps Script 웹앱 URL <span class="f-req">*</span></label>
+    <input class="fi" id="cfgScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+  </div>
+  <div class="fg" style="margin-bottom:8px">
+    <label class="f-lbl">스프레드시트 URL (선택)</label>
+    <input class="fi" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+  </div>
+  <div style="display:flex;gap:7px;align-items:center">
+    <button class="btn btn-primary btn-sm" onclick="saveSheetCfg()">💾 URL 저장</button>
+    <button class="btn btn-ghost btn-sm" onclick="openSheet()">📋 스프레드시트 열기</button>
+    <span id="syncStatusBadge" style="font-size:11px;color:var(--t5)">● 미설정</span>
+  </div>
+</div>
+<!-- 데이터 동기화 -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
+    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">🏗️ 현장 관리</div>
+    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncSiteCnt">로컬: 0건</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <button class="btn btn-primary btn-sm" onclick="pushSheet('sites')">📤 시트에 올리기</button>
+      <button class="btn btn-ghost btn-sm" onclick="pullSheet('sites')">📥 시트에서 불러오기</button>
+    </div>
+  </div>
+  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
+    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">🔍 하자유형</div>
+    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncDefCnt">로컬: 0건</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <button class="btn btn-primary btn-sm" onclick="pushSheet('defects')">📤 시트에 올리기</button>
+      <button class="btn btn-ghost btn-sm" onclick="pullSheet('defects')">📥 시트에서 불러오기</button>
+    </div>
+  </div>
+  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
+    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">✅ 체크리스트</div>
+    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncClCnt">로컬: 0건</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <button class="btn btn-primary btn-sm" onclick="pushSheet('checklists')">📤 시트에 올리기</button>
+      <button class="btn btn-ghost btn-sm" onclick="pullSheet('checklists')">📥 시트에서 불러오기</button>
+    </div>
+  </div>
+</div>
+<!-- 로그 -->
+<div style="font-size:11px;font-weight:700;color:var(--t7);margin-bottom:5px">📋 동기화 로그</div>
+<div class="sync-log" id="syncLog">동기화 로그가 여기에 표시됩니다.</div>
+<!-- Apps Script 설치 안내 -->
+<details style="margin-top:10px">
+  <summary style="font-size:12px;font-weight:700;color:var(--t5);cursor:pointer;padding:6px 0">📖 Apps Script 설치 방법 보기</summary>
+  <div style="font-size:11px;color:var(--t7);line-height:1.9;padding:10px;background:var(--card2);border-radius:8px;margin-top:6px">
+    1. 구글 스프레드시트 새 파일 생성<br>
+    2. <strong>확장 프로그램 → Apps Script</strong> 클릭<br>
+    3. Code.gs 파일에 제공된 Apps Script 코드 전체 붙여넣기<br>
+    4. 저장(Ctrl+S) 후 <strong>배포 → 새 배포</strong><br>
+    5. 유형: <strong>웹 앱</strong> / 액세스: <strong>모든 사용자</strong> 설정<br>
+    6. 배포 URL을 위 입력란에 붙여넣기<br>
+    7. <strong>💾 URL 저장</strong> 클릭 후 각 항목 <strong>📤 시트에 올리기</strong> 클릭
+  </div>
+</details>
+<div class="m-ft">
+  <button class="btn btn-ghost" onclick="closeOv('ovSync')">닫기</button>
+</div>
+</div>
+</div>
+
+<!-- ═══ APPdiv> </div> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content"> <!-- ===== DASHBOARD ===== --> <div class="panel on" id="panel-dashboard"> <div class="sg" id="statGrid"></div> <!-- 진행 중 하자 위험 배너 --> <div id="dashDefBanner"></div> <div class="two-col"> <div class="card"> <div class="card-hd"><div class="card-title">🔴 주요 하자 공종 TOP 5</div><button class="btn btn-ghost btn-sm" onclick="nav('risk')">전체 →</button></div> <div id="top5"></div> </div> <div class="card"> <div class="card-hd"><div class="card-title">🔔 미확인 알림</div><button class="btn btn-ghost btn-sm" onclick="nav('alerts')">전체 →</button></div> <div id="dashAlerts"></div> </div> </div> <div class="sec-title">🏗️ 현장별 현황</div> <div class="site-grid" id="dashSites"></div> </div> <!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
+
+
+
+
 
 
 
@@ -222,8 +300,9 @@ button,input,select,textarea{font-family:inherit} /* LAYOUT */
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwrXpd-c7LJ7ucTO9TyjrlohN4InaIEO74YWQ5Xm-JQdCPaCoAI_BfAOyJLTEUxjFO3/exec',
-SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w'
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFYxIgQtCpv0IemfVV0IUhRSds4W8AF8zTsTzZqeDrNW3FyoHAwmthmtL-JCI_Lbc/exec',
+  SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
+  SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트' }
 };
 /* ═══ 공종코드 레지스트리 (추가/삭제 가능) ═══ */
 let PROC_CODES = {
@@ -257,10 +336,13 @@ return map;
 }
 /* ═══ 초기화 ═══ */
 function init() {
-seedData();
+var _su=localStorage.getItem("bas_script_url"),_sv=localStorage.getItem("bas_sheet_url");
+  if(_su) CFG.APPS_SCRIPT_URL=_su;
+  if(_sv) CFG.SPREADSHEET_URL=_sv;
+  seedData();
 buildSiteSel();
 renderAll();
-initClock();
+initClock(); setTimeout(updateSyncStatus, 100);
 setInterval(autoGenAlerts, 30000);
 }
 function initClock() {
@@ -373,8 +455,8 @@ const w1  = rp.filter(p=>p.ts==='예정_1주').length;
 const done= ap.filter(p=>p.ts==='완료').length;
 const unrd= DB.alerts.filter(a=>!a.read).length;
 document.getElementById('statGrid').innerHTML = [
-{cls:'cr',ic:'🔴',val:inP,  lbl:'고위험 진행 공종',sub:'즉시 점검 필요',tgt:'risk',f:'진행중'},
-{cls:'co',ic:'⏰',val:w1,   lbl:'1주내 예정 위험', sub:'사전 체크 필요',tgt:'risk',f:'예정_1주'},
+{cls:'cr',ic:'🔴',val:inP,  lbl:'주요 하자 진행 공종',sub:'즉시 점검 필요',tgt:'risk',f:'진행중'},
+{cls:'co',ic:'⏰',val:w1,   lbl:'1주 내 주요 하자 예정 공종',sub:'사전 체크 필요',tgt:'risk',f:'예정_1주'},
 {cls:'cb',ic:'🏗️',val:DB.sites.length,lbl:'관리 현장 수',sub:'진행 중',tgt:'sites',f:''},
 {cls:'cy',ic:'📋',val:ap.length,lbl:'전체 공종 수',sub:'현장 합계',tgt:'gantt',f:''},
 {cls:'cg',ic:'✅',val:done, lbl:'완료 공종',       sub:'정상 완료',tgt:'gantt',f:''},
@@ -787,6 +869,8 @@ if (!newName) { toast('공종명을 입력하세요.', 'err'); return; }
 PROC_CODES[key] = newName;
 toast('"' + key + '" 공종명이 "' + newName + '"으로 수정되었습니다.', 'ok');
 renderCodeMgr(); rCL(); rGantt();
+  var _ls=document.getElementById('linkedProcSel');
+  if(_ls){var _lv=_ls.value;_ls.innerHTML='<option value="">-- 공종 선택 --</option>'+Object.entries(PROC_CODES).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');_ls.value=_lv;}
 }
 function cancelEditCode(btn) {
 const key = btn.dataset.k;
@@ -808,14 +892,23 @@ renderCodeMgr(); rCL();
 toast('"' + name + '" 공종코드가 추가되었습니다.', 'ok');
 }
 function delProcCode(btn) {
-const key = (typeof btn === 'string') ? btn : btn.dataset.k;
-if (BASE_CODES.has(key)) { toast('기본 코드는 삭제할 수 없습니다.', 'err'); return; }
-const cnt = DB.checklists.filter(c => c.code === key).length;
-delete PROC_CODES[key];
-DB.checklists = DB.checklists.filter(c => c.code !== key);
-if (DB.clCode === key) DB.clCode = Object.keys(PROC_CODES)[0] || 'WATERPROOF';
-renderCodeMgr(); rCL(); rGantt();
-toast('"' + key + '" 삭제 완료' + (cnt ? ' (체크리스트 ' + cnt + '개 함께 삭제)' : ''), 'ok');
+  var key = (typeof btn==='string')?btn:btn.dataset.k;
+  var usedProcs = DB.processes.filter(function(p){return p.code===key;}).length;
+  var usedCL    = DB.checklists.filter(function(c){return c.code===key;}).length;
+  if (usedProcs>0){
+    toast('"'+key+'" 코드를 사용하는 공종이 '+usedProcs+'개 있습니다. 먼저 해당 공종의 코드를 변경하세요.','err');
+    return;
+  }
+  var nm = PROC_CODES[key]||key;
+  var msg = '"'+nm+'" 코드를 삭제하시겠습니까?'+(usedCL?'\n체크리스트 '+usedCL+'개도 함께 삭제됩니다.':'');
+  if (!confirm(msg)) return;
+  delete PROC_CODES[key];
+  DB.checklists = DB.checklists.filter(function(c){return c.code!==key;});
+  if (DB.clCode===key) DB.clCode=Object.keys(PROC_CODES)[0]||'WATERPROOF';
+  renderCodeMgr(); rCL(); rGantt();
+  var lsel=document.getElementById('linkedProcSel');
+  if(lsel) lsel.innerHTML='<option value="">-- 공종 선택 --</option>'+Object.entries(PROC_CODES).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');
+  toast('"'+nm+'" 삭제 완료'+(usedCL?' (체크리스트 '+usedCL+'개 함께 삭제)':''),'ok');
 }
 /* 체크리스트 업로드 */
 function downloadCLTemplate() {
@@ -978,7 +1071,7 @@ document.getElementById('siteCount').textContent = DB.sites.length+'개';
 document.getElementById('siteGrid').innerHTML = DB.sites.map((s,i)=>{
 const ps=DB.processes.filter(p=>p.siteId===s.id).map(enrich);
 const done=ps.filter(p=>p.ts==='완료').length;
-const pct=ps.length?Math.round(done/ps.length*100):0;
+const pct=ps.length?Math.round(ps.reduce(function(sm,p){return sm+(p.progress||0);},0)/ps.length):0;
 const hr=ps.filter(p=>p.riskLevel==='상'&&p.ts!=='완료').length;
 const c=SITE_COLORS[i%SITE_COLORS.length];
 const dur=Math.round((new Date(s.endDate)-new Date(s.startDate))/86400000);
@@ -1081,13 +1174,32 @@ document.getElementById('chartGrid').innerHTML =
 }
 let list = DB.selSite==='all' ? DB.alerts : DB.alerts.filter(a=>a.siteId===DB.selSite);
 function rAlerts() {
-if (DB.alertF==='unread') list=list.filter(a=>!a.read);
-else if (DB.alertF==='read') list=list.filter(a=>a.read);
-else if (DB.alertF==='상'||DB.alertF==='중') list=list.filter(a=>a.riskLevel===DB.alertF);
-document.getElementById('alertCount').textContent=list.length+'건';
-document.getElementById('alertsList').innerHTML=list.length
-? list.map(a=>'<div class="al-item '+(a.read?'read':'unread')+' lv-'+a.riskLevel+'" onclick="openAlertDetail(\''+a.id+'\')"><div class="al-em">'+alEmoji(a.alertType)+'</div><div class="al-body"><div class="al-t">'+a.siteName+' · '+a.processName+'</div><div class="al-d">'+a.content+'</div><div class="al-m">📅 '+a.createdAt+' · '+alLabel(a.alertType)+'</div></div><span class="bdg '+(a.read?'bg':'br')+'">'+(a.read?'확인':'미확인')+'</span></div>').join('')
-: '<div class="empty"><div class="empty-ic">🔔</div><div class="empty-t">알림이 없습니다</div></div>';
+  var base = DB.selSite === 'all' ? DB.alerts : DB.alerts.filter(function(a){return a.siteId===DB.selSite;});
+  var list;
+  if      (DB.alertF==='unread') list = base.filter(function(a){return !a.read;});
+  else if (DB.alertF==='read')   list = base.filter(function(a){return  a.read;});
+  else if (DB.alertF==='상'||DB.alertF==='중') list = base.filter(function(a){return a.riskLevel===DB.alertF;});
+  else list = base;
+  var cntEl=document.getElementById('alertCount'); if(cntEl) cntEl.textContent=list.length+'건';
+  var listEl=document.getElementById('alertsList'); if(!listEl) return;
+  if (!list.length) {
+    listEl.innerHTML='<div class="empty"><div class="empty-ic">🔔</div><div class="empty-t">알림이 없습니다</div></div>';
+    return;
+  }
+  listEl.innerHTML = list.map(function(a){
+    var cls = a.read ? 'read' : 'unread';
+    var bdgCls = a.read ? 'bg' : 'br';
+    var bdgTxt = a.read ? '확인' : '미확인';
+    return '<div class="al-item '+cls+' lv-'+a.riskLevel+'" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)">'+
+      '<div class="al-em">'+alEmoji(a.alertType)+'</div>'+
+      '<div class="al-body">'+
+        '<div class="al-t">'+a.siteName+' · '+a.processName+'</div>'+
+        '<div class="al-d">'+a.content+'</div>'+
+        '<div class="al-m">📅 '+a.createdAt+' · '+alLabel(a.alertType)+'</div>'+
+      '</div>'+
+      '<span class="bdg '+bdgCls+'">'+bdgTxt+'</span>'+
+    '</div>';
+  }).join('');
 }
 function openAlertDetail(id) {
 var a=DB.alerts.find(function(x){return x.id===id;});if(!a)return;
@@ -1171,7 +1283,28 @@ CRUD – 현장
 ════════════════════════════════ */
 function openSiteForm(){DB.editId=null;document.getElementById('siteFormTitle').textContent='🏗️ 신규 현장 등록';['f-sNm','f-sLoc','f-sCli','f-sSt','f-sEn','f-sAmt','f-sMgr','f-sOfc','f-sNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sStat').value='진행중';openOv('ovSite');}
 function editSite(id){const s=DB.sites.find(x=>x.id===id);if(!s)return;DB.editId=id;document.getElementById('siteFormTitle').textContent='✏️ 현장 정보 수정';document.getElementById('f-sNm').value=s.name||'';document.getElementById('f-sLoc').value=s.location||'';document.getElementById('f-sCli').value=s.client||'';document.getElementById('f-sSt').value=s.startDate||'';document.getElementById('f-sEn').value=s.endDate||'';document.getElementById('f-sAmt').value=s.amount||'';document.getElementById('f-sStat').value=s.status||'진행중';document.getElementById('f-sMgr').value=s.manager||'';document.getElementById('f-sOfc').value=s.officer||'';document.getElementById('f-sNote').value=s.note||'';openOv('ovSite');}
-function saveSite(){const nm=document.getElementById('f-sNm').value.trim();if(!nm){toast('현장명을 입력하세요.','err');return;}const data={name:nm,location:gv('f-sLoc'),client:gv('f-sCli'),startDate:gv('f-sSt'),endDate:gv('f-sEn'),amount:gv('f-sAmt'),status:gv('f-sStat'),manager:gv('f-sMgr'),officer:gv('f-sOfc'),note:gv('f-sNote')};if(DB.editId){Object.assign(DB.sites.find(s=>s.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.sites.push(Object.assign({id:'S'+Date.now()},data));toast('"'+nm+'" 등록 완료','ok');buildSiteSel();}closeOv('ovSite');renderAll();syncToSheet(DB.editId?'updateSite':'addSite',data);}
+function saveSite() {
+  var nm = document.getElementById('f-sNm').value.trim();
+  if (!nm) { toast('현장명을 입력하세요.', 'err'); return; }
+  var data = {
+    name: nm, location: gv('f-sLoc'), client: gv('f-sCli'),
+    startDate: gv('f-sSt'), endDate: gv('f-sEn'), amount: gv('f-sAmt'),
+    status: gv('f-sStat'), manager: gv('f-sMgr'), officer: gv('f-sOfc'), note: gv('f-sNote')
+  };
+  var isEdit = !!DB.editId;
+  if (isEdit) {
+    Object.assign(DB.sites.find(function(s){return s.id===DB.editId;}), data);
+    toast('"'+nm+'" 수정 완료', 'ok');
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.sites, id: DB.editId, row: Object.assign({id:DB.editId}, data) });
+  } else {
+    var newId = 'S' + Date.now();
+    DB.sites.push(Object.assign({ id: newId }, data));
+    toast('"'+nm+'" 등록 완료', 'ok');
+    buildSiteSel();
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.sites, id: newId, row: Object.assign({id:newId}, data) });
+  }
+  closeOv('ovSite'); renderAll();
+}
 /* ════════════════════════════════
 CRUD – 공종
 ════════════════════════════════ */
@@ -1185,31 +1318,97 @@ CRUD – 체크리스트
 function refreshCLCodeSel(sel){sel.innerHTML=Object.entries(PROC_CODES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('');}
 function openCLForm(){DB.editId=null;document.getElementById('clTitle').textContent='✅ 체크항목 등록';['f-clDid','f-clItem','f-clStd','f-clMeth','f-clPass'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-clCode');refreshCLCodeSel(sel);sel.value=DB.clCode||'WATERPROOF';document.getElementById('f-clReq').value='필수';openOv('ovCL');}
 function editCL(id){const c=DB.checklists.find(x=>x.id===id);if(!c)return;DB.editId=id;document.getElementById('clTitle').textContent='✏️ 체크항목 수정';refreshCLCodeSel(document.getElementById('f-clCode'));document.getElementById('f-clCode').value=c.code||'WATERPROOF';document.getElementById('f-clDid').value=c.did||'';document.getElementById('f-clItem').value=c.item||'';document.getElementById('f-clStd').value=c.std||'';document.getElementById('f-clMeth').value=c.method||'';document.getElementById('f-clPass').value=c.pass||'';document.getElementById('f-clReq').value=c.req||'필수';openOv('ovCL');}
-function saveCL(){const item=gv('f-clItem').trim();if(!item){toast('체크항목명을 입력하세요.','err');return;}const data={code:gv('f-clCode'),did:gv('f-clDid'),item,std:gv('f-clStd'),method:gv('f-clMeth'),pass:gv('f-clPass'),req:gv('f-clReq'),checked:false};if(DB.editId){Object.assign(DB.checklists.find(c=>c.id===DB.editId),data);toast('수정 완료','ok');}else{DB.checklists.push(Object.assign({id:'C'+Date.now()},data));toast('등록 완료','ok');}DB.clCode=data.code;closeOv('ovCL');rCL();syncToSheet(DB.editId?'updateCL':'addCL',data);}
+function saveCL() {
+  var item = gv('f-clItem').trim();
+  if (!item) { toast('체크항목명을 입력하세요.', 'err'); return; }
+  var data = {
+    code: gv('f-clCode'), did: gv('f-clDid'), item: item,
+    std: gv('f-clStd'), method: gv('f-clMeth'), pass: gv('f-clPass'),
+    req: gv('f-clReq'), checked: false
+  };
+  var isEdit = !!DB.editId;
+  if (isEdit) {
+    var existing = DB.checklists.find(function(c){return c.id===DB.editId;});
+    if (existing) data.checked = existing.checked;
+    Object.assign(existing, data);
+    toast('수정 완료', 'ok');
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.checklists, id: DB.editId,
+      row: Object.assign({id:DB.editId}, data) });
+  } else {
+    var newId = 'C' + Date.now();
+    DB.checklists.push(Object.assign({ id: newId }, data));
+    toast('등록 완료', 'ok');
+    DB.clCode = data.code;
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.checklists, id: newId,
+      row: Object.assign({id:newId}, data) });
+  }
+  closeOv('ovCL'); rCL();
+}
 /* ════════════════════════════════
 CRUD – 하자유형
 ════════════════════════════════ */
 function openDefForm(){DB.editId=null;document.getElementById('defTitle').textContent='🔍 하자유형 등록';['f-dNm','f-dCause','f-dPrev','f-dCost','f-dTime'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dRisk').value='상';document.getElementById('f-dLitig').value='높음';renderLinkedProcCbs([]);openOv('ovDef');}
 function editDef(id){const d=DB.defects.find(x=>x.id===id);if(!d)return;DB.editId=id;document.getElementById('defTitle').textContent='✏️ 하자유형 수정';const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dNm').value=d.name||'';document.getElementById('f-dCat').value=d.category||'누수';document.getElementById('f-dRisk').value=d.riskLevel||'상';document.getElementById('f-dLitig').value=d.litigationFreq||'높음';document.getElementById('f-dCost').value=d.avgCost||'';document.getElementById('f-dTime').value=d.occurrenceTime||'';document.getElementById('f-dCause').value=d.mainCause||'';document.getElementById('f-dPrev').value=d.prevention||'';renderLinkedProcCbs(d.linkedCodes||[]);openOv('ovDef');}
-function saveDef(){const nm=gv('f-dNm').trim();if(!nm){toast('하자명을 입력하세요.','err');return;}const data={name:nm,category:gv('f-dCat'),riskLevel:gv('f-dRisk'),litigationFreq:gv('f-dLitig'),avgCost:gv('f-dCost'),occurrenceTime:gv('f-dTime'),mainCause:gv('f-dCause'),prevention:gv('f-dPrev'),linkedCodes:getLinkedCodes()};if(DB.editId){Object.assign(DB.defects.find(d=>d.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.defects.push(Object.assign({id:'D'+String(Date.now()).slice(-5)},data));toast('"'+nm+'" 등록 완료','ok');}closeOv('ovDef');rDefs();rStats();renderAll();syncToSheet(DB.editId?'updateDefect':'addDefect',data);}
+function saveDef() {
+  var nm = gv('f-dNm').trim();
+  if (!nm) { toast('하자명을 입력하세요.', 'err'); return; }
+  var data = {
+    name: nm, category: gv('f-dCat'), riskLevel: gv('f-dRisk'),
+    litigationFreq: gv('f-dLitig'), avgCost: gv('f-dCost'),
+    occurrenceTime: gv('f-dTime'), mainCause: gv('f-dCause'),
+    prevention: gv('f-dPrev'), linkedCodes: getLinkedCodes()
+  };
+  var isEdit = !!DB.editId;
+  if (isEdit) {
+    Object.assign(DB.defects.find(function(d){return d.id===DB.editId;}), data);
+    toast('"'+nm+'" 수정 완료', 'ok');
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.defects, id: DB.editId,
+      row: Object.assign({id:DB.editId}, data, {linkedCodes: data.linkedCodes.join('|')}) });
+  } else {
+    var newId = 'D' + String(Date.now()).slice(-5);
+    DB.defects.push(Object.assign({ id: newId }, data));
+    toast('"'+nm+'" 등록 완료', 'ok');
+    syncToSheet('upsertRow', { sheet: CFG.SHEET.defects, id: newId,
+      row: Object.assign({id:newId}, data, {linkedCodes: data.linkedCodes.join('|')}) });
+  }
+  closeOv('ovDef'); rDefs(); rStats(); renderAll();
+}
 /* ════════════════════════════════
 삭제
 ════════════════════════════════ */
 function askDel(type,id,name){DB.delTarget={type,id};document.getElementById('delName').textContent='"'+name+'"';openOv('ovDel');}
-function confirmDel(){
-const{type,id}=DB.delTarget||{};
-if(type==='site'){DB.sites=DB.sites.filter(s=>s.id!==id);DB.processes=DB.processes.filter(p=>p.siteId!==id);buildSiteSel();toast('현장이 삭제되었습니다.','ok');}
-else if(type==='process'){DB.processes=DB.processes.filter(p=>p.id!==id);toast('공종이 삭제되었습니다.','ok');}
-else if(type==='checklist'){DB.checklists=DB.checklists.filter(c=>c.id!==id);toast('체크항목이 삭제되었습니다.','ok');}
-else if(type==='defect'){DB.defects=DB.defects.filter(d=>d.id!==id);toast('하자유형이 삭제되었습니다.','ok');}
-closeOv('ovDel');DB.riskProcs=getRiskProcs();renderAll();
+function confirmDel() {
+  var tgt = DB.delTarget || {};
+  var type = tgt.type, id = tgt.id;
+  var sheetKey = null;
+  if (type === 'site') {
+    DB.sites = DB.sites.filter(function(s){return s.id!==id;});
+    DB.processes = DB.processes.filter(function(p){return p.siteId!==id;});
+    buildSiteSel(); toast('현장이 삭제되었습니다.', 'ok');
+    sheetKey = CFG.SHEET.sites;
+  } else if (type === 'process') {
+    DB.processes = DB.processes.filter(function(p){return p.id!==id;});
+    toast('공종이 삭제되었습니다.', 'ok');
+  } else if (type === 'checklist') {
+    DB.checklists = DB.checklists.filter(function(c){return c.id!==id;});
+    toast('체크항목이 삭제되었습니다.', 'ok');
+    sheetKey = CFG.SHEET.checklists;
+  } else if (type === 'defect') {
+    DB.defects = DB.defects.filter(function(d){return d.id!==id;});
+    toast('하자유형이 삭제되었습니다.', 'ok');
+    sheetKey = CFG.SHEET.defects;
+  }
+  if (sheetKey) {
+    syncToSheet('deleteRow', { sheet: sheetKey, id: id });
+  }
+  closeOv('ovDel');
+  DB.riskProcs = getRiskProcs(); renderAll();
 }
 /* ════════════════════════════════
 ════════════════════════════════ */
 /* ════════════════════════════════
 시트 동기화
 ════════════════════════════════ */
-function addSyncLog(msg){}
 function runSync() {
 if (!CFG.APPS_SCRIPT_URL || CFG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
 openOv('ovSync'); return;
@@ -1218,7 +1417,28 @@ toast('동기화 기능은 Apps Script 연동 후 사용 가능합니다.', 'inf
 }
 function getSyncPayload(t){return {};}
 function applySyncData(t,data){}
-function syncToSheet(action,data){if(!CFG.APPS_SCRIPT_URL||CFG.APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL')return;try{fetch(CFG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:action},data))});}catch(e){console.warn('Sync:',e.message);}}
+function syncToSheet(action, data, onDone) {
+  if (!CFG.APPS_SCRIPT_URL || CFG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+    if (onDone) onDone(null);
+    return;
+  }
+  var payload = Object.assign({ action: action }, data);
+  fetch(CFG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(json) {
+    if (json && json.ok) {
+      if (onDone) onDone(json);
+    } else {
+      console.warn('Sync 응답 오류:', json && json.error);
+      toast('시트 반영 중 오류: ' + (json && json.error || '알 수 없음'), 'err');
+    }
+  })
+  .catch(function(e) { console.warn('Sync 실패:', e.message); });
+}
 function exportGantt(){
 const sm=smMap(),list=filtered(DB.processes.map(enrich));
 if(!list.length){toast('내보낼 데이터가 없습니다.','err');return;}
@@ -1273,15 +1493,27 @@ setTimeout(()=>el.remove(),3000);
 }
 /* CSV 파서 (BOM 처리 포함) */
 function parseCSV(text) {
-text = text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-const lines = text.split('\n').filter(l=>l.trim());
-if (lines.length < 2) return [];
-const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
-return lines.slice(1).map(line=>{
-const vals=[], re=/("(?:[^"]|"")*"|[^,]*)/g; let m;
-while((m=re.exec(line))!==null&&vals.length<headers.length) vals.push(m[1].replace(/^"|"$/g,'').replace(/""/g,'"').trim());
-const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;
-}).filter(r=>Object.values(r).some(v=>v));
+  var lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim().split('\n');
+  if (!lines.length) return [];
+  if (lines[0].charCodeAt(0)===0xFEFF) lines[0]=lines[0].slice(1);
+  var headers = lines[0].split(',').map(function(h){return h.trim().replace(/^["']|["']$/g,'');});
+  var result = [];
+  for (var i=1;i<lines.length;i++) {
+    var line=lines[i].trim(); if(!line) continue;
+    var fields=[],cur='',inQ=false;
+    for (var j=0;j<line.length;j++) {
+      var ch=line[j];
+      if(ch==='"'&&!inQ){inQ=true;}
+      else if(ch==='"'&&inQ){inQ=false;}
+      else if(ch===','&&!inQ){fields.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    fields.push(cur.trim());
+    var row={};
+    headers.forEach(function(h,k){row[h]=(fields[k]||'').replace(/^["']|["']$/g,'');});
+    result.push(row);
+  }
+  return result;
 }
 function downCSV(csv,filename){
 const a=document.createElement('a');
@@ -1291,10 +1523,7 @@ a.download=filename; a.click();
 /* 오버레이 바깥 클릭 닫기 */
 document.querySelectorAll('.ov').forEach(ov=>{ov.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
 init();
-function saveSheetCfg() {
-  closeOv('ovSync');
-  toast('설정이 저장되었습니다.', 'ok');
-}
+
 function detailNav(el) {
 closeOv('ovDetail');
 if (el.dataset.did) openDefDetail(el.dataset.did);
@@ -1310,6 +1539,175 @@ openCLForCode(el.dataset.code, el.dataset.name||'');
 
 
 
+
+
+
+
+function goSiteGantt(siteId) {
+  DB.selSite = siteId;
+  var sel = document.getElementById('siteSel'); if(sel) sel.value = siteId;
+  nav('gantt', null);
+  document.querySelectorAll('.sb-btn').forEach(function(b){b.classList.remove('on');});
+  var gBtn = document.querySelector('.sb-btn[onclick*="gantt"]');
+  if(gBtn) gBtn.classList.add('on');
+  rGantt();
+  var s = DB.sites.find(function(x){return x.id===siteId;});
+  toast((s ? s.name : '현장') + ' 간트 차트로 이동', 'info');
+}
+
+function showProcSites(pid) {
+  var p = DB.processes.find(function(x){return x.id===pid;}); if(!p) return;
+  var sm = smMap();
+  var siteName = sm[p.siteId] || p.siteId;
+  var defs = (p.defs||[]);
+  var html = '<div style="margin-bottom:10px"><span class="bdg bb">'+(PROC_CODES[p.code]||p.code)+'</span> 공종이 진행 중인 현장</div>';
+  html += '<div style="background:var(--card2);border-radius:8px;padding:12px 14px;margin-bottom:12px">';
+  html += '<div style="font-size:13px;font-weight:700;color:var(--t9);margin-bottom:4px">'+siteName+'</div>';
+  html += '<div style="font-size:11px;color:var(--t5)">'+p.startDate+' ~ '+p.endDate+' · 진행률 '+p.progress+'%</div>';
+  html += '</div>';
+  if (defs.length) {
+    html += '<div style="font-size:12px;font-weight:700;color:var(--t7);margin-bottom:8px">⚠️ 관련 하자 유형 ('+defs.length+'개)</div>';
+    html += defs.map(function(d){
+      var cls = d.riskLevel==='상'?'br':d.riskLevel==='중'?'bo':'bg';
+      return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:5px;background:var(--card)">'+
+        '<span class="bdg '+cls+'">'+d.riskLevel+'</span>'+
+        '<div><div style="font-size:12px;font-weight:700;color:var(--t9)">'+d.name+'</div>'+
+        '<div style="font-size:11px;color:var(--green);margin-top:2px">✅ '+d.prevention+'</div></div></div>';
+    }).join('');
+  }
+  html += '<div class="m-ft" style="border-top:1.5px solid var(--border);margin-top:14px;padding-top:12px;display:flex;justify-content:flex-end;gap:7px">';
+  html += '<button class="btn btn-ghost" data-ov="ovDetail" onclick="closeOv(this.dataset.ov)">닫기</button>';
+  html += '<button class="btn btn-primary" data-sid="'+p.siteId+'" data-ov="ovDetail" onclick="closeOv(this.dataset.ov);goSiteGantt(this.dataset.sid)">📅 간트로 이동</button>';
+  html += '</div>';
+  document.getElementById('detailTitle').textContent = '🏗️ ' + p.name + ' · 현장 정보';
+  document.getElementById('detailBody').innerHTML = html;
+  openOv('ovDetail');
+}
+
+
+
+function loadFromSheet(sheetKey, onDone) {
+  if (!CFG.APPS_SCRIPT_URL || CFG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+    toast('Apps Script URL이 설정되지 않았습니다. 시트 동기화 메뉴에서 URL을 입력하세요.', 'err');
+    return;
+  }
+  toast(CFG.SHEET[sheetKey] + ' 로딩 중...', 'info');
+  fetch(CFG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getAll', sheet: CFG.SHEET[sheetKey] })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(json) {
+    if (json && json.ok && json.rows) {
+      onDone(json.rows);
+      toast(CFG.SHEET[sheetKey] + ' ' + json.rows.length + '건 로드 완료', 'ok');
+    } else {
+      toast('로드 실패: ' + (json && json.error || '알 수 없음'), 'err');
+    }
+  })
+  .catch(function(e) { toast('네트워크 오류: ' + e.message, 'err'); });
+}
+
+function sheetEnabled() {
+  return CFG.APPS_SCRIPT_URL && CFG.APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+}
+
+function saveSheetCfg() {
+  var url1 = (document.getElementById('cfgScriptUrl')||{}).value || '';
+  var url2 = (document.getElementById('cfgSheetUrl')||{}).value || '';
+  url1 = url1.trim(); url2 = url2.trim();
+  if (url1) { CFG.APPS_SCRIPT_URL = url1; localStorage.setItem('bas_script_url', url1); }
+  if (url2) { CFG.SPREADSHEET_URL = url2; localStorage.setItem('bas_sheet_url', url2); }
+  updateSyncStatus();
+  toast('URL이 저장되었습니다.', 'ok');
+}
+
+function updateSyncStatus() {
+  var badge = document.getElementById('syncStatusBadge');
+  var inp1  = document.getElementById('cfgScriptUrl');
+  var inp2  = document.getElementById('cfgSheetUrl');
+  if (inp1 && CFG.APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_WEB_APP_URL') inp1.value = CFG.APPS_SCRIPT_URL;
+  if (inp2 && CFG.SPREADSHEET_URL !== 'YOUR_SPREADSHEET_URL') inp2.value = CFG.SPREADSHEET_URL;
+  if (badge) {
+    if (sheetEnabled()) { badge.textContent = '● 연결됨'; badge.style.color = 'var(--green)'; }
+    else                { badge.textContent = '● 미설정';  badge.style.color = 'var(--t3)'; }
+  }
+  var siteCnt = document.getElementById('syncSiteCnt');
+  var defCnt  = document.getElementById('syncDefCnt');
+  var clCnt   = document.getElementById('syncClCnt');
+  if (siteCnt) siteCnt.textContent = '로컬: ' + DB.sites.length + '건';
+  if (defCnt)  defCnt.textContent  = '로컬: ' + DB.defects.length + '건';
+  if (clCnt)   clCnt.textContent   = '로컬: ' + DB.checklists.length + '건';
+}
+
+function addSyncLog(msg) {
+  var el = document.getElementById('syncLog');
+  if (!el) return;
+  var ts = new Date().toLocaleTimeString('ko-KR');
+  el.textContent = '[' + ts + '] ' + msg + '\n' + el.textContent;
+}
+
+// 시트에 전체 데이터 올리기
+function pushSheet(key) {
+  if (!sheetEnabled()) { toast('Apps Script URL을 먼저 설정하세요.', 'err'); return; }
+  var sheetName = CFG.SHEET[key];
+  var rows;
+  if (key === 'sites')      rows = DB.sites;
+  else if (key === 'defects') rows = DB.defects.map(function(d){return Object.assign({},d,{linkedCodes:(d.linkedCodes||[]).join('|')});});
+  else if (key === 'checklists') rows = DB.checklists;
+  else { toast('알 수 없는 키: '+key, 'err'); return; }
+  addSyncLog(sheetName + ' 업로드 시작 (' + rows.length + '건)...');
+  toast(sheetName + ' 업로드 중...', 'info');
+  fetch(CFG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'replaceAll', sheet: sheetName, rows: rows })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(json){
+    if (json && json.ok) {
+      addSyncLog('✅ ' + sheetName + ' 업로드 완료 (' + rows.length + '건)');
+      toast(sheetName + ' 업로드 완료', 'ok');
+    } else {
+      addSyncLog('❌ 오류: ' + (json && json.error || '알 수 없음'));
+      toast('업로드 실패: ' + (json && json.error || ''), 'err');
+    }
+  })
+  .catch(function(e){ addSyncLog('❌ 네트워크 오류: ' + e.message); toast('네트워크 오류', 'err'); });
+}
+
+// 시트에서 전체 데이터 불러오기
+function pullSheet(key) {
+  if (!sheetEnabled()) { toast('Apps Script URL을 먼저 설정하세요.', 'err'); return; }
+  var sheetName = CFG.SHEET[key];
+  addSyncLog(sheetName + ' 불러오기 시작...');
+  toast(sheetName + ' 불러오는 중...', 'info');
+  fetch(CFG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getAll', sheet: sheetName })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(json){
+    if (!json || !json.ok) { addSyncLog('❌ 오류: '+(json&&json.error||'알 수 없음')); toast('불러오기 실패','err'); return; }
+    var rows = json.rows || [];
+    if (key === 'sites') {
+      DB.sites = rows; buildSiteSel();
+    } else if (key === 'defects') {
+      DB.defects = rows.map(function(r){
+        return Object.assign({},r,{linkedCodes: r.linkedCodes ? String(r.linkedCodes).split('|').filter(Boolean) : []});
+      });
+    } else if (key === 'checklists') {
+      DB.checklists = rows.map(function(r){ return Object.assign({},r,{checked: r.checked==='true'||r.checked===true}); });
+    }
+    DB.riskProcs = getRiskProcs(); renderAll();
+    addSyncLog('✅ ' + sheetName + ' ' + rows.length + '건 불러오기 완료');
+    toast(sheetName + ' ' + rows.length + '건 로드 완료', 'ok');
+    updateSyncStatus();
+  })
+  .catch(function(e){ addSyncLog('❌ 네트워크 오류: '+e.message); toast('네트워크 오류','err'); });
+}
 
 
 
