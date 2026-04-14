@@ -297,10 +297,11 @@ button,input,select,textarea{font-family:inherit} /* LAYOUT */
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFYxIgQtCpv0IemfVV0IUhRSds4W8AF8zTsTzZqeDrNW3FyoHAwmthmtL-JCI_Lbc/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxRA5TP94HeuKQX-WnpVrGJgzKtYQDVLL_y74Esne1CvtUc98AVbHkIpGS3ERuuzuWt/exec',
   SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
   SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트' }
 };
@@ -775,9 +776,15 @@ html += '</div>';
 document.getElementById('clContent').innerHTML = html;
 }
 function tglCL(id) {
-const c=DB.checklists.find(x=>x.id===id); if(!c)return; c.checked=!c.checked;
-const el=document.getElementById('cli-'+id); if(!el)return;
-el.classList.toggle('done',c.checked); el.querySelector('.cl-cb').textContent=c.checked?'✓':'';
+  var c = DB.checklists.find(function(x){return x.id===id;}); if(!c) return;
+  c.checked = !c.checked;
+  var el = document.getElementById('cli-'+id); if(!el) return;
+  el.classList.toggle('done', c.checked);
+  var cb = el.querySelector('.cl-cb'); if(cb) cb.textContent = c.checked ? '✓' : '';
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.checklists, id: c.id,
+    row: Object.assign({}, c)
+  });
 }
 function resetCL(){ DB.checklists.filter(c=>c.code===DB.clCode).forEach(c=>c.checked=false); rCLContent(); toast('초기화되었습니다.','info'); }
 function submitCL(){ const d=DB.checklists.filter(c=>c.code===DB.clCode).filter(c=>c.checked).length; toast('점검 제출 완료! ('+d+'/'+DB.checklists.filter(c=>c.code===DB.clCode).length+' 항목)','ok'); }
@@ -892,23 +899,24 @@ renderCodeMgr(); rCL();
 toast('"' + name + '" 공종코드가 추가되었습니다.', 'ok');
 }
 function delProcCode(btn) {
-  var key = (typeof btn==='string')?btn:btn.dataset.k;
+  var key = (typeof btn==='string') ? btn : btn.dataset.k;
   var usedProcs = DB.processes.filter(function(p){return p.code===key;}).length;
   var usedCL    = DB.checklists.filter(function(c){return c.code===key;}).length;
-  if (usedProcs>0){
-    toast('"'+key+'" 코드를 사용하는 공종이 '+usedProcs+'개 있습니다. 먼저 해당 공종의 코드를 변경하세요.','err');
+  if (usedProcs > 0) {
+    toast('"'+key+'" 코드를 사용하는 공종이 '+usedProcs+'개 있습니다. 먼저 해당 공종의 코드를 변경하세요.', 'err');
     return;
   }
-  var nm = PROC_CODES[key]||key;
-  var msg = '"'+nm+'" 코드를 삭제하시겠습니까?'+(usedCL?'\n체크리스트 '+usedCL+'개도 함께 삭제됩니다.':'');
+  var nm = PROC_CODES[key] || key;
+  var msg = '"'+nm+'" 코드를 삭제하시겠습니까?' + (usedCL ? '\n체크리스트 '+usedCL+'개도 함께 삭제됩니다.' : '');
   if (!confirm(msg)) return;
   delete PROC_CODES[key];
   DB.checklists = DB.checklists.filter(function(c){return c.code!==key;});
-  if (DB.clCode===key) DB.clCode=Object.keys(PROC_CODES)[0]||'WATERPROOF';
+  if (DB.clCode === key) DB.clCode = Object.keys(PROC_CODES)[0] || 'WATERPROOF';
   renderCodeMgr(); rCL(); rGantt();
-  var lsel=document.getElementById('linkedProcSel');
-  if(lsel) lsel.innerHTML='<option value="">-- 공종 선택 --</option>'+Object.entries(PROC_CODES).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');
-  toast('"'+nm+'" 삭제 완료'+(usedCL?' (체크리스트 '+usedCL+'개 함께 삭제)':''),'ok');
+  var lsel = document.getElementById('linkedProcSel');
+  if (lsel) lsel.innerHTML = '<option value="">-- 공종 선택 --</option>' +
+    Object.entries(PROC_CODES).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');
+  toast('"'+nm+'" 삭제 완료' + (usedCL?' (체크리스트 '+usedCL+'개 함께 삭제)':''), 'ok');
 }
 /* 체크리스트 업로드 */
 function downloadCLTemplate() {
@@ -1287,22 +1295,27 @@ function saveSite() {
   var nm = document.getElementById('f-sNm').value.trim();
   if (!nm) { toast('현장명을 입력하세요.', 'err'); return; }
   var data = {
-    name: nm, location: gv('f-sLoc'), client: gv('f-sCli'),
-    startDate: gv('f-sSt'), endDate: gv('f-sEn'), amount: gv('f-sAmt'),
-    status: gv('f-sStat'), manager: gv('f-sMgr'), officer: gv('f-sOfc'), note: gv('f-sNote')
+    name:nm, location:gv('f-sLoc'), client:gv('f-sCli'),
+    startDate:gv('f-sSt'), endDate:gv('f-sEn'), amount:gv('f-sAmt'),
+    status:gv('f-sStat'), manager:gv('f-sMgr'), officer:gv('f-sOfc'), note:gv('f-sNote')
   };
   var isEdit = !!DB.editId;
+  var rowId;
   if (isEdit) {
+    rowId = DB.editId;
     Object.assign(DB.sites.find(function(s){return s.id===DB.editId;}), data);
     toast('"'+nm+'" 수정 완료', 'ok');
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.sites, id: DB.editId, row: Object.assign({id:DB.editId}, data) });
   } else {
-    var newId = 'S' + Date.now();
-    DB.sites.push(Object.assign({ id: newId }, data));
+    rowId = 'S' + Date.now();
+    DB.sites.push(Object.assign({id:rowId}, data));
     toast('"'+nm+'" 등록 완료', 'ok');
     buildSiteSel();
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.sites, id: newId, row: Object.assign({id:newId}, data) });
   }
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.sites, id: rowId,
+    row: Object.assign({id:rowId}, data)
+  });
+  addSyncLog((isEdit?'수정':'등록') + ': 현장 "'+nm+'"');
   closeOv('ovSite'); renderAll();
 }
 /* ════════════════════════════════
@@ -1322,26 +1335,29 @@ function saveCL() {
   var item = gv('f-clItem').trim();
   if (!item) { toast('체크항목명을 입력하세요.', 'err'); return; }
   var data = {
-    code: gv('f-clCode'), did: gv('f-clDid'), item: item,
-    std: gv('f-clStd'), method: gv('f-clMeth'), pass: gv('f-clPass'),
-    req: gv('f-clReq'), checked: false
+    code:gv('f-clCode'), did:gv('f-clDid'), item:item,
+    std:gv('f-clStd'), method:gv('f-clMeth'), pass:gv('f-clPass'),
+    req:gv('f-clReq'), checked:false
   };
   var isEdit = !!DB.editId;
+  var rowId;
   if (isEdit) {
+    rowId = DB.editId;
     var existing = DB.checklists.find(function(c){return c.id===DB.editId;});
     if (existing) data.checked = existing.checked;
     Object.assign(existing, data);
     toast('수정 완료', 'ok');
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.checklists, id: DB.editId,
-      row: Object.assign({id:DB.editId}, data) });
   } else {
-    var newId = 'C' + Date.now();
-    DB.checklists.push(Object.assign({ id: newId }, data));
-    toast('등록 완료', 'ok');
+    rowId = 'C' + Date.now();
+    DB.checklists.push(Object.assign({id:rowId}, data));
     DB.clCode = data.code;
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.checklists, id: newId,
-      row: Object.assign({id:newId}, data) });
+    toast('등록 완료', 'ok');
   }
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.checklists, id: rowId,
+    row: Object.assign({id:rowId}, data)
+  });
+  addSyncLog((isEdit?'수정':'등록') + ': 체크리스트 "'+item+'"');
   closeOv('ovCL'); rCL();
 }
 /* ════════════════════════════════
@@ -1352,54 +1368,63 @@ function editDef(id){const d=DB.defects.find(x=>x.id===id);if(!d)return;DB.editI
 function saveDef() {
   var nm = gv('f-dNm').trim();
   if (!nm) { toast('하자명을 입력하세요.', 'err'); return; }
+  var codes = getLinkedCodes();
   var data = {
-    name: nm, category: gv('f-dCat'), riskLevel: gv('f-dRisk'),
-    litigationFreq: gv('f-dLitig'), avgCost: gv('f-dCost'),
-    occurrenceTime: gv('f-dTime'), mainCause: gv('f-dCause'),
-    prevention: gv('f-dPrev'), linkedCodes: getLinkedCodes()
+    name:nm, category:gv('f-dCat'), riskLevel:gv('f-dRisk'),
+    litigationFreq:gv('f-dLitig'), avgCost:gv('f-dCost'),
+    occurrenceTime:gv('f-dTime'), mainCause:gv('f-dCause'),
+    prevention:gv('f-dPrev'), linkedCodes:codes
   };
   var isEdit = !!DB.editId;
+  var rowId;
   if (isEdit) {
+    rowId = DB.editId;
     Object.assign(DB.defects.find(function(d){return d.id===DB.editId;}), data);
     toast('"'+nm+'" 수정 완료', 'ok');
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.defects, id: DB.editId,
-      row: Object.assign({id:DB.editId}, data, {linkedCodes: data.linkedCodes.join('|')}) });
   } else {
-    var newId = 'D' + String(Date.now()).slice(-5);
-    DB.defects.push(Object.assign({ id: newId }, data));
+    rowId = 'D' + String(Date.now()).slice(-5);
+    DB.defects.push(Object.assign({id:rowId}, data));
     toast('"'+nm+'" 등록 완료', 'ok');
-    syncToSheet('upsertRow', { sheet: CFG.SHEET.defects, id: newId,
-      row: Object.assign({id:newId}, data, {linkedCodes: data.linkedCodes.join('|')}) });
   }
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.defects, id: rowId,
+    row: Object.assign({id:rowId}, data, {linkedCodes: codes.join('|')})
+  });
+  addSyncLog((isEdit?'수정':'등록') + ': 하자유형 "'+nm+'"');
   closeOv('ovDef'); rDefs(); rStats(); renderAll();
 }
 /* ════════════════════════════════
 삭제
 ════════════════════════════════ */
-function askDel(type,id,name){DB.delTarget={type,id};document.getElementById('delName').textContent='"'+name+'"';openOv('ovDel');}
+function askDel(type, id, nm) {
+  DB.delTarget = { type: type, id: id, nm: nm };
+  var el = document.getElementById('delName'); if(el) el.textContent = nm || id;
+  openOv('ovDel');
+}
 function confirmDel() {
   var tgt = DB.delTarget || {};
-  var type = tgt.type, id = tgt.id;
+  var type = tgt.type, id = tgt.id, nm = tgt.nm || id;
   var sheetKey = null;
   if (type === 'site') {
     DB.sites = DB.sites.filter(function(s){return s.id!==id;});
     DB.processes = DB.processes.filter(function(p){return p.siteId!==id;});
-    buildSiteSel(); toast('현장이 삭제되었습니다.', 'ok');
+    buildSiteSel(); toast('현장이 삭제되었습니다.','ok');
     sheetKey = CFG.SHEET.sites;
   } else if (type === 'process') {
     DB.processes = DB.processes.filter(function(p){return p.id!==id;});
-    toast('공종이 삭제되었습니다.', 'ok');
+    toast('공종이 삭제되었습니다.','ok');
   } else if (type === 'checklist') {
     DB.checklists = DB.checklists.filter(function(c){return c.id!==id;});
-    toast('체크항목이 삭제되었습니다.', 'ok');
+    toast('체크항목이 삭제되었습니다.','ok');
     sheetKey = CFG.SHEET.checklists;
   } else if (type === 'defect') {
     DB.defects = DB.defects.filter(function(d){return d.id!==id;});
-    toast('하자유형이 삭제되었습니다.', 'ok');
+    toast('하자유형이 삭제되었습니다.','ok');
     sheetKey = CFG.SHEET.defects;
   }
   if (sheetKey) {
     syncToSheet('deleteRow', { sheet: sheetKey, id: id });
+    addSyncLog('삭제: ' + type + ' id=' + id);
   }
   closeOv('ovDel');
   DB.riskProcs = getRiskProcs(); renderAll();
@@ -1418,26 +1443,28 @@ toast('동기화 기능은 Apps Script 연동 후 사용 가능합니다.', 'inf
 function getSyncPayload(t){return {};}
 function applySyncData(t,data){}
 function syncToSheet(action, data, onDone) {
-  if (!CFG.APPS_SCRIPT_URL || CFG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
-    if (onDone) onDone(null);
-    return;
-  }
-  var payload = Object.assign({ action: action }, data);
+  if (!sheetEnabled()) { if (onDone) onDone(null); return; }
+  var payload = JSON.stringify(Object.assign({ action: action }, data));
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    headers: { 'Content-Type': 'text/plain' },
+    body: payload
   })
-  .then(function(res) { return res.json(); })
-  .then(function(json) {
+  .then(function(res) { return res.text(); })
+  .then(function(txt) {
+    var json;
+    try { json = JSON.parse(txt); } catch(e) { json = { ok: false, error: txt }; }
     if (json && json.ok) {
       if (onDone) onDone(json);
     } else {
-      console.warn('Sync 응답 오류:', json && json.error);
-      toast('시트 반영 중 오류: ' + (json && json.error || '알 수 없음'), 'err');
+      console.warn('Sync 오류:', json && json.error);
+      addSyncLog('❌ ' + action + ' 오류: ' + (json && json.error || '알 수 없음'));
     }
   })
-  .catch(function(e) { console.warn('Sync 실패:', e.message); });
+  .catch(function(e) {
+    console.warn('Sync 실패:', e.message);
+    addSyncLog('❌ 네트워크 오류: ' + e.message);
+  });
 }
 function exportGantt(){
 const sm=smMap(),list=filtered(DB.processes.map(enrich));
@@ -1653,28 +1680,29 @@ function pushSheet(key) {
   if (!sheetEnabled()) { toast('Apps Script URL을 먼저 설정하세요.', 'err'); return; }
   var sheetName = CFG.SHEET[key];
   var rows;
-  if (key === 'sites')      rows = DB.sites;
-  else if (key === 'defects') rows = DB.defects.map(function(d){return Object.assign({},d,{linkedCodes:(d.linkedCodes||[]).join('|')});});
+  if      (key === 'sites')      rows = DB.sites;
+  else if (key === 'defects')    rows = DB.defects.map(function(d){ return Object.assign({},d,{linkedCodes:(d.linkedCodes||[]).join('|')}); });
   else if (key === 'checklists') rows = DB.checklists;
-  else { toast('알 수 없는 키: '+key, 'err'); return; }
+  else { toast('알 수 없는 키: '+key,'err'); return; }
   addSyncLog(sheetName + ' 업로드 시작 (' + rows.length + '건)...');
   toast(sheetName + ' 업로드 중...', 'info');
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'replaceAll', sheet: sheetName, rows: rows })
   })
-  .then(function(r){ return r.json(); })
-  .then(function(json){
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    var json; try{ json=JSON.parse(txt); }catch(e){ json={ok:false,error:txt}; }
     if (json && json.ok) {
       addSyncLog('✅ ' + sheetName + ' 업로드 완료 (' + rows.length + '건)');
       toast(sheetName + ' 업로드 완료', 'ok');
     } else {
-      addSyncLog('❌ 오류: ' + (json && json.error || '알 수 없음'));
-      toast('업로드 실패: ' + (json && json.error || ''), 'err');
+      addSyncLog('❌ 업로드 오류: ' + (json&&json.error||'알 수 없음'));
+      toast('업로드 실패: ' + (json&&json.error||''), 'err');
     }
   })
-  .catch(function(e){ addSyncLog('❌ 네트워크 오류: ' + e.message); toast('네트워크 오류', 'err'); });
+  .catch(function(e){ addSyncLog('❌ 네트워크 오류: '+e.message); toast('네트워크 오류','err'); });
 }
 
 // 시트에서 전체 데이터 불러오기
@@ -1685,12 +1713,13 @@ function pullSheet(key) {
   toast(sheetName + ' 불러오는 중...', 'info');
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'getAll', sheet: sheetName })
   })
-  .then(function(r){ return r.json(); })
-  .then(function(json){
-    if (!json || !json.ok) { addSyncLog('❌ 오류: '+(json&&json.error||'알 수 없음')); toast('불러오기 실패','err'); return; }
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    var json; try{ json=JSON.parse(txt); }catch(e){ json={ok:false,error:txt}; }
+    if (!json||!json.ok) { addSyncLog('❌ 오류: '+(json&&json.error||'알 수 없음')); toast('불러오기 실패','err'); return; }
     var rows = json.rows || [];
     if (key === 'sites') {
       DB.sites = rows; buildSiteSel();
@@ -1699,7 +1728,9 @@ function pullSheet(key) {
         return Object.assign({},r,{linkedCodes: r.linkedCodes ? String(r.linkedCodes).split('|').filter(Boolean) : []});
       });
     } else if (key === 'checklists') {
-      DB.checklists = rows.map(function(r){ return Object.assign({},r,{checked: r.checked==='true'||r.checked===true}); });
+      DB.checklists = rows.map(function(r){
+        return Object.assign({},r,{checked: r.checked==='true'||r.checked===true});
+      });
     }
     DB.riskProcs = getRiskProcs(); renderAll();
     addSyncLog('✅ ' + sheetName + ' ' + rows.length + '건 불러오기 완료');
@@ -1708,6 +1739,7 @@ function pullSheet(key) {
   })
   .catch(function(e){ addSyncLog('❌ 네트워크 오류: '+e.message); toast('네트워크 오류','err'); });
 }
+
 
 
 
