@@ -1,203 +1,231 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>하자 예방 관리 현황판</title>
-
-<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}:root{--bg:#EFF3FA;--white:#fff;--card:#fff;--card2:#F5F7FD;--border:#DDE4F4;--border2:#C8D3EE;--t9:#18243C;--t7:#334060;--t5:#6070A0;--t3:#A0AECB;--blue:#3B6CE0;--blue-l:#EAF0FD;--blue-d:#2552C4;--red:#DC4C4C;--red-l:#FEF0F0;--orange:#E8721C;--orange-l:#FEF4EC;--yellow:#D9A000;--yellow-l:#FFFAE6;--green:#22A85E;--green-l:#EDFAF3;--purple:#7050D8;--purple-l:#F2EEFE;--teal:#169090;--teal-l:#E4F8F7;--s1:0 1px 4px rgba(24,36,60,.06);--s2:0 4px 16px rgba(24,36,60,.09);--s3:0 8px 32px rgba(24,36,60,.13);--r:12px;--r2:8px;--sbW:224px;--topH:56px}body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--t9);font-size:13px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}button,input,select,textarea{font-family:inherit}.app{display:flex;min-height:100vh}.sb{width:var(--sbW);background:var(--white);border-right:1.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:var(--s2)}.sb-head{padding:18px 14px 14px;background:linear-gradient(135deg,#EAF0FD,#F2EEFE);border-bottom:1.5px solid var(--border)}.sb-brand{display:flex;align-items:center;gap:10px}.sb-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 3px 8px rgba(59,108,224,.3)}.sb-nm h2{font-size:12.5px;font-weight:900;line-height:1.3;color:var(--t9)}.sb-nm p{font-size:10px;color:var(--t5);margin-top:1px}.sb-body{flex:1;overflow-y:auto;padding:10px 7px}.sb-sec{margin-bottom:14px}.sb-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:0 7px;margin-bottom:3px}.sb-btn{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;cursor:pointer;color:var(--t5);font-size:12.5px;font-weight:600;transition:all .14s;border:none;background:none;width:100%;text-align:left;position:relative;margin-bottom:1px}.sb-btn:hover{background:var(--blue-l);color:var(--blue)}.sb-btn.on{background:linear-gradient(90deg,var(--blue-l),#EDF3FD);color:var(--blue);font-weight:700}.sb-btn.on::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:3px;background:var(--blue)}.sb-ic{font-size:14px;width:17px;text-align:center;flex-shrink:0}.sb-bdg{margin-left:auto;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red)}.sb-foot{padding:10px 14px;border-top:1.5px solid var(--border);background:var(--card2)}.sb-time{font-size:10px;color:var(--t3)}.sb-date{font-size:11px;font-weight:700;color:var(--t7);margin-top:1px}.main{margin-left:var(--sbW);flex:1;min-width:0}.topbar{height:var(--topH);background:var(--white);border-bottom:1.5px solid var(--border);padding:0 22px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:200;box-shadow:var(--s1)}.topbar-title{font-size:14px;font-weight:900;flex:1;color:var(--t9)}.mob-btn{display:none;background:none;border:none;font-size:19px;cursor:pointer;color:var(--t7);padding:4px}.content{padding:20px 22px}.panel{display:none;animation:fadeUp .2s ease}.panel.on{display:block}@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .14s;line-height:1;white-space:nowrap}.btn-primary{background:linear-gradient(135deg,var(--blue),#6090F0);color:#fff;box-shadow:0 2px 6px rgba(59,108,224,.25)}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,108,224,.35)}.btn-success{background:linear-gradient(135deg,var(--green),#40D080);color:#fff}.btn-danger{background:var(--red-l);color:var(--red);border:1.5px solid #F4B8B8}.btn-danger:hover{background:var(--red);color:#fff}.btn-ghost{background:var(--card2);color:var(--t7);border:1.5px solid var(--border2)}.btn-ghost:hover{background:var(--border);color:var(--t9)}.btn-warn{background:var(--orange-l);color:var(--orange);border:1.5px solid #F0C090}.btn-warn:hover{background:var(--orange);color:#fff}.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}.btn-icon{padding:5px 6px;border-radius:6px}.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--s1)}.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.card-title{font-size:13px;font-weight:700;color:var(--t9);display:flex;align-items:center;gap:6px}.sec-title{font-size:14px;font-weight:900;color:var(--t9);margin-bottom:12px;display:flex;align-items:center;gap:7px}.sec-sub{font-size:11px;color:var(--t5);font-weight:600}.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;margin-bottom:18px}.sc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 14px 12px;position:relative;overflow:hidden;cursor:pointer;transition:transform .14s,box-shadow .14s;box-shadow:var(--s1)}.sc:hover{transform:translateY(-2px);box-shadow:var(--s2)}.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}.sc.cr::before{background:linear-gradient(90deg,var(--red),#F48080)}.sc.co::before{background:linear-gradient(90deg,var(--orange),#F0A060)}.sc.cb::before{background:linear-gradient(90deg,var(--blue),#80A8F8)}.sc.cg::before{background:linear-gradient(90deg,var(--green),#60D090)}.sc.cy::before{background:linear-gradient(90deg,var(--yellow),#F0D060)}.sc.cp::before{background:linear-gradient(90deg,var(--purple),#B090F0)}.sc-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:9px}.sc.cr .sc-ic{background:var(--red-l)}.sc.co .sc-ic{background:var(--orange-l)}.sc.cb .sc-ic{background:var(--blue-l)}.sc.cg .sc-ic{background:var(--green-l)}.sc.cy .sc-ic{background:var(--yellow-l)}.sc.cp .sc-ic{background:var(--purple-l)}.sc-val{font-size:26px;font-weight:900;line-height:1;color:var(--t9)}.sc-lbl{font-size:11px;color:var(--t5);margin-top:3px;font-weight:600}.sc-sub{font-size:10px;color:var(--t3);margin-top:2px}.sc-arr{position:absolute;bottom:10px;right:11px;font-size:13px;color:var(--t3);transition:transform .14s}.sc:hover .sc-arr{transform:translateX(3px);color:var(--blue)}.bdg{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;line-height:1.4;white-space:nowrap}.br{background:var(--red-l);color:#B03030;border:1px solid #F4B8B8}.bo{background:var(--orange-l);color:#B05010;border:1px solid #F0C090}.by{background:var(--yellow-l);color:#907000;border:1px solid #F0D880}.bg{background:var(--green-l);color:#167040;border:1px solid #90D8B0}.bb{background:var(--blue-l);color:#1840B0;border:1px solid #B0C8F8}.bp{background:var(--purple-l);color:#4030A0;border:1px solid #C0A8F8}.bt{background:var(--teal-l);color:#0E7070}.bx{background:var(--card2);color:var(--t5);border:1px solid var(--border2)}.pb{width:100%;height:5px;background:var(--border);border-radius:3px;overflow:hidden}.pb-f{height:100%;border-radius:3px;transition:width .5s ease}.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:11px}.rl-wrap{background:var(--card);border:1.5px solid var(--border);border-left:4px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden;box-shadow:var(--s1);transition:box-shadow .14s}.rl-wrap:hover{box-shadow:var(--s2)}.rl-wrap.sts-진행중{border-left-color:var(--red)}.rl-wrap.sts-예정_1주{border-left-color:var(--orange)}.rl-wrap.sts-예정_2주{border-left-color:var(--yellow)}.rl-wrap.sts-예정{border-left-color:var(--blue)}.rl-row{display:grid;grid-template-columns:120px 1fr 180px 110px auto 26px;align-items:center;padding:10px 14px;gap:10px;cursor:pointer;transition:background .1s;min-height:52px}.rl-row:hover{background:var(--card2)}.rl-pname{font-size:13px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rl-site{font-size:11px;color:var(--t5);margin-top:1px}.rl-period{font-size:11px;color:var(--t5);white-space:nowrap}.rl-prog{display:flex;flex-direction:column;align-items:flex-start;gap:3px}.rl-tabs{display:flex;gap:5px;flex-wrap:wrap}.rl-tab-btn{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--card2);color:var(--t5);transition:all .14s;white-space:nowrap}.rl-tab-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}.rl-tab-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}.rl-arr{font-size:11px;color:var(--t3);text-align:center;font-weight:700}.rl-body{border-top:1.5px solid var(--border);background:var(--card2)}.rl-def-list{padding:10px 14px;display:flex;flex-direction:column;gap:6px}.rl-def-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:background .1s}.rl-def-item:hover{background:var(--blue-l);border-color:var(--blue)}.rl-def-nm{font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px}.rl-def-row{font-size:11px;color:var(--t7);margin-bottom:2px}.rl-def-prev{font-size:11px;color:var(--green);font-weight:700}.rl-cl-list{padding:10px 14px}.rl-cl-item{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:7px;border:1px solid var(--border);margin-bottom:5px;background:var(--white)}@media(max-width:900px){.rl-row{grid-template-columns:100px 1fr auto 22px}.rl-period,.rl-prog{display:none}}@media(max-width:600px){.rl-row{grid-template-columns:90px 1fr auto 22px}.rl-tabs{display:none}}.tw{overflow-x:auto}.tbl{width:100%;border-collapse:separate;border-spacing:0}.tbl thead th{background:var(--card2);color:var(--t5);font-size:11px;font-weight:700;padding:9px 11px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0}.tbl tbody td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}.tbl tbody tr{cursor:pointer;transition:background .1s}.tbl tbody tr:hover td{background:var(--blue-l)}.tbl tbody tr:last-child td{border-bottom:none}.tbl tbody tr.sel-row td{background:var(--blue-l)}.fb-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}.fb{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);color:var(--t5);background:var(--card);transition:all .14s}.fb:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}.fb.on{background:var(--blue);color:#fff;border-color:var(--blue)}.gantt-wrap{overflow-x:auto;position:relative}.g-hdr{background:var(--card2);border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--t5)}.g-row{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}.g-row:hover{background:var(--blue-l)}.g-cell{padding:8px 9px;display:flex;align-items:center;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-right:1px solid var(--border)}.g-cell:last-child{border-right:none}.g-bar{position:absolute;top:5px;height:22px;border-radius:5px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff;overflow:hidden;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.12)}.today-ln{position:absolute;top:0;bottom:0;width:2px;background:rgba(220,76,76,.65);z-index:5;pointer-events:none}.today-ln::before{content:'오늘';position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--red);white-space:nowrap;background:var(--white);padding:1px 4px;border-radius:3px;border:1px solid var(--red)}.gantt-add{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:2px dashed var(--border2);border-radius:7px;cursor:pointer;color:var(--t5);font-size:12px;font-weight:700;transition:all .14s;margin-top:6px;background:none;width:100%}.gantt-add:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}.cl-item{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);margin-bottom:5px;transition:all .14s;background:var(--card)}.cl-item:hover{border-color:var(--blue);background:var(--blue-l)}.cl-item.done{background:var(--green-l);border-color:#90D8B0}.cl-item.sel{background:var(--orange-l);border-color:var(--orange)}.cl-sel-cb{width:16px;height:16px;accent-color:var(--orange);cursor:pointer;flex-shrink:0;margin-top:3px}.cl-cb{width:19px;height:19px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;transition:all .14s;margin-top:1px;color:#fff;cursor:pointer}.cl-item.done .cl-cb{background:var(--green);border-color:var(--green)}.cl-body{flex:1;min-width:0}.cl-nm{font-size:13px;font-weight:700;color:var(--t9)}.cl-std{font-size:11px;color:var(--t5);margin-top:2px}.cl-req{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--red-l);color:var(--red);flex-shrink:0}.cl-acts{display:flex;gap:3px;flex-shrink:0;margin-left:3px}.cl-grp-t{font-size:12px;font-weight:700;color:var(--t7);padding:8px 0 7px;border-bottom:2px solid var(--border);margin-bottom:7px;display:flex;align-items:center;gap:6px}.code-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);margin:3px}.code-chip-del{cursor:pointer;font-size:13px;line-height:1;padding:0 2px;border-radius:3px}.code-chip-del:hover{background:var(--blue);color:#fff}.al-item{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:6px;background:var(--card);transition:box-shadow .14s;cursor:pointer}.al-item:hover{box-shadow:var(--s2)}.al-item.unread{border-left:4px solid var(--red)}.al-item.read{opacity:.68}.al-item.lv-중{border-left-color:var(--orange)}.al-item.lv-하{border-left-color:var(--green)}.al-em{font-size:20px;flex-shrink:0;line-height:1;margin-top:1px}.al-body{flex:1;min-width:0}.al-t{font-size:13px;font-weight:700;color:var(--t9)}.al-d{font-size:11px;color:var(--t5);margin-top:2px}.al-m{font-size:10px;color:var(--t3);margin-top:4px}.site-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:13px}.site-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--s1);transition:all .14s;position:relative;overflow:hidden}.site-card:hover{box-shadow:var(--s2);transform:translateY(-2px)}.site-top{height:4px;position:absolute;top:0;left:0;right:0;border-radius:var(--r) var(--r) 0 0}.site-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}.site-nm{font-size:14px;font-weight:900;color:var(--t9)}.site-loc{font-size:11px;color:var(--t5);margin-top:2px;font-weight:600}.site-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}.si-box{background:var(--card2);border-radius:6px;padding:7px 9px}.si-l{font-size:10px;color:var(--t3);font-weight:700;margin-bottom:1px}.si-v{font-size:12px;font-weight:700;color:var(--t9)}.site-acts{display:flex;gap:4px}.dash-def-banner{background:linear-gradient(135deg,var(--red-l),var(--orange-l));border:1.5px solid #F4B8B8;border-radius:var(--r);padding:14px 16px;margin-bottom:16px}.dash-def-banner-t{font-size:13px;font-weight:900;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px}.dash-def-tag{display:inline-flex;align-items:center;gap:5px;background:var(--white);border:1px solid #F4B8B8;border-radius:7px;padding:5px 10px;margin:3px;cursor:pointer;font-size:11px;font-weight:700;color:var(--t9);transition:all .14s}.dash-def-tag:hover{background:var(--red-l);color:var(--red)}.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-bottom:18px}.ch-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--s1)}.ov{position:fixed;inset:0;background:rgba(24,36,60,.36);backdrop-filter:blur(3px);z-index:500;display:none;align-items:center;justify-content:center;padding:14px}.ov.open{display:flex}.modal{background:var(--card);border-radius:14px;width:100%;max-height:88vh;overflow-y:auto;padding:22px;box-shadow:var(--s3);animation:mIn .2s ease}.modal.sm{max-width:420px}.modal.md{max-width:560px}.modal.lg{max-width:700px}.modal.xl{max-width:860px}@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}.m-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}.m-title{font-size:16px;font-weight:900;color:var(--t9)}.m-x{background:var(--card2);border:1.5px solid var(--border2);color:var(--t5);width:28px;height:28px;border-radius:7px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}.m-x:hover{background:var(--red-l);color:var(--red);border-color:#F4B8B8}.m-ft{display:flex;justify-content:flex-end;gap:7px;margin-top:18px;padding-top:14px;border-top:1.5px solid var(--border)}.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fgrid .fg{margin-bottom:0}.fspan{grid-column:1/-1}.f-lbl{font-size:11px;font-weight:700;color:var(--t7)}.f-req{color:var(--red);margin-left:1px}.fi,.fs,.fta{background:var(--card2);border:1.5px solid var(--border2);color:var(--t9);padding:7px 10px;border-radius:7px;font-size:13px;font-weight:600;outline:none;transition:border-color .14s,box-shadow .14s;width:100%}.fi:focus,.fs:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,108,224,.1)}.fta{resize:vertical;min-height:66px}.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9000;display:flex;flex-direction:column-reverse;gap:6px;pointer-events:none}.toast{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;box-shadow:var(--s3);min-width:210px;font-size:12px;font-weight:700;color:var(--t9);animation:tIn .22s ease;pointer-events:all}.toast.ok{border-left:4px solid var(--green)}.toast.err{border-left:4px solid var(--red)}.toast.info{border-left:4px solid var(--blue)}@keyframes tIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}.loading{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px}.loading.show{display:flex}.load-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 18px rgba(59,108,224,.3);animation:lp 1.5s ease-in-out infinite}@keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}.load-bar{width:190px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}.load-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:2px;animation:lb 1.3s ease-in-out infinite}@keyframes lb{0%{width:0;margin-left:0}50%{width:55%;margin-left:20%}100%{width:0;margin-left:100%}}.load-txt{font-size:12px;font-weight:700;color:var(--t5)}.empty{text-align:center;padding:36px 16px}.empty-ic{font-size:38px;margin-bottom:9px}.empty-t{font-size:13px;font-weight:700;color:var(--t7);margin-bottom:3px}.empty-s{font-size:11px;color:var(--t3)}.ibox{background:var(--card2);border-radius:7px;padding:8px 10px}.ibox-l{font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px}.ibox-v{font-size:13px;font-weight:700;color:var(--t9)}.confirm-ic{font-size:42px;text-align:center;margin-bottom:8px}.confirm-msg{font-size:13px;color:var(--t7);text-align:center;line-height:1.8;margin-bottom:16px}.two-col{display:grid;grid-template-columns:1fr 290px;gap:13px;margin-bottom:18px}@media(max-width:900px){.two-col{grid-template-columns:1fr}}@media(max-width:768px){.sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}.main{margin-left:0}.mob-btn{display:flex}.sg{grid-template-columns:repeat(2,1fr)}.rg,.site-grid{grid-template-columns:1fr}.content{padding:14px 13px}.topbar{padding:0 13px}.fgrid{grid-template-columns:1fr}.cg{grid-template-columns:1fr}}::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}</style>
-</head>
-<body>
-
-<!-- LOADING -->
-<div class="loading" id="loading">
-  <div class="load-logo">🏗️</div>
-  <div class="load-bar"><div class="load-fill"></div></div>
-  <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div>
-</div>
-
-<!-- TOAST -->
-<div class="toast-wrap" id="toastWrap"></div>
-
-<!-- ═══ APP LAYOUT ═══ -->
-<div class="app">
-  <nav class="sb" id="sb">
-    <div class="sb-head">
-      <div class="sb-brand">
-        <div class="sb-logo">🏗️</div>
-        <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div>
-      </div>
-    </div>
-    <div class="sb-body">
-      <div class="sb-sec">
-        <div class="sb-lbl">메인</div>
-        <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button>
-        <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button>
-      </div>
-      <div class="sb-sec">
-        <div class="sb-lbl">공정 관리</div>
-        <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button>
-        <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button>
-      </div>
-      <div class="sb-sec">
-        <div class="sb-lbl">데이터 관리</div>
-        <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button>
-        <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button>
-        <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button>
-      </div>
-      <div class="sb-sec">
-        <div class="sb-lbl">알림 &amp; 설정</div>
-        <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button>
-        <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button>
-      </div>
-    </div>
-    <div class="sb-foot">
-      <div class="sb-time">최종 업데이트</div>
-      <div class="sb-date" id="sbDate">—</div>
-    </div>
-  </nav>
-
-  <div class="main">
-    <div class="topbar">
-      <button class="mob-btn" onclick="toggleSb()">☰</button>
-      <div class="topbar-title" id="topTitle">📊 대시보드</div>
-      <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select>
-      <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button>
-      <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button>
-    </div>
-
-    <div class="content">
-
-      <!-- ===== DASHBOARD ===== -->
-      <div class="panel on" id="panel-dashboard">
-        <div class="sg" id="statGrid"></div>
-        <!-- 진행 중 하자 위험 배너 -->
-        <div id="dashDefBanner"></div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-hd"><div class="card-title">🔴 주요 하자 공종 TOP 5</div><button class="btn btn-ghost btn-sm" onclick="nav('risk')">전체 →</button></div>
-            <div id="top5"></div>
-          </div>
-          <div class="card">
-            <div class="card-hd"><div class="card-title">🔔 미확인 알림</div><button class="btn btn-ghost btn-sm" onclick="nav('alerts')">전체 →</button></div>
-            <div id="dashAlerts"></div>
-          </div>
-        </div>
-        <div class="sec-title">🏗️ 현장별 현황</div>
-        <div class="site-grid" id="dashSites"></div>
-      </div>
-
-      <!-- ===== 주요 하자 공종 현황 ===== -->
-      <div class="panel" id="panel-risk">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div>
-        </div>
-        <div class="fb-wrap" id="riskFb">
-          <button class="fb on" onclick="setRF(this,'all')">전체</button>
-          <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button>
-          <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button>
-          <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button>
-          <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button>
-        </div>
-        <div id="riskList"></div>
-      </div>
-
-      <!-- ===== GANTT ===== -->
-      <div class="panel" id="panel-gantt">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button>
-            <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button>
-          </div>
-        </div>
-        <div class="card" style="padding:0;overflow:hidden">
-          <div class="gantt-wrap"><div id="ganttBody"></div></div>
-          <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button>
-        </div>
-      </div>
-
-      <!-- ===== CHECKLIST ===== -->
-      <div class="panel" id="panel-checklist">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button>
-            <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button>
-            <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button>
-            <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button>
-            <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button>
-          </div>
-        </div>
-        <div class="fb-wrap" id="clFb"></div>
-        <div id="clContent"></div>
-      </div>
-
-      <!-- ===== DEFECTS ===== -->
-      <div class="panel" id="panel-defects">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button>
-            <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button>
-          </div>
-        </div>
-        <div class="fb-wrap" id="defFb"></div>
-        <div class="card" style="padding:0">
-          <div class="tw">
-            <table class="tbl">
-              <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead>
-              <tbody id="defBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== SITES ===== -->
-      <div class="panel" id="panel-sites">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div>
-          <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button>
-        </div>
-        <div class="site-grid" id="siteGrid"></div>
-      </div>
-
-      <!-- ===== STATS ===== -->
-      <div class="panel" id="panel-stats">
-        <div class="sec-title">📈 하자 리스크 통계 분석</div>
-        <div class="cg" id="chartGrid"></div>
-      </div>
-
-      <!-- ===== ALERTS ===== -->
-      <div class="panel" id="panel-alerts">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div>
-          <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
-        </div>
-        <div class="fb-wrap">
-          <button class="fb on" onclick="setAF(this,'all')">전체</button>
-          <button class="fb" onclick="setAF(this,'unread')">미확인</button>
-          <button class="fb" onclick="setAF(this,'read')">확인</button>
-          <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button>
-          <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button>
-        </div>
-        <div id="alertsList"></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
+<!DOCTYPE html> <html lang="ko"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>하자 예방 관리 현황판</title>
+<style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{ --bg:#EFF3FA;--white:#fff;--card:#fff;--card2:#F5F7FD; --border:#DDE4F4;--border2:#C8D3EE; --t9:#18243C;--t7:#334060;--t5:#6070A0;--t3:#A0AECB; --blue:#3B6CE0;--blue-l:#EAF0FD;--blue-d:#2552C4; --red:#DC4C4C;--red-l:#FEF0F0; --orange:#E8721C;--orange-l:#FEF4EC; --yellow:#D9A000;--yellow-l:#FFFAE6; --green:#22A85E;--green-l:#EDFAF3; --purple:#7050D8;--purple-l:#F2EEFE; --teal:#169090;--teal-l:#E4F8F7; --s1:0 1px 4px rgba(24,36,60,.06); --s2:0 4px 16px rgba(24,36,60,.09); --s3:0 8px 32px rgba(24,36,60,.13); --r:12px;--r2:8px;--sbW:224px;--topH:56px
+}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--t9);font-size:13px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit} /* LAYOUT */
+.app{display:flex;min-height:100vh}
+.sb{width:var(--sbW);background:var(--white);border-right:1.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:var(--s2)}
+.sb-head{padding:18px 14px 14px;background:linear-gradient(135deg,#EAF0FD,#F2EEFE);border-bottom:1.5px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:10px}
+.sb-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 3px 8px rgba(59,108,224,.3)}
+.sb-nm h2{font-size:12.5px;font-weight:900;line-height:1.3;color:var(--t9)}
+.sb-nm p{font-size:10px;color:var(--t5);margin-top:1px}
+.sb-body{flex:1;overflow-y:auto;padding:10px 7px}
+.sb-sec{margin-bottom:14px}
+.sb-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);padding:0 7px;margin-bottom:3px}
+.sb-btn{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;cursor:pointer;color:var(--t5);font-size:12.5px;font-weight:600;transition:all .14s;border:none;background:none;width:100%;text-align:left;position:relative;margin-bottom:1px}
+.sb-btn:hover{background:var(--blue-l);color:var(--blue)}
+.sb-btn.on{background:linear-gradient(90deg,var(--blue-l),#EDF3FD);color:var(--blue);font-weight:700}
+.sb-btn.on::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:3px;background:var(--blue)}
+.sb-ic{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-bdg{margin-left:auto;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red)}
+.sb-foot{padding:10px 14px;border-top:1.5px solid var(--border);background:var(--card2)}
+.sb-time{font-size:10px;color:var(--t3)}
+.sb-date{font-size:11px;font-weight:700;color:var(--t7);margin-top:1px}
+.main{margin-left:var(--sbW);flex:1;min-width:0}
+.topbar{height:var(--topH);background:var(--white);border-bottom:1.5px solid var(--border);padding:0 22px;display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:200;box-shadow:var(--s1)}
+.topbar-title{font-size:14px;font-weight:900;flex:1;color:var(--t9)}
+.mob-btn{display:none;background:none;border:none;font-size:19px;cursor:pointer;color:var(--t7);padding:4px}
+.content{padding:20px 22px}
+.panel{display:none;animation:fadeUp .2s ease}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}} /* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .14s;line-height:1;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--blue),#6090F0);color:#fff;box-shadow:0 2px 6px rgba(59,108,224,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,108,224,.35)}
+.btn-success{background:linear-gradient(135deg,var(--green),#40D080);color:#fff}
+.btn-danger{background:var(--red-l);color:var(--red);border:1.5px solid #F4B8B8}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-ghost{background:var(--card2);color:var(--t7);border:1.5px solid var(--border2)}
+.btn-ghost:hover{background:var(--border);color:var(--t9)}
+.btn-warn{background:var(--orange-l);color:var(--orange);border:1.5px solid #F0C090}
+.btn-warn:hover{background:var(--orange);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
+.btn-icon{padding:5px 6px;border-radius:6px} /* CARDS */
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--s1)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:700;color:var(--t9);display:flex;align-items:center;gap:6px}
+.sec-title{font-size:14px;font-weight:900;color:var(--t9);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.sec-sub{font-size:11px;color:var(--t5);font-weight:600} /* STAT CARDS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;margin-bottom:18px}
+.sc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 14px 12px;position:relative;overflow:hidden;cursor:pointer;transition:transform .14s,box-shadow .14s;box-shadow:var(--s1)}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--s2)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.sc.cr::before{background:linear-gradient(90deg,var(--red),#F48080)}
+.sc.co::before{background:linear-gradient(90deg,var(--orange),#F0A060)}
+.sc.cb::before{background:linear-gradient(90deg,var(--blue),#80A8F8)}
+.sc.cg::before{background:linear-gradient(90deg,var(--green),#60D090)}
+.sc.cy::before{background:linear-gradient(90deg,var(--yellow),#F0D060)}
+.sc.cp::before{background:linear-gradient(90deg,var(--purple),#B090F0)}
+.sc-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:9px}
+.sc.cr .sc-ic{background:var(--red-l)}.sc.co .sc-ic{background:var(--orange-l)}.sc.cb .sc-ic{background:var(--blue-l)}.sc.cg .sc-ic{background:var(--green-l)}.sc.cy .sc-ic{background:var(--yellow-l)}.sc.cp .sc-ic{background:var(--purple-l)}
+.sc-val{font-size:26px;font-weight:900;line-height:1;color:var(--t9)}
+.sc-lbl{font-size:11px;color:var(--t5);margin-top:3px;font-weight:600}
+.sc-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.sc-arr{position:absolute;bottom:10px;right:11px;font-size:13px;color:var(--t3);transition:transform .14s}
+.sc:hover .sc-arr{transform:translateX(3px);color:var(--blue)} /* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;line-height:1.4;white-space:nowrap}
+.br{background:var(--red-l);color:#B03030;border:1px solid #F4B8B8}
+.bo{background:var(--orange-l);color:#B05010;border:1px solid #F0C090}
+.by{background:var(--yellow-l);color:#907000;border:1px solid #F0D880}
+.bg{background:var(--green-l);color:#167040;border:1px solid #90D8B0}
+.bb{background:var(--blue-l);color:#1840B0;border:1px solid #B0C8F8}
+.bp{background:var(--purple-l);color:#4030A0;border:1px solid #C0A8F8}
+.bt{background:var(--teal-l);color:#0E7070}
+.bx{background:var(--card2);color:var(--t5);border:1px solid var(--border2)} /* PROGRESS BAR */
+.pb{width:100%;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pb-f{height:100%;border-radius:3px;transition:width .5s ease} /* RISK / DEFECT CARDS */ /* ── 주요 하자 공종 현황 – 행 리스트형 ── */
+.rl-wrap{background:var(--card);border:1.5px solid var(--border);border-left:4px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden;box-shadow:var(--s1);transition:box-shadow .14s}
+.rl-wrap:hover{box-shadow:var(--s2)}
+.rl-wrap.sts-진행중{border-left-color:var(--red)}
+.rl-wrap.sts-예정_1주{border-left-color:var(--orange)}
+.rl-wrap.sts-예정_2주{border-left-color:var(--yellow)}
+.rl-wrap.sts-예정{border-left-color:var(--blue)}
+.rl-row{display:grid;grid-template-columns:120px 1fr 180px 110px auto 26px;align-items:center;padding:10px 14px;gap:10px;cursor:pointer;transition:background .1s;min-height:52px}
+.rl-row:hover{background:var(--card2)}
+.rl-pname{font-size:13px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-site{font-size:11px;color:var(--t5);margin-top:1px}
+.rl-period{font-size:11px;color:var(--t5);white-space:nowrap}
+.rl-prog{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.rl-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.rl-tab-btn{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--card2);color:var(--t5);transition:all .14s;white-space:nowrap}
+.rl-tab-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.rl-tab-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.rl-arr{font-size:11px;color:var(--t3);text-align:center;font-weight:700}
+.rl-body{border-top:1.5px solid var(--border);background:var(--card2)}
+.rl-def-list{padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.rl-def-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:background .1s}
+.rl-def-item:hover{background:var(--blue-l);border-color:var(--blue)}
+.rl-def-nm{font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px}
+.rl-def-row{font-size:11px;color:var(--t7);margin-bottom:2px}
+.rl-def-prev{font-size:11px;color:var(--green);font-weight:700}
+.rl-cl-list{padding:10px 14px}
+.rl-cl-item{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:7px;border:1px solid var(--border);margin-bottom:5px;background:var(--white)}
+@media(max-width:900px){.rl-row{grid-template-columns:100px 1fr auto 22px}.rl-period,.rl-prog{display:none}}
+@media(max-width:600px){.rl-row{grid-template-columns:90px 1fr auto 22px}.rl-tabs{display:none}} /* TABLE */
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:separate;border-spacing:0}
+.tbl thead th{background:var(--card2);color:var(--t5);font-size:11px;font-weight:700;padding:9px 11px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0}
+.tbl tbody td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.tbl tbody tr{cursor:pointer;transition:background .1s}
+.tbl tbody tr:hover td{background:var(--blue-l)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr.sel-row td{background:var(--blue-l)} /* FILTER BAR */
+.fb-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.fb{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);color:var(--t5);background:var(--card);transition:all .14s}
+.fb:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.fb.on{background:var(--blue);color:#fff;border-color:var(--blue)} /* GANTT */
+.gantt-wrap{overflow-x:auto;position:relative}
+.g-hdr{background:var(--card2);border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--t5)}
+.g-row{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+.g-row:hover{background:var(--blue-l)} .g-cell{padding:8px 9px;display:flex;align-items:center;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-right:1px solid var(--border)}
+.g-cell:last-child{border-right:none}
+.g-bar{position:absolute;top:5px;height:22px;border-radius:5px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff;overflow:hidden;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.today-ln{position:absolute;top:0;bottom:0;width:2px;background:rgba(220,76,76,.65);z-index:5;pointer-events:none}
+.today-ln::before{content:'오늘';position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--red);white-space:nowrap;background:var(--white);padding:1px 4px;border-radius:3px;border:1px solid var(--red)}
+.gantt-add{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:2px dashed var(--border2);border-radius:7px;cursor:pointer;color:var(--t5);font-size:12px;font-weight:700;transition:all .14s;margin-top:6px;background:none;width:100%}
+.gantt-add:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)} /* ── CSV/엑셀 업로드 드롭존 ── */ /* CHECKLIST */
+.cl-item{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);margin-bottom:5px;transition:all .14s;background:var(--card)}
+.cl-item:hover{border-color:var(--blue);background:var(--blue-l)}
+.cl-item.done{background:var(--green-l);border-color:#90D8B0}
+.cl-item.sel{background:var(--orange-l);border-color:var(--orange)}
+.cl-sel-cb{width:16px;height:16px;accent-color:var(--orange);cursor:pointer;flex-shrink:0;margin-top:3px}
+.cl-cb{width:19px;height:19px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;transition:all .14s;margin-top:1px;color:#fff;cursor:pointer}
+.cl-item.done .cl-cb{background:var(--green);border-color:var(--green)}
+.cl-body{flex:1;min-width:0}
+.cl-nm{font-size:13px;font-weight:700;color:var(--t9)}
+.cl-std{font-size:11px;color:var(--t5);margin-top:2px}
+.cl-req{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--red-l);color:var(--red);flex-shrink:0}
+.cl-acts{display:flex;gap:3px;flex-shrink:0;margin-left:3px}
+.cl-grp-t{font-size:12px;font-weight:700;color:var(--t7);padding:8px 0 7px;border-bottom:2px solid var(--border);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+/* ── 공종코드 관리 탭 ── */ /* ALERT ITEMS */
+.al-item{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:6px;background:var(--card);transition:box-shadow .14s;cursor:pointer}
+.al-item:hover{box-shadow:var(--s2)}
+.al-item.unread{border-left:4px solid var(--red)}
+.al-item.read{opacity:.68}
+.al-item.lv-중{border-left-color:var(--orange)}
+.al-item.lv-하{border-left-color:var(--green)}
+.al-em{font-size:20px;flex-shrink:0;line-height:1;margin-top:1px}
+.al-body{flex:1;min-width:0}
+.al-t{font-size:13px;font-weight:700;color:var(--t9)}
+.al-d{font-size:11px;color:var(--t5);margin-top:2px}
+.al-m{font-size:10px;color:var(--t3);margin-top:4px} /* SITE CARDS */
+.site-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:13px}
+.site-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--s1);transition:all .14s;position:relative;overflow:hidden}
+.site-card:hover{box-shadow:var(--s2);transform:translateY(-2px)}
+.site-top{height:4px;position:absolute;top:0;left:0;right:0;border-radius:var(--r) var(--r) 0 0}
+.site-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.site-nm{font-size:14px;font-weight:900;color:var(--t9)}
+.site-loc{font-size:11px;color:var(--t5);margin-top:2px;font-weight:600}
+.site-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.si-box{background:var(--card2);border-radius:6px;padding:7px 9px}
+.si-l{font-size:10px;color:var(--t3);font-weight:700;margin-bottom:1px}
+.si-v{font-size:12px;font-weight:700;color:var(--t9)}
+.site-acts{display:flex;gap:4px} /* ── 대시보드 하자 위험 배너 ── */
+.dash-def-banner{background:linear-gradient(135deg,var(--red-l),var(--orange-l));border:1.5px solid #F4B8B8;border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
+.dash-def-banner-t{font-size:13px;font-weight:900;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dash-def-tag{display:inline-flex;align-items:center;gap:5px;background:var(--white);border:1px solid #F4B8B8;border-radius:7px;padding:5px 10px;margin:3px;cursor:pointer;font-size:11px;font-weight:700;color:var(--t9);transition:all .14s}
+.dash-def-tag:hover{background:var(--red-l);color:var(--red)} /* CHART GRID */
+.cg{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
+.ch-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--s1)}
+.ch-card canvas{max-height:185px} /* MODAL */
+.ov{position:fixed;inset:0;background:rgba(24,36,60,.36);backdrop-filter:blur(3px);z-index:500;display:none;align-items:center;justify-content:center;padding:14px}
+.ov.open{display:flex}
+.modal{background:var(--card);border-radius:14px;width:100%;max-height:88vh;overflow-y:auto;padding:22px;box-shadow:var(--s3);animation:mIn .2s ease}
+.modal.sm{max-width:420px}.modal.md{max-width:560px}.modal.lg{max-width:700px}.modal.xl{max-width:860px}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.m-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.m-title{font-size:16px;font-weight:900;color:var(--t9)}
+.m-x{background:var(--card2);border:1.5px solid var(--border2);color:var(--t5);width:28px;height:28px;border-radius:7px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}
+.m-x:hover{background:var(--red-l);color:var(--red);border-color:#F4B8B8}
+.m-ft{display:flex;justify-content:flex-end;gap:7px;margin-top:18px;padding-top:14px;border-top:1.5px solid var(--border)} /* FORMS */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid .fg{margin-bottom:0}
+.fspan{grid-column:1/-1}
+.f-lbl{font-size:11px;font-weight:700;color:var(--t7)}
+.f-req{color:var(--red);margin-left:1px}
+.fi,.fs,.fta{background:var(--card2);border:1.5px solid var(--border2);color:var(--t9);padding:7px 10px;border-radius:7px;font-size:13px;font-weight:600;outline:none;transition:border-color .14s,box-shadow .14s;width:100%}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,108,224,.1)}
+.fta{resize:vertical;min-height:66px} /* RISK CONFIG TOGGLES */ .tog input:checked+ .tog input:checked+ /* SYNC LOG */ /* TOAST */
+.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9000;display:flex;flex-direction:column-reverse;gap:6px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;box-shadow:var(--s3);min-width:210px;font-size:12px;font-weight:700;color:var(--t9);animation:tIn .22s ease;pointer-events:all}
+.toast.ok{border-left:4px solid var(--green)}.toast.err{border-left:4px solid var(--red)}.toast.info{border-left:4px solid var(--blue)}
+@keyframes tIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}} /* LOADING */ 50%{transform:scale(1.07)}} 50%{width:55%;margin-left:20%}100%{width:0;margin-left:100%}} /* EMPTY */
+.empty{text-align:center;padding:36px 16px}
+.empty-ic{font-size:38px;margin-bottom:9px}
+.empty-t{font-size:13px;font-weight:700;color:var(--t7);margin-bottom:3px}
+.empty-s{font-size:11px;color:var(--t3)} /* INFO BOX */
+.ibox{background:var(--card2);border-radius:7px;padding:8px 10px}
+.ibox-l{font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px}
+.ibox-v{font-size:13px;font-weight:700;color:var(--t9)} /* CONFIRM */
+.confirm-ic{font-size:42px;text-align:center;margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--t7);text-align:center;line-height:1.8;margin-bottom:16px} /* TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 290px;gap:13px;margin-bottom:18px} /* RESPONSIVE */
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+@media(max-width:768px){ .sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)} .main{margin-left:0}.mob-btn{display:flex} .sg{grid-template-columns:repeat(2,1fr)}.rg,.site-grid{grid-template-columns:1fr} .content{padding:14px 13px}.topbar{padding:0 13px}.fgrid{grid-template-columns:1fr}.cg{grid-template-columns:1fr}
+}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}</style>
+</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div> <div class="fg"><label class="f-lbl">위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구"></div> <div class="fg"><label class="f-lbl">발주처</label><input class="fi" id="f-sCli" placeholder="예) ○○건설(주)"></div> <div class="fg"><label class="f-lbl">공사 시작일</label><input class="fi" id="f-sSt" type="date"></div> <div class="fg"><label class="f-lbl">공사 종료일</label><input class="fi" id="f-sEn" type="date"></div> <div class="fg"><label class="f-lbl">공사금액(억)</label><input class="fi" id="f-sAmt" type="number" placeholder="예) 320"></div> <div class="fg"><label class="f-lbl">상태</label><select class="fs" id="f-sStat"><option value="진행중">진행중</option><option value="예정">예정</option><option value="완료">완료</option><option value="일시중단">일시중단</option></select></div> <div class="fg"><label class="f-lbl">현장소장</label><input class="fi" id="f-sMgr" placeholder="예) 김현장"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-sOfc" placeholder="예) 이담당"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-sNote" rows="2" placeholder="특이사항 입력"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSite')">취소</button><button class="btn btn-primary" onclick="saveSite()">💾 저장</button></div> </div> </div> <!-- 공종 폼 --> <div class="ov" id="ovProc"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="procTitle">📅 공종 등록</div><button class="m-x" onclick="closeOv('ovProc')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장<span class="f-req">*</span></label><select class="fs" id="f-pSite"></select></div> <div class="fg"><label class="f-lbl">공종명<span class="f-req">*</span></label><input class="fi" id="f-pNm" placeholder="예) 방수공사"></div> <div class="fg"><label class="f-lbl">공종코드</label><select class="fs" id="f-pCode"></select></div> <div class="fg"><label class="f-lbl">시작일<span class="f-req">*</span></label><input class="fi" id="f-pSt" type="date"></div> <div class="fg"><label class="f-lbl">종료일<span class="f-req">*</span></label><input class="fi" id="f-pEn" type="date"></div> <div class="fg"><label class="f-lbl">진행률(%)</label><input class="fi" id="f-pProg" type="number" min="0" max="100" value="0"></div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-pRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">담당업체</label><input class="fi" id="f-pCo" placeholder="예) ○○방수(주)"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-pMgr" placeholder="예) 김방수"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-pNote" rows="2" placeholder="특이사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovProc')">취소</button><button class="btn btn-primary" onclick="saveProc()">💾 저장</button></div> </div> </div> <!-- 간트 CSV/엑셀 업로드 모달 --> <div class="ov" id="ovGanttUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 공정 데이터 업로드</div><button class="m-x" onclick="closeOv('ovGanttUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종명, 공종코드, 시작일(YYYY-MM-DD), 종료일(YYYY-MM-DD) &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadGanttTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('ganttFileInput').click()" ondrop="handleGanttDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📊</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV, XLSX 지원</div> </div> <input type="file" id="ganttFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleGanttFile(this)"> <div id="ganttUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearGanttUpload()">✕ 취소</button></div><div class="upload-preview" id="ganttPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovGanttUpload')">닫기</button><button class="btn btn-primary" id="ganttImportBtn" onclick="importGanttData()" style="display:none">✅ 간트에 반영</button></div> </div></div> <!-- 체크리스트 항목 폼 --> <div class="ov" id="ovCL"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="clTitle">✅ 체크항목 등록</div><button class="m-x" onclick="closeOv('ovCL')">✕</button></div> <div class="fg"><label class="f-lbl">공종코드<span class="f-req">*</span></label><select class="fs" id="f-clCode"></select></div> <div class="fg"><label class="f-lbl">관련 하자 ID</label><input class="fi" id="f-clDid" placeholder="예) D001"></div> <div class="fg"><label class="f-lbl">체크항목명<span class="f-req">*</span></label><input class="fi" id="f-clItem" placeholder="예) 바탕면 청소 및 이물질 제거"></div> <div class="fg"><label class="f-lbl">기준내용<span class="f-req">*</span></label><textarea class="fta" id="f-clStd" placeholder="예) 콘크리트 표면 레이턴스 제거, 이물질 없을 것"></textarea></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">검사방법</label><input class="fi" id="f-clMeth" placeholder="예) 육안검사"></div> <div class="fg"><label class="f-lbl">합격기준</label><input class="fi" id="f-clPass" placeholder="예) 완전 청소 상태"></div> </div> <div class="fg"><label class="f-lbl">필수여부</label><select class="fs" id="f-clReq"><option value="필수">필수</option><option value="권장">권장</option></select></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCL')">취소</button><button class="btn btn-primary" onclick="saveCL()">💾 저장</button></div> </div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 기본 코드(방수공사 등)는 삭제할 수 없습니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="number" placeholder="예) 500"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 --> <div class="ov" id="ovSync"> <div class="modal md"> <div class="m-hd"><div class="m-title">🔄 스프레드시트 동기화</div><button class="m-x" onclick="closeOv('ovSync')">✕</button></div> <div class="sync-log" id="syncLog">동기화 로그가 여기에 표시됩니다.</div> <div class="fgrid"> <div class="fg"><label class="f-lbl">동기화 대상</label><select class="fs" id="syncTarget"><option value="all">전체 데이터</option><option value="processes">공종(간트)</option><option value="checklists">체크리스트</option><option value="defects">하자유형</option><option value="sites">현장정보</option></select></div> <div class="fg"><label class="f-lbl">방향</label><select class="fs" id="syncDir"><option value="pull">시트 → 시스템 (불러오기)</option><option value="push">시스템 → 시트 (내보내기)</option></select></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSync')">닫기</button><button class="btn btn-primary" onclick="runSync()">🔄 동기화 실행</button></div> </div> </div> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content"> <!-- ===== DASHBOARD ===== --> <div class="panel on" id="panel-dashboard"> <div class="sg" id="statGrid"></div> <!-- 진행 중 하자 위험 배너 --> <div id="dashDefBanner"></div> <div class="two-col"> <div class="card"> <div class="card-hd"><div class="card-title">🔴 주요 하자 공종 TOP 5</div><button class="btn btn-ghost btn-sm" onclick="nav('risk')">전체 →</button></div> <div id="top5"></div> </div> <div class="card"> <div class="card-hd"><div class="card-title">🔔 미확인 알림</div><button class="btn btn-ghost btn-sm" onclick="nav('alerts')">전체 →</button></div> <div id="dashAlerts"></div> </div> </div> <div class="sec-title">🏗️ 현장별 현황</div> <div class="site-grid" id="dashSites"></div> </div> <!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
 
 
 
+
+
+
+
+
+
 'use strict';
+/* ═══ 설정 ═══ */
 const CFG = {
 APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwrXpd-c7LJ7ucTO9TyjrlohN4InaIEO74YWQ5Xm-JQdCPaCoAI_BfAOyJLTEUxjFO3/exec',
 SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w'
 };
+/* ═══ 공종코드 레지스트리 (추가/삭제 가능) ═══ */
 let PROC_CODES = {
 WATERPROOF:'방수공사', TILE:'타일공사', WINDOW:'창호공사',
 CONCRETE:'콘크리트', INSULATION:'단열공사', PIPING:'배관공사',
@@ -205,7 +233,9 @@ EXTERIOR:'외장공사', FLOORING:'바닥공사', ELECTRICAL:'전기공사',
 FOUNDATION:'기초공사', TEMP:'가설공사', FIRE:'방화공사',
 PAINT:'도장공사', OTHER:'기타'
 };
+/* ═══ 하자 분류 레지스트리 (추가/삭제 가능) ═══ */
 let DEF_CATS = ['누수','균열','결로','마감','창호','외벽','설비','구조','차음','단열','전기','방화','기타'];
+/* ═══ 전역 상태 ═══ */
 const DB = {
 sites:[], processes:[], defects:[], checklists:[], alerts:[],
 riskProcs:[],
@@ -215,6 +245,7 @@ defCat:'all', editId:null, delTarget:null, curAlertId:null,
 bulkMode:false, selCLIds:new Set(),
 pendingGanttRows:[], pendingCLRows:[],
 };
+/* ═══ 공종 ↔ 하자 동적 매핑 ═══ */
 function getDMAP() {
 const map = {};
 Object.keys(PROC_CODES).forEach(k => map[k] = []);
@@ -224,14 +255,13 @@ codes.forEach(c => { if (map[c]) map[c].push(d.id); });
 });
 return map;
 }
+/* ═══ 초기화 ═══ */
 function init() {
-try { seedData(); } catch(e) { console.error('seedData:', e); }
-const loadEl = document.getElementById('loading');
-if (loadEl) loadEl.style.display = 'none';
-try { buildSiteSel(); } catch(e) { console.error('buildSiteSel:', e); }
-try { renderAll(); } catch(e) { console.error('renderAll:',e); }
-try { initClock(); } catch(e) {}
-setInterval(function(){ try { autoGenAlerts(); } catch(e) {} }, 30000);
+seedData();
+buildSiteSel();
+renderAll();
+initClock();
+setInterval(autoGenAlerts, 30000);
 }
 function initClock() {
 const tick = () => {
@@ -242,41 +272,42 @@ n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
 };
 tick(); setInterval(tick, 60000);
 }
+/* ═══ 샘플 데이터 ═══ */
 function seedData() {
-var d = function(n) { var r = new Date(); r.setDate(r.getDate()+n); return r.toISOString().split('T')[0]; };
+var d = function(n){var r=new Date();r.setDate(r.getDate()+n);return r.toISOString().split('T')[0];};
 DB.sites = [
 {id:'S001',name:'○○아파트 1단지',location:'서울시 강동구',client:'○○건설',startDate:d(-240),endDate:d(250),amount:'320',manager:'김현장',officer:'이담당',status:'진행중',note:''},
 {id:'S002',name:'△△주상복합',location:'경기도 성남시',client:'△△개발',startDate:d(-90),endDate:d(540),amount:'580',manager:'박현장',officer:'최담당',status:'진행중',note:''}
 ];
 DB.processes = [
-{id:'P001',siteId:'S001',name:'가설공사',  code:'TEMP',      startDate:d(-240),endDate:d(-210),progress:100,riskLevel:'하',company:'○○가설',manager:'홍가설',note:''},
-{id:'P002',siteId:'S001',name:'기초공사',  code:'FOUNDATION',startDate:d(-210),endDate:d(-170),progress:100,riskLevel:'상',company:'○○기초',manager:'이기초',note:''},
-{id:'P003',siteId:'S001',name:'방수공사',  code:'WATERPROOF', startDate:d(-25),endDate:d(15),  progress:62, riskLevel:'상',company:'○○방수',manager:'최방수',note:'지하층 진행 중'},
-{id:'P004',siteId:'S001',name:'단열공사',  code:'INSULATION', startDate:d(6),  endDate:d(44),  progress:0,  riskLevel:'상',company:'○○단열',manager:'정단열',note:''},
-{id:'P005',siteId:'S001',name:'창호공사',  code:'WINDOW',     startDate:d(18), endDate:d(58),  progress:0,  riskLevel:'상',company:'○○창호',manager:'강창호',note:''},
-{id:'P006',siteId:'S001',name:'타일공사',  code:'TILE',       startDate:d(55), endDate:d(100), progress:0,  riskLevel:'중',company:'○○타일',manager:'조타일',note:''},
-{id:'P007',siteId:'S001',name:'배관공사',  code:'PIPING',     startDate:d(-55),endDate:d(32),  progress:68, riskLevel:'상',company:'○○배관',manager:'윤배관',note:''},
-{id:'P008',siteId:'S002',name:'콘크리트',  code:'CONCRETE',   startDate:d(-40),endDate:d(60),  progress:42, riskLevel:'상',company:'△△콘크리트',manager:'남콘크리',note:'10층 시공 중'}
+{id:'P001',siteId:'S001',name:'가설공사',  code:'TEMP',      startDate:d(-240),endDate:d(-210),progress:100,riskLevel:'하',company:'○○가설',  manager:'홍가설',note:''},
+{id:'P002',siteId:'S001',name:'기초공사',  code:'FOUNDATION',startDate:d(-210),endDate:d(-170),progress:100,riskLevel:'상',company:'○○기초',  manager:'이기초',note:''},
+{id:'P003',siteId:'S001',name:'방수공사',  code:'WATERPROOF', startDate:d(-25), endDate:d(15),  progress:62, riskLevel:'상',company:'○○방수',  manager:'최방수',note:'지하층 진행 중'},
+{id:'P004',siteId:'S001',name:'단열공사',  code:'INSULATION', startDate:d(6),   endDate:d(44),  progress:0,  riskLevel:'상',company:'○○단열',  manager:'정단열',note:''},
+{id:'P005',siteId:'S001',name:'창호공사',  code:'WINDOW',     startDate:d(18),  endDate:d(58),  progress:0,  riskLevel:'상',company:'○○창호',  manager:'강창호',note:''},
+{id:'P006',siteId:'S001',name:'타일공사',  code:'TILE',       startDate:d(55),  endDate:d(100), progress:0,  riskLevel:'중',company:'○○타일',  manager:'조타일',note:''},
+{id:'P007',siteId:'S001',name:'배관공사',  code:'PIPING',     startDate:d(-55), endDate:d(32),  progress:68, riskLevel:'상',company:'○○배관',  manager:'윤배관',note:''},
+{id:'P008',siteId:'S002',name:'콘크리트',  code:'CONCRETE',   startDate:d(-40), endDate:d(60),  progress:42, riskLevel:'상',company:'△△콘크리트',manager:'남콘크리',note:'10층 시공 중'}
 ];
 DB.defects = [
-{id:'D001',name:'욕실 누수',   category:'누수',riskLevel:'상',mainCause:'방수층 시공불량, 배수구 처리 미흡',occurrenceTime:'입주 후 6개월~2년',litigationFreq:'매우높음',avgCost:'500', prevention:'방수층 두께 및 코너부 보강 철저',linkedCodes:['WATERPROOF']},
-{id:'D002',name:'옥상 누수',   category:'누수',riskLevel:'상',mainCause:'방수층 손상, 신축줄눈 처리 불량', occurrenceTime:'1년~3년',          litigationFreq:'높음',    avgCost:'2000',prevention:'방수재 선정 및 드레인 주변 방수',linkedCodes:['WATERPROOF']},
-{id:'D003',name:'구조체 균열', category:'균열',riskLevel:'상',mainCause:'기초 부동침하, 콘크리트 배합 불량',occurrenceTime:'시공 중~3년',      litigationFreq:'매우높음',avgCost:'10000',prevention:'콘크리트 배합설계 및 양생 관리 철저',linkedCodes:['CONCRETE','FOUNDATION']},
-{id:'D004',name:'결로',        category:'결로',riskLevel:'상',mainCause:'단열 불량, 열교 발생',           occurrenceTime:'동절기 첫해',      litigationFreq:'높음',    avgCost:'1500',prevention:'단열재 연속성 확보 및 열교차단재 설치',linkedCodes:['INSULATION']},
-{id:'D005',name:'타일 들뜸',   category:'마감',riskLevel:'중',mainCause:'접착제 불량',                    occurrenceTime:'1~3년',            litigationFreq:'높음',    avgCost:'400', prevention:'접착제 도포량 관리',linkedCodes:['TILE']},
-{id:'D006',name:'창호 누수',   category:'창호',riskLevel:'상',mainCause:'실링 불량',                      occurrenceTime:'1년 이내',         litigationFreq:'높음',    avgCost:'200', prevention:'수밀성 테스트 필수',linkedCodes:['WINDOW']},
-{id:'D007',name:'배관 누수',   category:'설비',riskLevel:'상',mainCause:'접합부 불량',                    occurrenceTime:'2~5년',            litigationFreq:'높음',    avgCost:'1000',prevention:'압력시험 철저',linkedCodes:['PIPING']},
-{id:'D008',name:'층간소음',    category:'차음',riskLevel:'중',mainCause:'완충재 불량',                    occurrenceTime:'즉시',             litigationFreq:'매우높음',avgCost:'3000',prevention:'완충재 시공기준 준수',linkedCodes:['FLOORING']}
+{id:'D001',name:'욕실 누수',  category:'누수',riskLevel:'상',mainCause:'방수층 시공불량, 배수구 처리 미흡',occurrenceTime:'입주 후 6개월~2년',litigationFreq:'매우높음',avgCost:'500', prevention:'방수층 두께 및 코너부 보강 철저',linkedCodes:['WATERPROOF']},
+{id:'D002',name:'옥상 누수',  category:'누수',riskLevel:'상',mainCause:'방수층 손상, 신축줄눈 처리 불량', occurrenceTime:'1년~3년',          litigationFreq:'높음',    avgCost:'2000',prevention:'방수재 선정 및 드레인 주변 방수',linkedCodes:['WATERPROOF']},
+{id:'D003',name:'구조체 균열',category:'균열',riskLevel:'상',mainCause:'기초 부동침하, 콘크리트 배합 불량',occurrenceTime:'시공 중~3년',      litigationFreq:'매우높음',avgCost:'10000',prevention:'콘크리트 배합설계 및 양생 관리 철저',linkedCodes:['CONCRETE','FOUNDATION']},
+{id:'D004',name:'결로',       category:'결로',riskLevel:'상',mainCause:'단열 불량, 열교 발생',           occurrenceTime:'동절기 첫해',      litigationFreq:'높음',    avgCost:'1500',prevention:'단열재 연속성 확보 및 열교차단재 설치',linkedCodes:['INSULATION']},
+{id:'D005',name:'타일 들뜸',  category:'마감',riskLevel:'중',mainCause:'접착제 불량',                   occurrenceTime:'1~3년',            litigationFreq:'높음',    avgCost:'400', prevention:'접착제 도포량 관리',linkedCodes:['TILE']},
+{id:'D006',name:'창호 누수',  category:'창호',riskLevel:'상',mainCause:'실링 불량',                     occurrenceTime:'1년 이내',         litigationFreq:'높음',    avgCost:'200', prevention:'수밀성 테스트 필수',linkedCodes:['WINDOW']},
+{id:'D007',name:'배관 누수',  category:'설비',riskLevel:'상',mainCause:'접합부 불량',                   occurrenceTime:'2~5년',            litigationFreq:'높음',    avgCost:'1000',prevention:'압력시험 철저',linkedCodes:['PIPING']},
+{id:'D008',name:'층간소음',   category:'차음',riskLevel:'중',mainCause:'완충재 불량',                   occurrenceTime:'즉시',             litigationFreq:'매우높음',avgCost:'3000',prevention:'완충재 시공기준 준수',linkedCodes:['FLOORING']}
 ];
 DB.checklists = [
 {id:'C001',code:'WATERPROOF',did:'D001',item:'바탕면 청소 및 이물질 제거',std:'콘크리트 표면 레이턴스 제거',method:'육안검사',pass:'완전 청소 상태',req:'필수',checked:false},
 {id:'C002',code:'WATERPROOF',did:'D001',item:'프라이머 도포 상태 확인',  std:'전면 균일 도포',            method:'육안검사',pass:'균일 도포 확인',req:'필수',checked:false},
 {id:'C003',code:'WATERPROOF',did:'D002',item:'방수층 두께 기준 충족',    std:'도막방수 3mm 이상',         method:'두께게이지',pass:'설계두께 이상',req:'필수',checked:false},
-{id:'C004',code:'WATERPROOF',did:'D002',item:'72시간 담수시험',          std:'72시간 후 누수 없을 것',   method:'담수시험',pass:'누수 없음',req:'필수',checked:false},
-{id:'C005',code:'TILE',      did:'D005',item:'바탕면 평활도 확인',       std:'3m당 편차 ±3mm 이내',      method:'수평기 측정',pass:'기준 충족',req:'필수',checked:false},
-{id:'C006',code:'TILE',      did:'D005',item:'타일 두드림 검사',         std:'전 타일 100% 검사',        method:'타음검사',pass:'들뜸 없음',req:'필수',checked:false},
-{id:'C007',code:'WINDOW',    did:'D006',item:'창호 주변 실링 상태',      std:'전면 균일 실링',           method:'육안검사',pass:'연속 실링',req:'필수',checked:false},
-{id:'C008',code:'PIPING',    did:'D007',item:'배관 압력시험',            std:'수압시험',                 method:'시험기록',pass:'누수 없음',req:'필수',checked:false}
+{id:'C004',code:'WATERPROOF',did:'D002',item:'72시간 담수시험',          std:'72시간 후 누수 없을 것',    method:'담수시험',   pass:'누수 없음',   req:'필수',checked:false},
+{id:'C005',code:'TILE',      did:'D005',item:'바탕면 평활도 확인',       std:'3m당 편차 3mm 이내',        method:'수평기 측정',pass:'기준 충족',   req:'필수',checked:false},
+{id:'C006',code:'TILE',      did:'D005',item:'타일 두드림 검사',         std:'전 타일 100% 검사',         method:'타음검사',   pass:'들뜸 없음',   req:'필수',checked:false},
+{id:'C007',code:'WINDOW',    did:'D006',item:'창호 주변 실링 상태',      std:'전면 균일 실링',            method:'육안검사',   pass:'연속 실링',   req:'필수',checked:false},
+{id:'C008',code:'PIPING',    did:'D007',item:'배관 압력시험',            std:'수압시험',                  method:'시험기록',   pass:'누수 없음',   req:'필수',checked:false}
 ];
 autoGenAlerts();
 }
@@ -301,6 +332,7 @@ return DB.processes.map(enrich)
 .filter(p => p.ts !== '완료' && p.defs.length > 0)
 .sort((a,b) => {const o={진행중:0,예정_1주:1,예정_2주:2,예정:3};return (o[a.ts]!=null?o[a.ts]:9)-(o[b.ts]!=null?o[b.ts]:9);});
 }
+/* ═══ 알림 자동 생성 ═══ */
 function autoGenAlerts() {
 const today = new Date().toISOString().split('T')[0];
 const existKeys = new Set(DB.alerts.map(a=>a.processId+'_'+a.type));
@@ -320,6 +352,7 @@ if (ts==='진행중' && hasHR) push('고위험_진행중','['+site.name+'] '+p.n
 });
 updBadges();
 }
+/* ═══ 전체 렌더링 ═══ */
 function renderAll() {
 DB.riskProcs = getRiskProcs();
 rDash(); rRisk(); rGantt(); rCL(); rDefs(); rSites(); rStats(); rAlerts();
@@ -329,6 +362,9 @@ function updBadges() {
 document.getElementById('riskBdg').textContent  = DB.riskProcs.filter(p=>p.ts==='진행중').length;
 document.getElementById('alertBdg').textContent = DB.alerts.filter(a=>!a.read).length;
 }
+/* ════════════════════════════════
+대시보드
+════════════════════════════════ */
 function rDash() {
 const rp = filtered(DB.riskProcs);
 const ap = filtered(DB.processes.map(enrich));
@@ -400,6 +436,9 @@ nav(tgt);
 if (tgt==='risk' && f) { DB.riskF=f; rRisk(); }
 if (tgt==='alerts' && f==='unread') { DB.alertF='unread'; rAlerts(); }
 }
+/* ════════════════════════════════
+1. 주요 하자 공종 현황 – 행(Row) 리스트형
+════════════════════════════════ */
 const procTabState = {};
 function rRisk() {
 let list = filtered(DB.riskProcs);
@@ -497,6 +536,9 @@ function tglCLDirect(id, checked) {
 const c = DB.checklists.find(x => x.id === id);
 if (c) c.checked = checked;
 }
+/* ════════════════════════════════
+2. 간트 차트
+════════════════════════════════ */
 let dragId = null;
 function rGantt() {
 const list = filtered(DB.processes.map(enrich));
@@ -531,35 +573,74 @@ html+='<div style="display:grid;grid-template-columns:'+cols+'" class="g-row" dr
 '</div>';
 });
 document.getElementById('ganttBody').innerHTML = html;
-}function ddOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('drop-here');}function ddEnd(e){e.currentTarget.classList.remove('dragging');}function handleGanttDrop(e) {
-e.preventDefault();
-document.getElementById('ganttDropZone').classList.remove('drag-over');
-const file = e.dataTransfer.files[0]; if (file) processGanttFile(file);
-}function processGanttFile(file) {
-const reader = new FileReader();
-reader.onload = e => {
-try {
-const rows = parseCSV(e.target.result);
-if (!rows.length) { toast('데이터가 없습니다.','err'); return; }
-DB.pendingGanttRows = rows;
-const cols = Object.keys(rows[0]);
-const html = '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>' +
-rows.slice(0,8).map(r=>'<tr>'+cols.map(c=>'<td>'+(r[c]||'')+'</td>').join('')+'</tr>').join('') +
-(rows.length>8?'<tr><td colspan="'+cols.length+'" style="text-align:center;color:var(--t5)">... 외 '+(rows.length-8)+'행</td></tr>':'') + '</table>';
-document.getElementById('ganttPreviewLabel').textContent = '미리보기 (총 '+rows.length+'행)';
-document.getElementById('ganttPreviewTable').innerHTML = html;
-document.getElementById('ganttUploadPreview').style.display = '';
-document.getElementById('ganttImportBtn').style.display = '';
-toast(rows.length+'개 행을 인식했습니다. 반영 버튼을 누르세요.','info');
-} catch(err) { toast('파일 파싱 오류: '+err.message,'err'); }
+}
+function ddStart(e,id){dragId=id;e.currentTarget.classList.add("dragging");e.dataTransfer.effectAllowed="move";}
+function ddOver(e){e.preventDefault();e.currentTarget.classList.add("drop-here");}
+function ddLeave(e){e.currentTarget.classList.remove("drop-here");}
+function ddEnd(e){e.currentTarget.classList.remove("dragging");}
+function ddDrop(e,tgtId){e.preventDefault();e.currentTarget.classList.remove("drop-here");if(!dragId||dragId===tgtId)return;var ai=DB.processes.findIndex(function(p){return p.id===dragId;}),bi=DB.processes.findIndex(function(p){return p.id===tgtId;});if(ai<0||bi<0)return;var tmp=DB.processes[ai];DB.processes[ai]=DB.processes[bi];DB.processes[bi]=tmp;rGantt();toast("공종 순서 변경","info");}
+function downloadGanttTemplate() {
+const csv = '공종명,공종코드,시작일,종료일,진행률,담당업체,담당자,비고\n방수공사,WATERPROOF,2025-05-01,2025-05-30,0,○○방수,김방수,\n단열공사,INSULATION,2025-06-01,2025-06-20,0,○○단열,이단열,';
+downCSV(csv, 'gantt_template.csv');
+toast('양식 파일이 다운로드되었습니다.','ok');
+}
+function handleGanttDrop(e){e.preventDefault();}
+function handleGanttFile(inp){if(inp.files[0])processGanttFile(inp.files[0]);inp.value="";}
+function processGanttFile(file) {
+var reader=new FileReader();
+reader.onload=function(e){
+try{
+var rows=parseCSV(e.target.result);
+if(!rows.length){toast('데이터가 없습니다.','err');return;}
+DB.pendingGanttRows=rows;
+var cols=Object.keys(rows[0]);
+var html='<table><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>'+rows.slice(0,6).map(function(r){return '<tr>'+cols.map(function(c){return '<td>'+(r[c]||'')+'</td>';}).join('')+'</tr>';}).join('')+'</table>';
+var pv=document.getElementById('ganttPreviewTable');if(pv)pv.innerHTML=html;
+var pp=document.getElementById('ganttUploadPreview');if(pp)pp.style.display='';
+var bn=document.getElementById('ganttImportBtn');if(bn)bn.style.display='';
+toast(rows.length+'개 행 인식. 반영 버튼을 누르세요.','info');
+}catch(err){toast('파싱 오류: '+err.message,'err');}
 };
-reader.readAsText(file, 'utf-8');
-}function matchCode(raw) {
+reader.readAsText(file,'utf-8');
+}
+
+function importGanttData() {
+if (!DB.pendingGanttRows.length) { toast('업로드된 데이터가 없습니다.','err'); return; }
+let added=0, skipped=0;
+const siteSel = document.getElementById('siteSel').value;
+const siteId  = (siteSel!=='all') ? siteSel : (DB.sites[0]&&DB.sites[0].id)||'S001';
+DB.pendingGanttRows.forEach(r => {
+const nm = r['공종명']||r['name']||'';
+const st = r['시작일']||r['startDate']||'';
+const en = r['종료일']||r['endDate']||'';
+if (!nm||!st||!en) { skipped++; return; }
+const code = matchCode(r['공종코드']||r['code']||'');
+DB.processes.push({
+id:'P'+Date.now()+Math.random().toString(36).slice(2,4),
+siteId, name:nm, code,
+startDate:st, endDate:en,
+progress:parseInt(r['진행률']||r['progress']||0)||0,
+riskLevel:'중',
+company:r['담당업체']||r['company']||'',
+manager:r['담당자']||r['manager']||'',
+note:r['비고']||r['note']||''
+});
+added++;
+});
+closeOv('ovGanttUpload');
+clearGanttUpload();
+DB.riskProcs = getRiskProcs();
+autoGenAlerts(); renderAll();
+toast(added+'개 공종이 추가되었습니다.'+(skipped?' ('+skipped+'개 건너뜀)':''),'ok');
+}
+function matchCode(raw) {
 const up = (raw||'').toUpperCase().trim();
 if (PROC_CODES[up]) return up;
 const entry = Object.entries(PROC_CODES).find(([,v])=>v===raw||v.includes(raw));
 return entry ? entry[0] : 'OTHER';
-}function rCL() {
+}
+function clearGanttUpload(){DB.pendingGanttRows=[];var p=document.getElementById("ganttUploadPreview");if(p)p.style.display="none";var b=document.getElementById("ganttImportBtn");if(b)b.style.display="none";}
+function rCL() {
 document.getElementById('clFb').innerHTML = Object.entries(PROC_CODES).map(([k,v])=>
 '<button class="fb '+(DB.clCode===k?'on':'')+'" onclick="setClCode(this,\''+k+'\')">'+v+'</button>'
 ).join('');
@@ -618,46 +699,172 @@ el.classList.toggle('done',c.checked); el.querySelector('.cl-cb').textContent=c.
 }
 function resetCL(){ DB.checklists.filter(c=>c.code===DB.clCode).forEach(c=>c.checked=false); rCLContent(); toast('초기화되었습니다.','info'); }
 function submitCL(){ const d=DB.checklists.filter(c=>c.code===DB.clCode).filter(c=>c.checked).length; toast('점검 제출 완료! ('+d+'/'+DB.checklists.filter(c=>c.code===DB.clCode).length+' 항목)','ok'); }
-function toggleBulkMode(){}
-function selCL(){}
-function selectAllCL(){}
-function bulkDelCL(){}
-function delGroupCL(){}
+/* 선택 모드 */
+function toggleBulkMode() {
+DB.bulkMode = !DB.bulkMode;
+DB.selCLIds.clear();
+var _bdb=document.getElementById('bulkDelBtn');if(_bdb)_bdb.style.display=DB.bulkMode?'':'none';
+rCLContent();
+toast(DB.bulkMode?'선택 모드 활성화 – 삭제할 항목을 선택하세요.':'선택 모드 해제','info');
+}
+function selCL(id, checked) {
+if (checked) DB.selCLIds.add(id); else DB.selCLIds.delete(id);
+rCLContent();
+}
+function selectAllCL() {
+const items = DB.checklists.filter(c=>c.code===DB.clCode);
+const allSel = items.every(c=>DB.selCLIds.has(c.id));
+if (allSel) items.forEach(c=>DB.selCLIds.delete(c.id));
+else items.forEach(c=>DB.selCLIds.add(c.id));
+rCLContent();
+}
+function bulkDelCL() {
+if (!DB.selCLIds.size) { toast('선택된 항목이 없습니다.','err'); return; }
+DB.checklists = DB.checklists.filter(c=>!DB.selCLIds.has(c.id));
+toast(DB.selCLIds.size+'개 항목이 삭제되었습니다.','ok');
+DB.selCLIds.clear(); rCLContent();
+}
+function delGroupCL(did) {
+const cnt = DB.checklists.filter(c=>c.code===DB.clCode&&c.did===did).length;
+DB.checklists = DB.checklists.filter(c=>!(c.code===DB.clCode&&c.did===did));
+toast(cnt+'개 항목 삭제 완료','ok'); rCLContent();
+}
+/* ════════════════════════════════
+공종코드 관리 (추가 / 수정 / 삭제)
+════════════════════════════════ */
 const BASE_CODES = new Set(['WATERPROOF','TILE','WINDOW','CONCRETE','INSULATION','PIPING','EXTERIOR','FLOORING','ELECTRICAL','FOUNDATION','TEMP','FIRE','PAINT','OTHER']);
-function renderCodeMgr(){}
-function startEditCode(){}
-function saveEditCode(){}
-function cancelEditCode(){}
-function addProcCode(){}
-function delProcCode(){}
-function handleCLDrop(e) {
-e.preventDefault();
-document.getElementById('clDropZone').classList.remove('drag-over');
-const file = e.dataTransfer.files[0]; if (file) processCLFile(file);
-}function processCLFile(file) {
-const reader = new FileReader();
-reader.onload = e => {
-try {
-const rows = parseCSV(e.target.result);
-if (!rows.length) { toast('데이터가 없습니다.','err'); return; }
-DB.pendingCLRows = rows;
-const cols = Object.keys(rows[0]);
-const html = '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>' +
-rows.slice(0,8).map(r=>'<tr>'+cols.map(c=>'<td>'+(r[c]||'')+'</td>').join('')+'</tr>').join('') +
-(rows.length>8?'<tr><td colspan="'+cols.length+'" style="text-align:center;color:var(--t5)">... 외 '+(rows.length-8)+'행</td></tr>':'') + '</table>';
-document.getElementById('clPreviewLabel').textContent='미리보기 (총 '+rows.length+'행)';
-document.getElementById('clPreviewTable').innerHTML=html;
-document.getElementById('clUploadPreview').style.display='';
-document.getElementById('clImportBtn').style.display='';
-toast(rows.length+'개 항목을 인식했습니다. 반영 버튼을 누르세요.','info');
-} catch(err) { toast('파일 파싱 오류: '+err.message,'err'); }
+function renderCodeMgr() {
+const rows = Object.entries(PROC_CODES);
+let tbl = '<div style="border:1.5px solid var(--border);border-radius:9px;overflow:hidden">' +
+'<table style="width:100%;border-collapse:collapse">' +
+'<thead><tr>' +
+'<th style="background:var(--card2);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:2px solid var(--border)">코드</th>' +
+'<th style="background:var(--card2);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:2px solid var(--border)">공종명</th>' +
+'<th style="background:var(--card2);padding:8px 11px;text-align:center;font-size:11px;font-weight:700;color:var(--t5);border-bottom:2px solid var(--border);width:140px">관리</th>' +
+'</tr></thead><tbody>';
+rows.forEach(function(entry, idx) {
+const k = entry[0], v = entry[1];
+const isBase = BASE_CODES.has(k);
+const isLast = (idx === rows.length - 1);
+const bd = isLast ? '' : 'border-bottom:1px solid var(--border)';
+tbl +=
+'<tr>' +
+'<td style="padding:8px 11px;' + bd + ';font-size:12px;font-weight:700;color:var(--blue)">' +
+k + (isBase ? ' <span style="font-size:9px;color:var(--t3);font-weight:400">(기본)</span>' : '') +
+'</td>' +
+'<td style="padding:8px 11px;' + bd + ';font-size:12px">' +
+'<span id="cname-' + k + '">' + v + '</span>' +
+'<input id="cedit-' + k + '" class="fi" value="' + v + '" style="display:none;padding:4px 8px;font-size:12px;height:28px">' +
+'</td>' +
+'<td style="padding:6px 11px;' + bd + ';text-align:center;white-space:nowrap">' +
+'<span id="cview-' + k + '">' +
+'<button class="btn btn-ghost btn-sm" onclick="startEditCode(this)" data-k="' + k + '" style="padding:3px 8px">✏️ 수정</button>' +
+(!isBase ? ' <button class="btn btn-danger btn-sm" onclick="delProcCode(this)" data-k="' + k + '" style="padding:3px 8px">🗑️</button>' : '') +
+'</span>' +
+'<span id="ceditbtns-' + k + '" style="display:none">' +
+'<button class="btn btn-primary btn-sm" onclick="saveEditCode(this)" data-k="' + k + '" style="padding:3px 8px">💾</button>' +
+' <button class="btn btn-ghost btn-sm" onclick="cancelEditCode(this)" data-k="' + k + '" style="padding:3px 8px">✕</button>' +
+'</span>' +
+'</td>' +
+'</tr>';
+});
+tbl += '</tbody></table></div>';
+document.getElementById('codeTableWrap').innerHTML = tbl;
+}
+function startEditCode(btn) {
+const key = btn.dataset.k;
+var _cn=document.getElementById('cname-'+key);if(_cn)_cn.style.display='none';
+var _ce=document.getElementById('cedit-'+key);if(_ce)_ce.style.display='inline-block';
+var _cv=document.getElementById('cview-'+key);if(_cv)_cv.style.display='none';
+var _cb=document.getElementById('ceditbtns-'+key);if(_cb)_cb.style.display='';
+const inp = document.getElementById('cedit-' + key);
+inp.focus(); inp.select();
+}
+function saveEditCode(btn) {
+const key     = btn.dataset.k;
+const newName = document.getElementById('cedit-' + key).value.trim();
+if (!newName) { toast('공종명을 입력하세요.', 'err'); return; }
+PROC_CODES[key] = newName;
+toast('"' + key + '" 공종명이 "' + newName + '"으로 수정되었습니다.', 'ok');
+renderCodeMgr(); rCL(); rGantt();
+}
+function cancelEditCode(btn) {
+const key = btn.dataset.k;
+var _cn2=document.getElementById('cname-'+key);if(_cn2)_cn2.style.display='';
+var _ce2=document.getElementById('cedit-'+key);if(_ce2)_ce2.style.display='none';
+var _cv2=document.getElementById('cview-'+key);if(_cv2)_cv2.style.display='';
+var _cb2=document.getElementById('ceditbtns-'+key);if(_cb2)_cb2.style.display='none';
+}
+function addProcCode() {
+const key  = (document.getElementById('newCodeKey').value.trim()).toUpperCase();
+const name = document.getElementById('newCodeName').value.trim();
+if (!key || !name) { toast('코드와 공종명을 모두 입력하세요.', 'err'); return; }
+if (!/^[A-Z][A-Z0-9_]*$/.test(key)) { toast('코드는 영문 대문자·숫자·_만 사용 가능합니다.', 'err'); return; }
+if (PROC_CODES[key]) { toast('"' + key + '"은(는) 이미 존재하는 코드입니다.', 'err'); return; }
+PROC_CODES[key] = name;
+document.getElementById('newCodeKey').value = '';
+document.getElementById('newCodeName').value = '';
+renderCodeMgr(); rCL();
+toast('"' + name + '" 공종코드가 추가되었습니다.', 'ok');
+}
+function delProcCode(btn) {
+const key = (typeof btn === 'string') ? btn : btn.dataset.k;
+if (BASE_CODES.has(key)) { toast('기본 코드는 삭제할 수 없습니다.', 'err'); return; }
+const cnt = DB.checklists.filter(c => c.code === key).length;
+delete PROC_CODES[key];
+DB.checklists = DB.checklists.filter(c => c.code !== key);
+if (DB.clCode === key) DB.clCode = Object.keys(PROC_CODES)[0] || 'WATERPROOF';
+renderCodeMgr(); rCL(); rGantt();
+toast('"' + key + '" 삭제 완료' + (cnt ? ' (체크리스트 ' + cnt + '개 함께 삭제)' : ''), 'ok');
+}
+/* 체크리스트 업로드 */
+function downloadCLTemplate() {
+const csv = '공종코드,하자ID,체크항목,기준내용,검사방법,합격기준,필수여부\nWATERPROOF,D001,바탕면 청소 및 이물질 제거,레이턴스 제거,육안검사,완전 청소 상태,필수\nTILE,D007,바탕면 평활도 확인,3m당 ±3mm 이내,수평기 측정,기준 충족,필수';
+downCSV(csv, 'checklist_template.csv');
+toast('양식 파일이 다운로드되었습니다.','ok');
+}
+function handleCLDrop(e){e.preventDefault();}
+function handleCLFile(inp){if(inp.files[0])processCLFile(inp.files[0]);inp.value="";}
+function processCLFile(file) {
+var reader=new FileReader();
+reader.onload=function(e){
+try{
+var rows=parseCSV(e.target.result);
+if(!rows.length){toast('데이터가 없습니다.','err');return;}
+DB.pendingCLRows=rows;
+var cols=Object.keys(rows[0]);
+var html='<table><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>'+rows.slice(0,6).map(function(r){return '<tr>'+cols.map(function(c){return '<td>'+(r[c]||'')+'</td>';}).join('')+'</tr>';}).join('')+'</table>';
+var pv=document.getElementById('clPreviewTable');if(pv)pv.innerHTML=html;
+var pp=document.getElementById('clUploadPreview');if(pp)pp.style.display='';
+var bn=document.getElementById('clImportBtn');if(bn)bn.style.display='';
+toast(rows.length+'개 항목 인식. 반영 버튼을 누르세요.','info');
+}catch(err){toast('파싱 오류: '+err.message,'err');}
 };
 reader.readAsText(file,'utf-8');
-}function clearCLUpload() {
-DB.pendingCLRows=[];
-document.getElementById('clUploadPreview').style.display='none';
-document.getElementById('clImportBtn').style.display='none';
 }
+
+function importCLData() {
+if (!DB.pendingCLRows.length) { toast('업로드된 데이터가 없습니다.','err'); return; }
+let added=0, skipped=0;
+DB.pendingCLRows.forEach(r=>{
+const code = matchCode(r['공종코드']||r['code']||'');
+const item = r['체크항목']||r['item']||'';
+if (!item) { skipped++; return; }
+DB.checklists.push({
+id:'C'+Date.now()+Math.random().toString(36).slice(2,4),
+code, did:r['하자ID']||r['did']||'',
+item, std:r['기준내용']||r['std']||'',
+method:r['검사방법']||r['method']||'',
+pass:r['합격기준']||r['pass']||'',
+req:r['필수여부']||r['req']||'필수', checked:false
+});
+added++;
+});
+DB.clCode = DB.pendingCLRows[0] ? matchCode(DB.pendingCLRows[0]['공종코드']||'') : DB.clCode;
+closeOv('ovCLUpload'); clearCLUpload();
+rCL(); toast(added+'개 체크항목이 추가되었습니다.'+(skipped?' ('+skipped+'개 건너뜀)':''),'ok');
+}
+function clearCLUpload(){DB.pendingCLRows=[];var p=document.getElementById("clUploadPreview");if(p)p.style.display="none";var b=document.getElementById("clImportBtn");if(b)b.style.display="none";}
 function rDefs() {
 document.getElementById('defCount').textContent = DB.defects.length+'개';
 document.getElementById('defFb').innerHTML = ['전체'].concat(DEF_CATS).map(c=>
@@ -675,7 +882,7 @@ document.getElementById('defBody').innerHTML = list.map(d=>
 '<td style="max-width:120px;color:var(--t7)">'+d.mainCause+'</td>' +
 '<td style="font-size:11px;color:var(--t5)">'+d.occurrenceTime+'</td>' +
 '<td><span class="bdg '+ligBdg(d.litigationFreq)+'">'+d.litigationFreq+'</span></td>' +
-'<td style="font-weight:700">'+d.avgCost+'만원</td>' +
+'<td style="font-weight:700">'+(parseInt(d.avgCost)||0).toLocaleString()+'만원</td>' +
 '<td onclick="event.stopPropagation()" style="white-space:nowrap">' +
 '<button class="btn btn-ghost btn-icon btn-sm" onclick="editDef(\''+d.id+'\')">✏️</button>' +
 '<button class="btn btn-danger btn-icon btn-sm" onclick="askDel(\'defect\',\''+d.id+'\',\''+escQ(d.name)+'\')">🗑️</button>' +
@@ -687,12 +894,84 @@ function setDefCat(btn,cat){
 document.querySelectorAll('#defFb .fb').forEach(b=>b.classList.remove('on'));
 btn.classList.add('on'); DB.defCat=(cat==='전체'?'all':cat); rDefs();
 }
-function openDefCatMgr(){}
-function renderDefCatList(){}
-function addDefCat(){}
-function delDefCat(){}
-function renderLinkedProcCbs(){}
-function getLinkedCodes(){}
+/* 하자 분류 관리 */
+function openDefCatMgr() { renderDefCatList(); openOv('ovDefCat'); }
+function renderDefCatList() {
+document.getElementById('defCatList').innerHTML = DEF_CATS.map(c=>
+'<span class="code-chip">'+c+
+'<span class="code-chip-del" onclick="delDefCat(\''+c+'\')">✕</span></span>'
+).join('');
+}
+function addDefCat() {
+const nm = document.getElementById('newDefCat').value.trim();
+if (!nm) { toast('분류명을 입력하세요.','err'); return; }
+if (DEF_CATS.includes(nm)) { toast('이미 존재하는 분류입니다.','err'); return; }
+DEF_CATS.push(nm);
+document.getElementById('newDefCat').value='';
+renderDefCatList(); rDefs();
+const sel=document.getElementById('f-dCat');
+if(sel) sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+toast('"'+nm+'" 분류가 추가되었습니다.','ok');
+}
+function delDefCat(cat) {
+const cnt = DB.defects.filter(d=>d.category===cat).length;
+if (cnt) { toast('"'+cat+'" 분류에 '+cnt+'개 하자유형이 있습니다. 먼저 하자유형을 다른 분류로 변경하세요.','err'); return; }
+DEF_CATS = DEF_CATS.filter(c=>c!==cat);
+renderDefCatList(); rDefs();
+const sel=document.getElementById('f-dCat');
+if(sel) sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+toast('"'+cat+'" 분류가 삭제되었습니다.','ok');
+}
+/* 하자유형 폼 – 연계 공종 체크박스 렌더 */
+function renderLinkedProcCbs(selected) {
+var wrap = document.getElementById('f-dProcWrap'); if (!wrap) return;
+// 현재 선택된 codes (기존 chip에서 data-code 읽기)
+var current = selected || [];
+// 셀렉트 + chip 방식
+wrap.innerHTML =
+  '<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">' +
+    '<select id="linkedProcSel" class="fs" style="flex:1;padding:5px 8px;font-size:12px">' +
+      '<option value="">-- 공종 선택 --</option>' +
+      Object.entries(PROC_CODES).map(function(e){
+        return '<option value="'+e[0]+'">'+e[1]+'</option>';
+      }).join('') +
+    '</select>' +
+    '<button type="button" class="btn btn-primary btn-sm" onclick="addLinkedProc()" style="white-space:nowrap">＋ 추가</button>' +
+  '</div>' +
+  '<div id="linkedChips" style="display:flex;flex-wrap:wrap;gap:5px;min-height:28px">' +
+    current.map(function(k){
+      var nm = PROC_CODES[k] || k;
+      return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">' +
+        nm +
+        '<button type="button" data-code="'+k+'" onclick="removeLinkedProc(this)" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--blue);padding:0;line-height:1">✕</button>' +
+      '</span>';
+    }).join('') +
+  '</div>';
+}
+function addLinkedProc() {
+var sel = document.getElementById('linkedProcSel'); if (!sel) return;
+var code = sel.value; if (!code) { toast('공종을 선택하세요.','err'); return; }
+var chips = document.getElementById('linkedChips'); if (!chips) return;
+// 중복 확인
+var existing = Array.from(chips.querySelectorAll('[data-code]')).map(function(b){return b.dataset.code;});
+if (existing.indexOf(code) >= 0) { toast('이미 추가된 공종입니다.','info'); return; }
+var nm = PROC_CODES[code] || code;
+var chip = document.createElement('span');
+chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700';
+chip.innerHTML = nm + '<button type="button" data-code="'+code+'" onclick="removeLinkedProc(this)" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--blue);padding:0;line-height:1">✕</button>';
+chips.appendChild(chip);
+sel.value = '';
+}
+function removeLinkedProc(btn) {
+var chip = btn.parentElement; if (chip) chip.remove();
+}
+function getLinkedCodes() {
+var chips = document.getElementById('linkedChips'); if (!chips) return [];
+return Array.from(chips.querySelectorAll('[data-code]')).map(function(b){return b.dataset.code;});
+}
+/* ════════════════════════════════
+현장 관리
+════════════════════════════════ */
 const SITE_COLORS=['#3B6CE0','#7050D8','#E8721C','#22A85E','#DC4C4C','#169090'];
 function rSites() {
 document.getElementById('siteCount').textContent = DB.sites.length+'개';
@@ -721,63 +1000,87 @@ return '<div class="site-card">' +
 '</div>';
 }).join('');
 }
-function rStats() {
-const ap = DB.processes.map(enrich);
-const riskCnt  = {상:ap.filter(p=>p.riskLevel==='상').length, 중:ap.filter(p=>p.riskLevel==='중').length, 하:ap.filter(p=>p.riskLevel==='하').length};
-const stsCnt   = {진행중:ap.filter(p=>p.ts==='진행중').length, 예정_1주:ap.filter(p=>p.ts==='예정_1주').length, 예정_2주:ap.filter(p=>p.ts==='예정_2주').length, 예정:ap.filter(p=>p.ts==='예정').length, 완료:ap.filter(p=>p.ts==='완료').length};
-const catData  = DEF_CATS.slice(0,10).map(c=>({label:c, val:DB.defects.filter(d=>d.category===c).length, color:'#3B6CE0'}));
-const costData = DB.defects.slice().sort((a,b)=>parseInt(b.avgCost)-parseInt(a.avgCost)).slice(0,6).map(d=>({label:d.name, val:parseInt(d.avgCost)||0}));
-function barChart(title, items, maxVal, colors) {
-const bars = items.map((item, i) => {
-const pct = maxVal > 0 ? Math.round(item.val / maxVal * 100) : 0;
-const col = Array.isArray(colors) ? colors[i % colors.length] : colors;
-return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">' +
-'<div style="width:90px;font-size:11px;color:var(--t7);text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item.label + '</div>' +
-'<div style="flex:1;height:14px;background:var(--border);border-radius:3px;overflow:hidden">' +
-'<div style="width:' + pct + '%;height:100%;background:' + col + ';border-radius:3px;transition:width .4s ease"></div>' +
-'</div>' +
-'<div style="width:32px;font-size:11px;font-weight:700;color:var(--t9);flex-shrink:0">' + item.val + '</div>' +
-'</div>';
+/* ════════════════════════════════
+통계 차트
+════════════════════════════════ */
+function donut(title, segs) {
+var total = segs.reduce(function(s,x){return s+x.v;},0);
+var stack = segs.map(function(s){
+  var pct = total>0 ? (s.v/total*100).toFixed(1) : 0;
+  return pct>0 ? '<div style="flex:'+pct+';background:'+s.c+'" title="'+s.l+': '+s.v+'개 ('+pct+'%)"></div>' : '';
 }).join('');
-return '<div class="ch-card"><div style="font-size:13px;font-weight:700;color:var(--t9);margin-bottom:12px">' + title + '</div>' + bars + '</div>';
-}
-function donutChart(title, segments) {
-const total = segments.reduce((s, x) => s + x.val, 0);
-const items = segments.map(s => '<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">' +
-'<div style="width:12px;height:12px;border-radius:3px;background:' + s.color + ';flex-shrink:0"></div>' +
-'<div style="font-size:11px;color:var(--t7);flex:1">' + s.label + '</div>' +
-'<div style="font-size:12px;font-weight:700;color:var(--t9)">' + s.val + '</div>' +
-'</div>').join('');
-const pct = segments.map(s => (Object.assign({},s,{pct:total>0?Math.round(s.val/total*100):0})));
-const bars = '<div style="display:flex;height:16px;border-radius:8px;overflow:hidden;margin-bottom:14px">' +
-pct.map(s => s.pct > 0 ? '<div style="width:' + s.pct + '%;background:' + s.color + '" title="' + s.label + ': ' + s.pct + '%"></div>' : '').join('') +
+var legend = segs.map(function(s){
+  var pct = total>0 ? Math.round(s.v/total*100) : 0;
+  return '<div style="display:flex;align-items:center;gap:5px;padding:3px 0">'+
+    '<div style="width:10px;height:10px;border-radius:2px;flex-shrink:0;background:'+s.c+'"></div>'+
+    '<span style="font-size:11px;color:var(--t7);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.l+'</span>'+
+    '<strong style="font-size:12px;color:var(--t9);flex-shrink:0;margin-left:4px">'+s.v+'</strong>'+
+    '<span style="font-size:10px;color:var(--t3);flex-shrink:0;margin-left:3px">'+pct+'%</span>'+
+  '</div>';
+}).join('');
+return '<div class="ch-card">'+
+  '<div style="font-size:13px;font-weight:700;color:var(--t9);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">'+
+    title+
+    '<span style="font-size:11px;font-weight:400;color:var(--t5)">총 '+total+'개</span>'+
+  '</div>'+
+  '<div style="display:flex;border-radius:8px;overflow:hidden;height:24px;margin-bottom:14px">'+stack+'</div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+legend+'</div>'+
 '</div>';
-return '<div class="ch-card"><div style="font-size:13px;font-weight:700;color:var(--t9);margin-bottom:12px">' + title + '</div>' + bars + items + '</div>';
 }
-const riskSegs = [
-{label:'고위험(상)', val:riskCnt['상'], color:'#DC4C4C'},
-{label:'중위험(중)', val:riskCnt['중'], color:'#E8721C'},
-{label:'저위험(하)', val:riskCnt['하'], color:'#22A85E'}
-];
-const stsSegs = [
-{label:'진행중',  val:stsCnt['진행중'],   color:'#DC4C4C'},
-{label:'1주내',   val:stsCnt['예정_1주'], color:'#E8721C'},
-{label:'2주내',   val:stsCnt['예정_2주'], color:'#D9A000'},
-{label:'예정',    val:stsCnt['예정'],     color:'#3B6CE0'},
-{label:'완료',    val:stsCnt['완료'],     color:'#22A85E'}
-];
-const catMax  = catData.reduce(function(a,x){return x.val>a?x.val:a;},1);
-const catColors = ['#3B6CE0','#7050D8','#DC4C4C','#E8721C','#D9A000','#22A85E','#169090','#E8721C','#7050D8','#3B6CE0'];
-const costMax = costData.reduce(function(a,x){return x.val>a?x.val:a;},1);
-const costColors = ['#DC4C4C','#E8721C','#D9A000','#3B6CE0','#22A85E','#7050D8'];
+function bar(title, items, unit) {
+var maxV = items.reduce(function(a,x){return x.v>a?x.v:a;},1);
+var rows = items.map(function(x){
+  var pct = Math.round(x.v / maxV * 100);
+  var disp = x.v.toLocaleString() + unit;
+  return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+
+    '<div style="width:88px;font-size:11px;color:var(--t7);text-align:right;flex-shrink:0;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+x.l+'">'+x.l+'</div>'+
+    '<div style="flex:1;position:relative;height:20px;background:var(--border);border-radius:5px;overflow:hidden">'+
+      '<div style="position:absolute;left:0;top:0;bottom:0;width:'+pct+'%;background:'+x.c+';border-radius:5px;transition:width .4s ease"></div>'+
+      '<span style="position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--t7);white-space:nowrap">'+disp+'</span>'+
+    '</div>'+
+  '</div>';
+}).join('');
+return '<div class="ch-card"><div style="font-size:13px;font-weight:700;color:var(--t9);margin-bottom:12px">'+title+'</div>'+rows+'</div>';
+}
+function rStats() {
+var ap = DB.processes.map(enrich);
+var rC = {
+  상: ap.filter(function(p){return p.riskLevel==='상';}).length,
+  중: ap.filter(function(p){return p.riskLevel==='중';}).length,
+  하: ap.filter(function(p){return p.riskLevel==='하';}).length
+};
+var sC = {
+  진행중:  ap.filter(function(p){return p.ts==='진행중';}).length,
+  예정_1주: ap.filter(function(p){return p.ts==='예정_1주';}).length,
+  예정_2주: ap.filter(function(p){return p.ts==='예정_2주';}).length,
+  예정:    ap.filter(function(p){return p.ts==='예정';}).length,
+  완료:    ap.filter(function(p){return p.ts==='완료';}).length
+};
+var cc = ['#3B6CE0','#7050D8','#DC4C4C','#E8721C','#D9A000','#22A85E','#169090','#3B6CE0','#7050D8','#DC4C4C'];
+var catData = DEF_CATS.slice(0,10).map(function(c,i){
+  return {l:c, v:DB.defects.filter(function(d){return d.category===c;}).length, c:cc[i%cc.length]};
+});
+var kc = ['#DC4C4C','#E8721C','#D9A000','#3B6CE0','#22A85E','#7050D8'];
+var costData = DB.defects.slice().sort(function(a,b){return parseInt(b.avgCost)-parseInt(a.avgCost);}).slice(0,6)
+  .map(function(d,i){return {l:d.name, v:parseInt(d.avgCost)||0, c:kc[i]};});
 document.getElementById('chartGrid').innerHTML =
-donutChart('위험등급별 공종', riskSegs) +
-donutChart('공종 진행 현황', stsSegs) +
-barChart('하자 유형별 분류', catData, catMax, catColors) +
-barChart('보수비용 상위 하자', costData.map(function(d,i){return Object.assign({},d,{color:costColors[i]});}), costMax, costColors);
+  donut('위험등급별 공종', [
+    {l:'고위험(상)', v:rC['상'], c:'#DC4C4C'},
+    {l:'중위험(중)', v:rC['중'], c:'#E8721C'},
+    {l:'저위험(하)', v:rC['하'], c:'#22A85E'}
+  ]) +
+  donut('공종 진행 현황', [
+    {l:'진행중',  v:sC['진행중'],   c:'#DC4C4C'},
+    {l:'1주내',   v:sC['예정_1주'], c:'#E8721C'},
+    {l:'2주내',   v:sC['예정_2주'], c:'#D9A000'},
+    {l:'예정',    v:sC['예정'],     c:'#3B6CE0'},
+    {l:'완료',    v:sC['완료'],     c:'#22A85E'}
+  ]) +
+  bar('하자 유형별 분류', catData, '건') +
+  bar('보수비용 상위 하자', costData, '만원');
 }
-function rAlerts() {
 let list = DB.selSite==='all' ? DB.alerts : DB.alerts.filter(a=>a.siteId===DB.selSite);
+function rAlerts() {
 if (DB.alertF==='unread') list=list.filter(a=>!a.read);
 else if (DB.alertF==='read') list=list.filter(a=>a.read);
 else if (DB.alertF==='상'||DB.alertF==='중') list=list.filter(a=>a.riskLevel===DB.alertF);
@@ -786,50 +1089,137 @@ document.getElementById('alertsList').innerHTML=list.length
 ? list.map(a=>'<div class="al-item '+(a.read?'read':'unread')+' lv-'+a.riskLevel+'" onclick="openAlertDetail(\''+a.id+'\')"><div class="al-em">'+alEmoji(a.alertType)+'</div><div class="al-body"><div class="al-t">'+a.siteName+' · '+a.processName+'</div><div class="al-d">'+a.content+'</div><div class="al-m">📅 '+a.createdAt+' · '+alLabel(a.alertType)+'</div></div><span class="bdg '+(a.read?'bg':'br')+'">'+(a.read?'확인':'미확인')+'</span></div>').join('')
 : '<div class="empty"><div class="empty-ic">🔔</div><div class="empty-t">알림이 없습니다</div></div>';
 }
-function openAlertDetail(){}
-function markAlertRead(){}
-function markAllRead(){}
-function openProcDetail(){}
-function buildDetailDefTab(){}
-function buildDetailCLTab(){}
-function switchDetailTab(){}
-function openDefDetail(){}
-function openCLForCode(){}
-function openSiteForm(){}
-function editSite(){}
-function saveSite(){}
-function refreshProcCodeSel(){}
-function openProcForm(){}
-function editProc(){}
-function saveProc(){}
-function refreshCLCodeSel(){}
-function openCLForm(){}
-function editCL(){}
-function saveCL(){}
-function openDefForm(){}
-function editDef(){}
-function saveDef(){}
-function askDel(t,id,nm){toast(nm+" 삭제는 GitHub 버전에서 가능합니다.","info");}
-function confirmDel(){}
-function runSync(){
-const target=gv('syncTarget')||'all',dir=gv('syncDir')||'push';
-addSyncLog('동기화 시작: '+target+' ('+dir+')');
-if(!CFG.APPS_SCRIPT_URL||CFG.APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL'){
-addSyncLog('⚠️  Apps Script URL이 설정되지 않았습니다.');
-addSyncLog('--- 오프라인 시뮬레이션 ---');
-addSyncLog('✅ [시뮬레이션] '+target+' 데이터 '+dir+' 완료');
-toast('시뮬레이션 완료 (URL 미설정)','info');
-return;
+function openAlertDetail(id) {
+var a=DB.alerts.find(function(x){return x.id===id;});if(!a)return;
+DB.curAlertId=id;
+document.getElementById('alertDetailTitle').textContent=alEmoji(a.alertType)+' '+alLabel(a.alertType);
+document.getElementById('alertDetailBody').innerHTML='<div style="background:var(--red-l);border-radius:8px;padding:12px 14px;margin-bottom:10px"><div style="font-size:13px;font-weight:700;color:var(--t9)">'+a.content+'</div><div style="font-size:11px;color:var(--t5);margin-top:6px">'+a.siteName+' · '+a.processName+' · '+a.createdAt+'</div></div>';
+var _arb=document.getElementById('alertReadBtn');if(_arb)_arb.style.display=a.read?'none':'';
+openOv('ovAlert');
 }
-addSyncLog('📡 서버 연결 중...');
-fetch(CFG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync',target,dir,data:getSyncPayload(target)})})
-.then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
-.then(function(json){
-if(json.success){addSyncLog('✅ 동기화 완료');if(dir==='pull'&&json.data)applySyncData(target,json.data);toast('동기화 완료','ok');}
-else{addSyncLog('❌ 오류: '+(json.error||'알 수 없음'));toast('동기화 실패','err');}
-})
-.catch(function(e){addSyncLog('❌ 연결 오류: '+e.message);toast('동기화 연결 실패','err');});
-}function applySyncData(t,data){if(t==='processes'&&Array.isArray(data))DB.processes=data;if(t==='checklists'&&Array.isArray(data))DB.checklists=data;if(t==='defects'&&Array.isArray(data))DB.defects=data;if(t==='sites'&&Array.isArray(data)){DB.sites=data;buildSiteSel();}if(data&&data.sites){DB.sites=data.sites;DB.processes=data.processes;DB.defects=data.defects;DB.checklists=data.checklists;buildSiteSel();}DB.riskProcs=getRiskProcs();renderAll();}function exportGantt(){
+
+function markAlertRead(){const a=DB.alerts.find(x=>x.id===DB.curAlertId);if(!a)return;a.read=true;closeOv('ovAlert');rAlerts();rDash();updBadges();toast('알림을 확인 처리했습니다.','ok');}
+function markAllRead(){DB.alerts.forEach(a=>a.read=true);rAlerts();rDash();updBadges();toast('전체 알림을 확인 처리했습니다.','ok');}
+/* ════════════════════════════════
+상세 모달
+════════════════════════════════ */
+function openProcDetail(pid) {
+var raw=DB.processes.find(function(p){return p.id===pid;}); if(!raw)return;
+var p=enrich(raw); var sm=smMap(); var cls=DB.checklists.filter(function(c){return c.code===p.code;});
+document.getElementById('detailTitle').textContent='📋 '+p.name+' 상세';
+var body='<div class="fgrid" style="margin-bottom:12px">'+
+iBox('현장',sm[p.siteId]||p.siteId)+iBox('상태',stsBdg(p.ts))+
+iBox('시작일',p.startDate)+iBox('종료일',p.endDate)+iBox('진행률',p.progress+'%')+
+iBox('담당업체',p.company||'—')+iBox('담당자',p.manager||'—')+'</div>'+
+'<div class="pb" style="height:7px;margin-bottom:14px"><div class="pb-f" style="width:'+p.progress+'%;background:'+pcColor(p.ts)+'"></div></div>'+
+'<div style="display:flex;border:1.5px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:12px">'+
+'<button id="dtb-def" data-tab="def" onclick="swDTab(this.dataset.tab)" style="flex:1;padding:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:var(--blue);color:#fff">📋 하자 사례</button>'+
+'<button id="dtb-cl" data-tab="cl" onclick="swDTab(this.dataset.tab)" style="flex:1;padding:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:var(--card2);color:var(--t5);border-left:1.5px solid var(--border2)">✅ 체크리스트</button>'+
+'</div>'+
+'<div id="dtb-body-def">'+buildDefTab(p)+'</div>'+
+'<div id="dtb-body-cl" style="display:none">'+buildCLTab(p,cls)+'</div>';
+if(p.note)body+='<div style="margin-top:10px;font-size:11px;color:var(--t5)">📝 '+p.note+'</div>';
+document.getElementById('detailBody').innerHTML=body; openOv('ovDetail');
+}
+function buildDefTab(p) {
+if(!p.defs||!p.defs.length) return '<div class="empty" style="padding:16px"><div class="empty-ic">📋</div><div class="empty-t">연관 하자 없음</div></div>';
+return p.defs.map(function(d){return '<div style="background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:8px;cursor:pointer" data-did="'+d.id+'" onclick="detailNav(this)">'+
+'<div style="font-size:13px;font-weight:800;color:var(--t9);margin-bottom:5px">'+d.name+'</div>'+
+'<div style="font-size:11px;color:var(--t7);margin-bottom:3px">📌 <strong>주요 원인:</strong> '+d.mainCause+'</div>'+
+'<div style="font-size:11px;color:var(--t7);margin-bottom:4px">📅 <strong>발생 시기:</strong> '+d.occurrenceTime+'</div>'+
+'<div style="font-size:11px;color:var(--green);font-weight:700">✅ '+d.prevention+'</div></div>';}).join('');
+}
+function buildCLTab(p,cls) {
+var code = p.code, name = p.name;
+if(!cls.length) {
+return '<div class="empty" style="padding:16px"><div class="empty-ic">✅</div><div class="empty-t">체크리스트 없음</div>' +
+'<button class="btn btn-primary btn-sm" style="margin-top:8px" data-code="'+code+'" data-name="'+name+'" onclick="detailNavCL(this)">＋ 추가</button></div>';
+}
+var done = cls.filter(function(c){return c.checked;}).length;
+var rows = cls.map(function(c) {
+return '<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);margin-bottom:5px;background:var(--card)">' +
+'<span style="font-size:14px;flex-shrink:0;margin-top:1px">'+(c.checked?'&#x2705;':'&#x2B1C;')+'</span>' +
+'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--t9)">'+c.item+'</div>' +
+'<div style="font-size:10px;color:var(--t5);margin-top:2px">&#x1F4D0; '+c.std+'</div></div>' +
+(c.req==='필수'?'<span class="cl-req" style="flex-shrink:0">필수</span>':'') + '</div>';
+}).join('');
+return '<div style="font-size:11px;font-weight:700;color:var(--t5);margin-bottom:8px">'+done+'/'+cls.length+' 완료</div>' +
+rows +
+'<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" data-code="'+code+'" data-name="'+name+'" onclick="detailNavCL(this)">&#x1F4CB; 전체 체크리스트 관리</button>';
+}
+function swDTab(tab) {
+var defEl=document.getElementById('dtb-body-def'),clEl=document.getElementById('dtb-body-cl');
+var defBtn=document.getElementById('dtb-def'),clBtn=document.getElementById('dtb-cl');
+if(!defEl||!clEl)return;
+if(tab==='def'){defEl.style.display='';clEl.style.display='none';defBtn.style.background='var(--blue)';defBtn.style.color='#fff';clBtn.style.background='var(--card2)';clBtn.style.color='var(--t5)';}
+else{defEl.style.display='none';clEl.style.display='';clBtn.style.background='var(--blue)';clBtn.style.color='#fff';defBtn.style.background='var(--card2)';defBtn.style.color='var(--t5)';}
+}
+function openDefDetail(did) {
+const d=DB.defects.find(x=>x.id===did); if(!d)return;
+document.getElementById('detailTitle').textContent='🔍 '+d.name+' 상세';
+const linkedProcs = (d.linkedCodes||[]).map(c=>'<span class="bdg bb">'+( PROC_CODES[c]||c)+'</span>').join(' ')||'<span class="bdg bx">—</span>';
+document.getElementById('detailBody').innerHTML=
+'<div class="fgrid" style="margin-bottom:12px">'+iBox('분류','<span class="bdg bt">'+d.category+'</span>')+iBox('위험등급',rkBdg(d.riskLevel))+iBox('연계 공종',linkedProcs)+iBox('소송빈도','<span class="bdg '+ligBdg(d.litigationFreq)+'">'+d.litigationFreq+'</span>')+iBox('평균 보수비용',(parseInt(d.avgCost)||0).toLocaleString()+'만원')+'</div>'+
+'<div style="background:var(--red-l);border:1px solid #F4B8B8;border-radius:8px;padding:11px 13px;margin-bottom:9px"><div style="font-size:11px;font-weight:700;color:#B03030;margin-bottom:3px">⚠️ 주요 발생 원인</div><div style="font-size:13px;font-weight:700;color:var(--t9)">'+d.mainCause+'</div></div>'+
+'<div style="background:var(--card2);border-radius:8px;padding:11px 13px;margin-bottom:9px"><div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:3px">📅 발생 시기</div><div style="font-size:13px;font-weight:700">'+d.occurrenceTime+'</div></div>'+
+'<div style="background:var(--green-l);border:1px solid #90D8B0;border-radius:8px;padding:11px 13px"><div style="font-size:11px;font-weight:700;color:#167040;margin-bottom:3px">✅ 예방 핵심 사항</div><div style="font-size:13px;font-weight:700;color:var(--t9)">'+d.prevention+'</div></div>';
+openOv('ovDetail');
+}
+function openCLForCode(code,name){DB.clCode=code;nav('checklist');setTimeout(rCL,50);}
+/* ════════════════════════════════
+CRUD – 현장
+════════════════════════════════ */
+function openSiteForm(){DB.editId=null;document.getElementById('siteFormTitle').textContent='🏗️ 신규 현장 등록';['f-sNm','f-sLoc','f-sCli','f-sSt','f-sEn','f-sAmt','f-sMgr','f-sOfc','f-sNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sStat').value='진행중';openOv('ovSite');}
+function editSite(id){const s=DB.sites.find(x=>x.id===id);if(!s)return;DB.editId=id;document.getElementById('siteFormTitle').textContent='✏️ 현장 정보 수정';document.getElementById('f-sNm').value=s.name||'';document.getElementById('f-sLoc').value=s.location||'';document.getElementById('f-sCli').value=s.client||'';document.getElementById('f-sSt').value=s.startDate||'';document.getElementById('f-sEn').value=s.endDate||'';document.getElementById('f-sAmt').value=s.amount||'';document.getElementById('f-sStat').value=s.status||'진행중';document.getElementById('f-sMgr').value=s.manager||'';document.getElementById('f-sOfc').value=s.officer||'';document.getElementById('f-sNote').value=s.note||'';openOv('ovSite');}
+function saveSite(){const nm=document.getElementById('f-sNm').value.trim();if(!nm){toast('현장명을 입력하세요.','err');return;}const data={name:nm,location:gv('f-sLoc'),client:gv('f-sCli'),startDate:gv('f-sSt'),endDate:gv('f-sEn'),amount:gv('f-sAmt'),status:gv('f-sStat'),manager:gv('f-sMgr'),officer:gv('f-sOfc'),note:gv('f-sNote')};if(DB.editId){Object.assign(DB.sites.find(s=>s.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.sites.push(Object.assign({id:'S'+Date.now()},data));toast('"'+nm+'" 등록 완료','ok');buildSiteSel();}closeOv('ovSite');renderAll();syncToSheet(DB.editId?'updateSite':'addSite',data);}
+/* ════════════════════════════════
+CRUD – 공종
+════════════════════════════════ */
+function refreshProcCodeSel(sel){sel.innerHTML=Object.entries(PROC_CODES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('');}
+function openProcForm(){DB.editId=null;document.getElementById('procTitle').textContent='📅 공종 등록';['f-pNm','f-pSt','f-pEn','f-pCo','f-pMgr','f-pNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-pProg').value='0';document.getElementById('f-pRisk').value='중';refreshProcCodeSel(document.getElementById('f-pCode'));const sel=document.getElementById('f-pSite');sel.innerHTML=DB.sites.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');openOv('ovProc');}
+function editProc(id){const p=DB.processes.find(x=>x.id===id);if(!p)return;DB.editId=id;document.getElementById('procTitle').textContent='✏️ 공종 수정';refreshProcCodeSel(document.getElementById('f-pCode'));const sel=document.getElementById('f-pSite');sel.innerHTML=DB.sites.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');sel.value=p.siteId;document.getElementById('f-pNm').value=p.name||'';document.getElementById('f-pCode').value=p.code||'WATERPROOF';document.getElementById('f-pSt').value=p.startDate||'';document.getElementById('f-pEn').value=p.endDate||'';document.getElementById('f-pProg').value=p.progress||0;document.getElementById('f-pRisk').value=p.riskLevel||'중';document.getElementById('f-pCo').value=p.company||'';document.getElementById('f-pMgr').value=p.manager||'';document.getElementById('f-pNote').value=p.note||'';openOv('ovProc');}
+function saveProc(){const nm=gv('f-pNm').trim();if(!nm){toast('공종명을 입력하세요.','err');return;}const st=gv('f-pSt'),en=gv('f-pEn');if(!st||!en){toast('시작일과 종료일을 입력하세요.','err');return;}const data={siteId:gv('f-pSite'),name:nm,code:gv('f-pCode'),startDate:st,endDate:en,progress:parseInt(gv('f-pProg'))||0,riskLevel:gv('f-pRisk'),company:gv('f-pCo'),manager:gv('f-pMgr'),note:gv('f-pNote')};if(DB.editId){Object.assign(DB.processes.find(p=>p.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.processes.push(Object.assign({id:'P'+Date.now()},data));toast('"'+nm+'" 등록 완료','ok');}closeOv('ovProc');DB.riskProcs=getRiskProcs();autoGenAlerts();renderAll();syncToSheet(DB.editId?'updateProcess':'addProcess',data);}
+/* ════════════════════════════════
+CRUD – 체크리스트
+════════════════════════════════ */
+function refreshCLCodeSel(sel){sel.innerHTML=Object.entries(PROC_CODES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('');}
+function openCLForm(){DB.editId=null;document.getElementById('clTitle').textContent='✅ 체크항목 등록';['f-clDid','f-clItem','f-clStd','f-clMeth','f-clPass'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-clCode');refreshCLCodeSel(sel);sel.value=DB.clCode||'WATERPROOF';document.getElementById('f-clReq').value='필수';openOv('ovCL');}
+function editCL(id){const c=DB.checklists.find(x=>x.id===id);if(!c)return;DB.editId=id;document.getElementById('clTitle').textContent='✏️ 체크항목 수정';refreshCLCodeSel(document.getElementById('f-clCode'));document.getElementById('f-clCode').value=c.code||'WATERPROOF';document.getElementById('f-clDid').value=c.did||'';document.getElementById('f-clItem').value=c.item||'';document.getElementById('f-clStd').value=c.std||'';document.getElementById('f-clMeth').value=c.method||'';document.getElementById('f-clPass').value=c.pass||'';document.getElementById('f-clReq').value=c.req||'필수';openOv('ovCL');}
+function saveCL(){const item=gv('f-clItem').trim();if(!item){toast('체크항목명을 입력하세요.','err');return;}const data={code:gv('f-clCode'),did:gv('f-clDid'),item,std:gv('f-clStd'),method:gv('f-clMeth'),pass:gv('f-clPass'),req:gv('f-clReq'),checked:false};if(DB.editId){Object.assign(DB.checklists.find(c=>c.id===DB.editId),data);toast('수정 완료','ok');}else{DB.checklists.push(Object.assign({id:'C'+Date.now()},data));toast('등록 완료','ok');}DB.clCode=data.code;closeOv('ovCL');rCL();syncToSheet(DB.editId?'updateCL':'addCL',data);}
+/* ════════════════════════════════
+CRUD – 하자유형
+════════════════════════════════ */
+function openDefForm(){DB.editId=null;document.getElementById('defTitle').textContent='🔍 하자유형 등록';['f-dNm','f-dCause','f-dPrev','f-dCost','f-dTime'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dRisk').value='상';document.getElementById('f-dLitig').value='높음';renderLinkedProcCbs([]);openOv('ovDef');}
+function editDef(id){const d=DB.defects.find(x=>x.id===id);if(!d)return;DB.editId=id;document.getElementById('defTitle').textContent='✏️ 하자유형 수정';const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dNm').value=d.name||'';document.getElementById('f-dCat').value=d.category||'누수';document.getElementById('f-dRisk').value=d.riskLevel||'상';document.getElementById('f-dLitig').value=d.litigationFreq||'높음';document.getElementById('f-dCost').value=d.avgCost||'';document.getElementById('f-dTime').value=d.occurrenceTime||'';document.getElementById('f-dCause').value=d.mainCause||'';document.getElementById('f-dPrev').value=d.prevention||'';renderLinkedProcCbs(d.linkedCodes||[]);openOv('ovDef');}
+function saveDef(){const nm=gv('f-dNm').trim();if(!nm){toast('하자명을 입력하세요.','err');return;}const data={name:nm,category:gv('f-dCat'),riskLevel:gv('f-dRisk'),litigationFreq:gv('f-dLitig'),avgCost:gv('f-dCost'),occurrenceTime:gv('f-dTime'),mainCause:gv('f-dCause'),prevention:gv('f-dPrev'),linkedCodes:getLinkedCodes()};if(DB.editId){Object.assign(DB.defects.find(d=>d.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.defects.push(Object.assign({id:'D'+String(Date.now()).slice(-5)},data));toast('"'+nm+'" 등록 완료','ok');}closeOv('ovDef');rDefs();rStats();renderAll();syncToSheet(DB.editId?'updateDefect':'addDefect',data);}
+/* ════════════════════════════════
+삭제
+════════════════════════════════ */
+function askDel(type,id,name){DB.delTarget={type,id};document.getElementById('delName').textContent='"'+name+'"';openOv('ovDel');}
+function confirmDel(){
+const{type,id}=DB.delTarget||{};
+if(type==='site'){DB.sites=DB.sites.filter(s=>s.id!==id);DB.processes=DB.processes.filter(p=>p.siteId!==id);buildSiteSel();toast('현장이 삭제되었습니다.','ok');}
+else if(type==='process'){DB.processes=DB.processes.filter(p=>p.id!==id);toast('공종이 삭제되었습니다.','ok');}
+else if(type==='checklist'){DB.checklists=DB.checklists.filter(c=>c.id!==id);toast('체크항목이 삭제되었습니다.','ok');}
+else if(type==='defect'){DB.defects=DB.defects.filter(d=>d.id!==id);toast('하자유형이 삭제되었습니다.','ok');}
+closeOv('ovDel');DB.riskProcs=getRiskProcs();renderAll();
+}
+/* ════════════════════════════════
+════════════════════════════════ */
+/* ════════════════════════════════
+시트 동기화
+════════════════════════════════ */
+function addSyncLog(msg){}
+function runSync() {
+if (!CFG.APPS_SCRIPT_URL || CFG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+openOv('ovSync'); return;
+}
+toast('동기화 기능은 Apps Script 연동 후 사용 가능합니다.', 'info');
+}
+function getSyncPayload(t){return {};}
+function applySyncData(t,data){}
+function syncToSheet(action,data){if(!CFG.APPS_SCRIPT_URL||CFG.APPS_SCRIPT_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL')return;try{fetch(CFG.APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:action},data))});}catch(e){console.warn('Sync:',e.message);}}
+function exportGantt(){
 const sm=smMap(),list=filtered(DB.processes.map(enrich));
 if(!list.length){toast('내보낼 데이터가 없습니다.','err');return;}
 const rows=[['공종ID','현장명','공종명','공종코드','시작일','종료일','진행률','담당업체','담당자','상태']];
@@ -837,6 +1227,9 @@ list.forEach(p=>rows.push([p.id,sm[p.siteId]||p.siteId,p.name,p.code,p.startDate
 downCSV(rows.map(r=>r.join(',')).join('\n'),'gantt_'+new Date().toISOString().split('T')[0]+'.csv');
 toast('CSV로 내보내졌습니다.','ok');
 }
+/* ════════════════════════════════
+네비게이션
+════════════════════════════════ */
 const PANEL_TITLES={dashboard:'📊 대시보드',risk:'⚠️ 주요 하자 공종 현황',gantt:'📅 공정 간트 차트',checklist:'✅ 체크리스트 관리',defects:'🔍 하자유형 관리',sites:'🏗️ 현장 관리',stats:'📈 통계 분석',alerts:'🔔 알림 현황'};
 function nav(name,btn){
 document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
@@ -848,14 +1241,17 @@ document.getElementById('sb').classList.remove('open');
 }
 function setRF(btn,f){document.querySelectorAll('#riskFb .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.riskF=f;rRisk();}
 function setAF(btn,f){document.querySelectorAll('#panel-alerts .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.alertF=f;rAlerts();}
-function onSiteFilter(){DB.selSite=gv('siteSel');rDash();rRisk();rGantt();}
-function filterBySite(id){DB.selSite=id;document.getElementById('siteSel').value=id;rDash();rRisk();rGantt();}
+function onSiteFilter(){DB.selSite=gv('siteSel');rDash();rRisk();rGantt();rAlerts();}
+function filterBySite(id){DB.selSite=id;document.getElementById('siteSel').value=id;rDash();rRisk();rGantt();rAlerts();}
 function buildSiteSel(){const sel=document.getElementById('siteSel');const prev=sel.value;sel.innerHTML='<option value="all">전체 현장</option>'+DB.sites.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');if(prev)sel.value=prev;}
 function toggleSb(){document.getElementById('sb').classList.toggle('open');}
 function openOv(id){document.getElementById(id).classList.add('open');}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
-function openSheet(){}
-function refreshApp(){document.getElementById('loading').style.display='flex';setTimeout(()=>{DB.riskProcs=getRiskProcs();autoGenAlerts();renderAll();document.getElementById('loading').style.display='none';},400);}
+function openSheet(){if(CFG.SPREADSHEET_URL&&CFG.SPREADSHEET_URL!=='YOUR_SPREADSHEET_URL')window.open(CFG.SPREADSHEET_URL,'_blank');else toast('CFG.SPREADSHEET_URL을 설정하세요.','info');}
+function refreshApp(){DB.riskProcs=getRiskProcs();autoGenAlerts();renderAll();toast('새로고침 완료','ok');}
+/* ════════════════════════════════
+유틸
+════════════════════════════════ */
 function gv(id){const el=document.getElementById(id);return el?el.value:'';}
 function smMap(){const m={};DB.sites.forEach(s=>m[s.id]=s.name);return m;}
 function filtered(list){return DB.selSite==='all'?list:list.filter(x=>x.siteId===DB.selSite);}
@@ -874,16 +1270,48 @@ el.className='toast '+(type||'info');
 el.innerHTML='<span>'+(ic[type]||'📢')+'</span><span>'+msg+'</span>';
 document.getElementById('toastWrap').appendChild(el);
 setTimeout(()=>el.remove(),3000);
-}function downCSV(csv,filename){
+}
+/* CSV 파서 (BOM 처리 포함) */
+function parseCSV(text) {
+text = text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+const lines = text.split('\n').filter(l=>l.trim());
+if (lines.length < 2) return [];
+const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+return lines.slice(1).map(line=>{
+const vals=[], re=/("(?:[^"]|"")*"|[^,]*)/g; let m;
+while((m=re.exec(line))!==null&&vals.length<headers.length) vals.push(m[1].replace(/^"|"$/g,'').replace(/""/g,'"').trim());
+const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;
+}).filter(r=>Object.values(r).some(v=>v));
+}
+function downCSV(csv,filename){
 const a=document.createElement('a');
 a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
 a.download=filename; a.click();
 }
+/* 오버레이 바깥 클릭 닫기 */
 document.querySelectorAll('.ov').forEach(ov=>{ov.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
 init();
+function saveSheetCfg() {
+  closeOv('ovSync');
+  toast('설정이 저장되었습니다.', 'ok');
+}
+function detailNav(el) {
+closeOv('ovDetail');
+if (el.dataset.did) openDefDetail(el.dataset.did);
+else if (el.dataset.code) openCLForCode(el.dataset.code, el.dataset.name||'');
+}
+function detailNavCL(el) {
+closeOv('ovDetail');
+openCLForCode(el.dataset.code, el.dataset.name||'');
+}
+
+
+
+
+
+
 
 
 
 </script>
-</body>
-</html>
+</body> </html>
