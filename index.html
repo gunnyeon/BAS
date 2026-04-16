@@ -374,12 +374,19 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
+
+
+
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz4pMEXnP_LovjvmLm8xFRg3fqUr_-BU0SRHfYupTzhjmG61qTJ5-Zr6HcK9rzfHfU1/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyT8Clt4ymw21Lf9JKIadzXaqXrupXyoBmnw-bDpbeLldpnCQPwOspT5Rtyi-QrgorF/exec',
   SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
-  SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드' }
+  SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림' }
 };
 /* ═══ 공종코드 레지스트리 (추가/삭제 가능) ═══ */
 let PROC_CODES = {
@@ -494,23 +501,32 @@ return DB.processes.map(enrich)
 }
 /* ═══ 알림 자동 생성 ═══ */
 function autoGenAlerts() {
-const today = new Date().toISOString().split('T')[0];
-const existKeys = new Set(DB.alerts.map(a=>a.processId+'_'+a.type));
-DB.processes.forEach(p => {
-const ts = timeStatus(p);
-const site = DB.sites.find(s=>s.id===p.siteId); if (!site) return;
-const hasHR = p.riskLevel==='상';
-const push = (type, msg) => {
-const key = p.id+'_'+type;
-if (!existKeys.has(key)) {
-DB.alerts.push({id:'A'+Date.now()+Math.random().toString(36).slice(2,5),processId:p.id,siteId:p.siteId,siteName:site.name,processName:p.name,type,alertType:type,content:msg,riskLevel:p.riskLevel,createdAt:today,read:false});
-existKeys.add(key);
-}
-};
-if ((ts==='예정_2주'||ts==='예정_1주') && hasHR) push('2주전_예방점검','['+site.name+'] '+p.name+' 시작 전 하자 예방 체크리스트를 점검하세요.');
-if (ts==='진행중' && hasHR) push('고위험_진행중','['+site.name+'] '+p.name+' 고위험 공종 진행 중 – 일일 체크리스트를 확인하세요.');
-});
-updBadges();
+  var today = new Date().toISOString().split('T')[0];
+  var existKeys = new Set(DB.alerts.map(function(a){return a.processId+'_'+a.type;}));
+  DB.processes.forEach(function(p) {
+    var ts = timeStatus(p);
+    var site = DB.sites.find(function(s){return s.id===p.siteId;}); if (!site) return;
+    var hasHR = p.riskLevel==='상';
+    var pushAlert = function(type, msg) {
+      var key = p.id+'_'+type;
+      if (!existKeys.has(key)) {
+        var alert = {
+          id:'A'+Date.now()+Math.random().toString(36).slice(2,5),
+          processId:p.id, siteId:p.siteId, siteName:site.name,
+          processName:p.name, type:type, alertType:type,
+          content:msg, riskLevel:p.riskLevel, createdAt:today, read:false
+        };
+        DB.alerts.push(alert);
+        syncToSheet('upsertRow', {sheet:CFG.SHEET.alerts, id:alert.id, row:alert});
+        existKeys.add(key);
+      }
+    };
+    if ((ts==='예정_2주'||ts==='예정_1주') && hasHR)
+      pushAlert('2주전_예방점검','['+site.name+'] '+p.name+' 시작 전 하자 예방 체크리스트를 점검하세요.');
+    if (ts==='진행중' && hasHR)
+      pushAlert('고위험_진행중','['+site.name+'] '+p.name+' 고위험 공종 진행 중 – 일일 체크리스트를 확인하세요.');
+  });
+  updBadges();
 }
 /* ═══ 전체 렌더링 ═══ */
 function renderAll() {
@@ -916,6 +932,11 @@ if (!DB.selCLIds.size) { toast('선택된 항목이 없습니다.','err'); retur
 DB.checklists = DB.checklists.filter(c=>!DB.selCLIds.has(c.id));
 toast(DB.selCLIds.size+'개 항목이 삭제되었습니다.','ok');
 DB.selCLIds.clear(); rCLContent();
+
+  DB.selCLIds.forEach(function(id){
+    syncToSheet('deleteRow',{sheet:CFG.SHEET.checklists,id:id});
+  });
+  DB.selCLIds = new Set();
 }
 function delGroupCL(did) {
 const cnt = DB.checklists.filter(c=>c.code===DB.clCode&&c.did===did).length;
@@ -1015,16 +1036,17 @@ function cancelEditCode(btn) {
   var ceditbtns = document.getElementById('ceditbtns-'+key); if(ceditbtns) ceditbtns.style.display='none';
 }
 function addProcCode() {
-const key  = (document.getElementById('newCodeKey').value.trim()).toUpperCase();
-const name = document.getElementById('newCodeName').value.trim();
-if (!key || !name) { toast('코드와 공종명을 모두 입력하세요.', 'err'); return; }
-if (!/^[A-Z][A-Z0-9_]*$/.test(key)) { toast('코드는 영문 대문자·숫자·_만 사용 가능합니다.', 'err'); return; }
-if (PROC_CODES[key]) { toast('"' + key + '"은(는) 이미 존재하는 코드입니다.', 'err'); return; }
-PROC_CODES[key] = name;
-document.getElementById('newCodeKey').value = '';
-document.getElementById('newCodeName').value = '';
-renderCodeMgr(); rCL();
-toast('"' + name + '" 공종코드가 추가되었습니다.', 'ok');
+  var key  = (document.getElementById('newCodeKey').value.trim()).toUpperCase();
+  var name = document.getElementById('newCodeName').value.trim();
+  if (!key || !name) { toast('코드와 공종명을 모두 입력하세요.', 'err'); return; }
+  if (!/^[A-Z][A-Z0-9_]*$/.test(key)) { toast('코드는 영문 대문자·숫자·_만 사용 가능합니다.', 'err'); return; }
+  if (PROC_CODES[key]) { toast('"' + key + '"은(는) 이미 존재하는 코드입니다.', 'err'); return; }
+  PROC_CODES[key] = name;
+  syncToSheet('upsertRow', {sheet: CFG.SHEET.codes, id: key, row: {code:key, name:name}});
+  document.getElementById('newCodeKey').value = '';
+  document.getElementById('newCodeName').value = '';
+  renderCodeMgr(); rCL();
+  toast('"' + name + '" 공종코드가 추가되었습니다.', 'ok');
 }
 function delProcCode(btn) {
   var key = (typeof btn==='string') ? btn : btn.dataset.k;
@@ -1326,8 +1348,22 @@ var _arb=document.getElementById('alertReadBtn');if(_arb)_arb.style.display=a.re
 openOv('ovAlert');
 }
 
-function markAlertRead(){const a=DB.alerts.find(x=>x.id===DB.curAlertId);if(!a)return;a.read=true;closeOv('ovAlert');rAlerts();rDash();updBadges();toast('알림을 확인 처리했습니다.','ok');}
-function markAllRead(){DB.alerts.forEach(a=>a.read=true);rAlerts();rDash();updBadges();toast('전체 알림을 확인 처리했습니다.','ok');}
+function markAlertRead() {
+  var a = DB.alerts.find(function(x){return x.id===DB.curAlertId;});
+  if (!a) return;
+  a.read = true;
+  syncToSheet('upsertRow',{sheet:CFG.SHEET.alerts,id:a.id,row:a});
+  closeOv('ovAlert'); rAlerts(); rDash(); updBadges();
+  toast('알림을 확인 처리했습니다.','ok');
+}
+function markAllRead() {
+  DB.alerts.forEach(function(a){a.read=true;});
+  DB.alerts.forEach(function(a){
+    syncToSheet('upsertRow',{sheet:CFG.SHEET.alerts,id:a.id,row:a});
+  });
+  rAlerts(); rDash(); updBadges();
+  toast('전체 알림을 확인 처리했습니다.','ok');
+}
 /* ════════════════════════════════
 상세 모달
 ════════════════════════════════ */
@@ -1432,7 +1468,36 @@ CRUD – 공종
 function refreshProcCodeSel(sel){sel.innerHTML=Object.entries(PROC_CODES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('');}
 function openProcForm(){DB.editId=null;document.getElementById('procTitle').textContent='📅 공종 등록';['f-pNm','f-pSt','f-pEn','f-pCo','f-pMgr','f-pNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-pProg').value='0';document.getElementById('f-pRisk').value='중';refreshProcCodeSel(document.getElementById('f-pCode'));const sel=document.getElementById('f-pSite');sel.innerHTML=DB.sites.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');openOv('ovProc');}
 function editProc(id){const p=DB.processes.find(x=>x.id===id);if(!p)return;DB.editId=id;document.getElementById('procTitle').textContent='✏️ 공종 수정';refreshProcCodeSel(document.getElementById('f-pCode'));const sel=document.getElementById('f-pSite');sel.innerHTML=DB.sites.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');sel.value=p.siteId;document.getElementById('f-pNm').value=p.name||'';document.getElementById('f-pCode').value=p.code||'WATERPROOF';document.getElementById('f-pSt').value=p.startDate||'';document.getElementById('f-pEn').value=p.endDate||'';document.getElementById('f-pProg').value=p.progress||0;document.getElementById('f-pRisk').value=p.riskLevel||'중';document.getElementById('f-pCo').value=p.company||'';document.getElementById('f-pMgr').value=p.manager||'';document.getElementById('f-pNote').value=p.note||'';openOv('ovProc');}
-function saveProc(){const nm=gv('f-pNm').trim();if(!nm){toast('공종명을 입력하세요.','err');return;}const st=gv('f-pSt'),en=gv('f-pEn');if(!st||!en){toast('시작일과 종료일을 입력하세요.','err');return;}const data={siteId:gv('f-pSite'),name:nm,code:gv('f-pCode'),startDate:st,endDate:en,progress:parseInt(gv('f-pProg'))||0,riskLevel:gv('f-pRisk'),company:gv('f-pCo'),manager:gv('f-pMgr'),note:gv('f-pNote')};if(DB.editId){Object.assign(DB.processes.find(p=>p.id===DB.editId),data);toast('"'+nm+'" 수정 완료','ok');}else{DB.processes.push(Object.assign({id:'P'+Date.now()},data));toast('"'+nm+'" 등록 완료','ok');}closeOv('ovProc');DB.riskProcs=getRiskProcs();autoGenAlerts();renderAll();syncToSheet(DB.editId?'updateProcess':'addProcess',data);}
+function saveProc() {
+  var nm = gv('f-pNm').trim();
+  if (!nm) { toast('공종명을 입력하세요.','err'); return; }
+  var st = gv('f-pSt'), en = gv('f-pEn');
+  if (!st||!en) { toast('시작일과 종료일을 입력하세요.','err'); return; }
+  var data = {
+    siteId:gv('f-pSite'), name:nm, code:gv('f-pCode'),
+    startDate:st, endDate:en,
+    progress:parseInt(gv('f-pProg'))||0,
+    riskLevel:gv('f-pRisk'),
+    company:gv('f-pCo'), manager:gv('f-pMgr'), note:gv('f-pNote')
+  };
+  var isEdit = !!DB.editId;
+  var rowId;
+  if (isEdit) {
+    rowId = DB.editId;
+    Object.assign(DB.processes.find(function(p){return p.id===DB.editId;}), data);
+    toast('"'+nm+'" 수정 완료','ok');
+  } else {
+    rowId = 'P'+Date.now();
+    DB.processes.push(Object.assign({id:rowId}, data));
+    toast('"'+nm+'" 등록 완료','ok');
+  }
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.gantt, id: rowId,
+    row: Object.assign({id:rowId}, data)
+  });
+  closeOv('ovProc');
+  DB.riskProcs = getRiskProcs(); autoGenAlerts(); renderAll();
+}
 /* ════════════════════════════════
 CRUD – 체크리스트
 ════════════════════════════════ */
@@ -1521,6 +1586,7 @@ function confirmDel() {
   } else if (type === 'process') {
     DB.processes = DB.processes.filter(function(p){return p.id!==id;});
     toast('공종이 삭제되었습니다.','ok');
+    syncToSheet('deleteRow',{sheet:CFG.SHEET.gantt,id:id});
   } else if (type === 'checklist') {
     DB.checklists = DB.checklists.filter(function(c){return c.id!==id;});
     toast('체크항목이 삭제되었습니다.','ok');
@@ -1795,7 +1861,9 @@ function pushSheet(key) {
   if      (key === 'sites')      rows = DB.sites;
   else if (key === 'defects')    rows = DB.defects.map(function(d){ return Object.assign({},d,{linkedCodes:(d.linkedCodes||[]).join('|')}); });
   else if (key === 'checklists') rows = DB.checklists;
-  else if (key === 'codes') rows = Object.entries(PROC_CODES).map(function(e){return {code:e[0], name:e[1]};});
+  else if (key === 'codes')  rows = Object.entries(PROC_CODES).map(function(e){return {code:e[0], name:e[1]};});
+  else if (key === 'gantt')  rows = DB.processes;
+  else if (key === 'alerts') rows = DB.alerts;
   else { toast('알 수 없는 키: '+key,'err'); return; }
   addSyncLog(sheetName + ' 업로드 시작 (' + rows.length + '건)...');
   toast(sheetName + ' 업로드 중...', 'info');
@@ -1903,7 +1971,7 @@ function pollAllSheets() {
 function pollSheet(key) {
   if (!sheetEnabled()) return;
   var sheetName = CFG.SHEET[key];
-  var nextKeys = { sites:'defects', defects:'checklists', checklists:'codes', codes:null };
+  var nextKeys = { sites:'defects', defects:'checklists', checklists:'codes', codes:'gantt', gantt:'alerts', alerts:null };
 
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
@@ -1936,43 +2004,36 @@ function applySheetData(key, rows) {
   var changed = false;
   if (key === 'sites') {
     if (JSON.stringify(DB.sites) !== JSON.stringify(rows)) {
-      DB.sites = rows;
-      buildSiteSel();
-      changed = true;
+      DB.sites = rows; buildSiteSel(); changed = true;
     }
   } else if (key === 'defects') {
-    var parsed = rows.map(function(r){
-      return Object.assign({}, r, {
-        linkedCodes: r.linkedCodes ? String(r.linkedCodes).split('|').filter(Boolean) : []
-      });
+    var pd = rows.map(function(r){
+      return Object.assign({},r,{linkedCodes:r.linkedCodes?String(r.linkedCodes).split('|').filter(Boolean):[]});
     });
-    if (JSON.stringify(DB.defects) !== JSON.stringify(parsed)) {
-      DB.defects = parsed;
-      changed = true;
-    }
+    if (JSON.stringify(DB.defects) !== JSON.stringify(pd)) { DB.defects = pd; changed = true; }
   } else if (key === 'checklists') {
-    var parsed2 = rows.map(function(r){
-      return Object.assign({}, r, { checked: r.checked==='true'||r.checked===true });
+    var pc = rows.map(function(r){
+      return Object.assign({},r,{checked:r.checked==='true'||r.checked===true});
     });
-    if (JSON.stringify(DB.checklists) !== JSON.stringify(parsed2)) {
-      DB.checklists = parsed2;
-      changed = true;
-    }
+    if (JSON.stringify(DB.checklists) !== JSON.stringify(pc)) { DB.checklists = pc; changed = true; }
   } else if (key === 'codes') {
-    var newCodes = {};
-    rows.forEach(function(r){ if(r.code&&r.name) newCodes[r.code.trim().toUpperCase()] = r.name.trim(); });
-    if (JSON.stringify(PROC_CODES) !== JSON.stringify(newCodes)) {
-      PROC_CODES = newCodes;
+    var nc = {};
+    rows.forEach(function(r){if(r.code&&r.name) nc[r.code.trim().toUpperCase()]=r.name.trim();});
+    if (JSON.stringify(PROC_CODES) !== JSON.stringify(nc)) {
+      PROC_CODES = nc;
       var lsel = document.getElementById('linkedProcSel');
       if (lsel) lsel.innerHTML = '<option value="">-- 공종 선택 --</option>' +
         Object.entries(PROC_CODES).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');
       changed = true;
     }
+  } else if (key === 'gantt') {
+    var pg = rows.map(function(r){return Object.assign({},r,{progress:parseInt(r.progress)||0});});
+    if (JSON.stringify(DB.processes) !== JSON.stringify(pg)) { DB.processes = pg; changed = true; }
+  } else if (key === 'alerts') {
+    var pa = rows.map(function(r){return Object.assign({},r,{read:r.read==='true'||r.read===true});});
+    if (JSON.stringify(DB.alerts) !== JSON.stringify(pa)) { DB.alerts = pa; changed = true; }
   }
-  if (changed) {
-    DB.riskProcs = getRiskProcs();
-    renderAll();
-  }
+  if (changed) { DB.riskProcs = getRiskProcs(); renderAll(); }
 }
 
 // 수동 전체 동기화 (시트 → 프로그램)
@@ -1988,20 +2049,29 @@ function pullAllNow() {
 function delAlert(id) {
   if (!confirm('이 알림을 삭제하시겠습니까?')) return;
   DB.alerts = DB.alerts.filter(function(a){return a.id!==id;});
-  rAlerts();
-  updBadges();
-  toast('알림이 삭제되었습니다.', 'ok');
+  syncToSheet('deleteRow',{sheet:CFG.SHEET.alerts,id:id});
+  rAlerts(); updBadges();
+  toast('알림이 삭제되었습니다.','ok');
 }
 
 function delAllReadAlerts() {
-  var cnt = DB.alerts.filter(function(a){return a.read;}).length;
-  if (!cnt) { toast('확인된 알림이 없습니다.', 'info'); return; }
-  if (!confirm('확인된 알림 '+cnt+'개를 모두 삭제하시겠습니까?')) return;
+  var readAlerts = DB.alerts.filter(function(a){return a.read;});
+  if (!readAlerts.length) { toast('확인된 알림이 없습니다.','info'); return; }
+  if (!confirm('확인된 알림 '+readAlerts.length+'개를 모두 삭제하시겠습니까?')) return;
+  readAlerts.forEach(function(a){
+    syncToSheet('deleteRow',{sheet:CFG.SHEET.alerts,id:a.id});
+  });
   DB.alerts = DB.alerts.filter(function(a){return !a.read;});
-  rAlerts();
-  updBadges();
-  toast('확인된 알림 '+cnt+'개 삭제 완료', 'ok');
+  rAlerts(); updBadges();
+  toast('확인된 알림 '+readAlerts.length+'개 삭제 완료','ok');
 }
+
+
+
+
+
+
+
 
 </script>
 </body> </html>
