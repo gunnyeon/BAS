@@ -349,8 +349,10 @@ button,input,select,textarea{font-family:inherit}
   <div id="dashSiteSummary"></div>
 </div>
 </div>
-</div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
+</div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
+  <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
 
 
 
@@ -1291,24 +1293,27 @@ function rAlerts() {
   else if (DB.alertF==='read')   list = base.filter(function(a){return  a.read;});
   else if (DB.alertF==='상'||DB.alertF==='중') list = base.filter(function(a){return a.riskLevel===DB.alertF;});
   else list = base;
-  var cntEl=document.getElementById('alertCount'); if(cntEl) cntEl.textContent=list.length+'건';
-  var listEl=document.getElementById('alertsList'); if(!listEl) return;
+  var cntEl = document.getElementById('alertCount'); if(cntEl) cntEl.textContent = list.length+'건';
+  var listEl = document.getElementById('alertsList'); if(!listEl) return;
   if (!list.length) {
-    listEl.innerHTML='<div class="empty"><div class="empty-ic">🔔</div><div class="empty-t">알림이 없습니다</div></div>';
+    listEl.innerHTML = '<div class="empty"><div class="empty-ic">🔔</div><div class="empty-t">알림이 없습니다</div></div>';
     return;
   }
   listEl.innerHTML = list.map(function(a){
-    var cls = a.read ? 'read' : 'unread';
+    var cls    = a.read ? 'read' : 'unread';
     var bdgCls = a.read ? 'bg' : 'br';
     var bdgTxt = a.read ? '확인' : '미확인';
-    return '<div class="al-item '+cls+' lv-'+a.riskLevel+'" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)">'+
-      '<div class="al-em">'+alEmoji(a.alertType)+'</div>'+
-      '<div class="al-body">'+
-        '<div class="al-t">'+a.siteName+' · '+a.processName+'</div>'+
-        '<div class="al-d">'+a.content+'</div>'+
-        '<div class="al-m">📅 '+a.createdAt+' · '+alLabel(a.alertType)+'</div>'+
-      '</div>'+
-      '<span class="bdg '+bdgCls+'">'+bdgTxt+'</span>'+
+    return '<div class="al-item '+cls+' lv-'+a.riskLevel+'" id="al-'+a.id+'">' +
+      '<div class="al-em" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)" style="cursor:pointer">'+alEmoji(a.alertType)+'</div>' +
+      '<div class="al-body" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)" style="cursor:pointer;flex:1">' +
+        '<div class="al-t">'+a.siteName+' · '+a.processName+'</div>' +
+        '<div class="al-d">'+a.content+'</div>' +
+        '<div class="al-m">📅 '+a.createdAt+' · '+alLabel(a.alertType)+'</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;margin-left:8px">' +
+        '<span class="bdg '+bdgCls+'">'+bdgTxt+'</span>' +
+        '<button class="btn btn-danger btn-sm" data-id="'+a.id+'" onclick="delAlert(this.dataset.id)" style="padding:3px 8px;font-size:10px">🗑️ 삭제</button>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -1977,6 +1982,25 @@ function pullAllNow() {
   addSyncLog('전체 동기화 시작...');
   _lastHash = {};  // 해시 초기화 → 강제 갱신
   pollSheet('sites');
+}
+
+
+function delAlert(id) {
+  if (!confirm('이 알림을 삭제하시겠습니까?')) return;
+  DB.alerts = DB.alerts.filter(function(a){return a.id!==id;});
+  rAlerts();
+  updBadges();
+  toast('알림이 삭제되었습니다.', 'ok');
+}
+
+function delAllReadAlerts() {
+  var cnt = DB.alerts.filter(function(a){return a.read;}).length;
+  if (!cnt) { toast('확인된 알림이 없습니다.', 'info'); return; }
+  if (!confirm('확인된 알림 '+cnt+'개를 모두 삭제하시겠습니까?')) return;
+  DB.alerts = DB.alerts.filter(function(a){return !a.read;});
+  rAlerts();
+  updBadges();
+  toast('확인된 알림 '+cnt+'개 삭제 완료', 'ok');
 }
 
 </script>
