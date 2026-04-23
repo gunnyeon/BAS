@@ -453,6 +453,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1547,8 +1548,8 @@ function rSites() {
       '<div class="site-info">' +
         '<div class="si-box"><div class="si-l">발주처</div><div class="si-v">'+(s.client||'—')+'</div></div>' +
         '<div class="si-box"><div class="si-l">상태</div><div class="si-v"><span class="bdg '+stCls+'">'+s.status+'</span></div></div>' +
-        '<div class="si-box"><div class="si-l">착공일자</div><div class="si-v">'+(s.startDate||'—')+'</div></div>' +
-        '<div class="si-box"><div class="si-l">준공일자</div><div class="si-v">'+(s.endDate||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">착공일자</div><div class="si-v">'+fmtDate(s.startDate)+'</div></div>' +
+        '<div class="si-box"><div class="si-l">준공일자</div><div class="si-v">'+fmtDate(s.endDate)+'</div></div>' +
         '<div class="si-box"><div class="si-l">공사기간</div><div class="si-v">'+dur+'</div></div>' +
         '<div class="si-box"><div class="si-l">공사금액</div><div class="si-v">'+(s.amount||'—')+'</div></div>' +
         '<div class="si-box"><div class="si-l">현장대리인</div><div class="si-v">'+(s.manager||'—')+'</div></div>' +
@@ -2621,6 +2622,16 @@ function calcDuration(startDate, endDate) {
   return years + '년 ' + remain + '개월';
 }
 
+
+
+function fmtDate(d) {
+  if (!d) return '—';
+  var dt = new Date(d);
+  if (isNaN(dt)) return d;
+  return dt.getFullYear() + '.' +
+    String(dt.getMonth()+1).padStart(2,'0') + '.' +
+    String(dt.getDate()).padStart(2,'0');
+}
 
 </script>
 </body> </html>
