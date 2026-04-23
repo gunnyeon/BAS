@@ -381,6 +381,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -420,15 +422,33 @@ return map;
 }
 /* ═══ 초기화 ═══ */
 function init() {
-var _su=localStorage.getItem("bas_script_url"),_sv=localStorage.getItem("bas_sheet_url");
-  if(_su) CFG.APPS_SCRIPT_URL=_su;
-  if(_sv) CFG.SPREADSHEET_URL=_sv;
-  seedData();
-buildSiteSel();
-renderAll();
-initClock(); setTimeout(updateSyncStatus, 100);
-  setTimeout(startRealtimeSync, 2000);  // URL 로드 후 2초 뒤 시작
-setInterval(autoGenAlerts, 30000);
+  var _su = localStorage.getItem('bas_script_url');
+  var _sv = localStorage.getItem('bas_sheet_url');
+  if (_su) CFG.APPS_SCRIPT_URL = _su;
+  if (_sv) CFG.SPREADSHEET_URL = _sv;
+
+  if (sheetEnabled()) {
+    // 로딩 오버레이 표시 (샘플 데이터가 보이는 것을 차단)
+    showLoadingOverlay('구글 스프레드시트에서 데이터를 불러오는 중...');
+    initClock();
+    setTimeout(updateSyncStatus, 50);
+    loadAllFromSheet(function() {
+      hideLoadingOverlay();
+      buildSiteSel();
+      DB.riskProcs = getRiskProcs();
+      renderAll();
+      autoGenAlerts();
+      startRealtimeSync();
+      setInterval(autoGenAlerts, 30000);
+    });
+  } else {
+    seedData();
+    buildSiteSel();
+    renderAll();
+    initClock();
+    setTimeout(updateSyncStatus, 100);
+    setInterval(autoGenAlerts, 30000);
+  }
 }
 function initClock() {
 const tick = () => {
@@ -2072,6 +2092,82 @@ function delAllReadAlerts() {
 
 
 
+
+
+function loadAllFromSheet(onComplete) {
+  var sheetMap = {
+    sites:      CFG.SHEET.sites,
+    defects:    CFG.SHEET.defects,
+    checklists: CFG.SHEET.checklists,
+    codes:      CFG.SHEET.codes,
+    gantt:      CFG.SHEET.gantt,
+    alerts:     CFG.SHEET.alerts
+  };
+  var keys = Object.keys(sheetMap);
+  var done = 0;
+  var total = keys.length;
+
+  function applyRow(key, rows) {
+    if      (key==='sites')      { DB.sites = rows; }
+    else if (key==='defects')    { DB.defects = rows.map(function(r){ return Object.assign({},r,{linkedCodes:r.linkedCodes?String(r.linkedCodes).split('|').filter(Boolean):[]}); }); }
+    else if (key==='checklists') { DB.checklists = rows.map(function(r){ return Object.assign({},r,{checked:r.checked==='true'||r.checked===true}); }); }
+    else if (key==='codes')      { var nc={}; rows.forEach(function(r){if(r.code&&r.name)nc[r.code.trim().toUpperCase()]=r.name.trim();}); if(Object.keys(nc).length) PROC_CODES=nc; }
+    else if (key==='gantt')      { DB.processes = rows.map(function(r){ return Object.assign({},r,{progress:parseInt(r.progress)||0}); }); }
+    else if (key==='alerts')     { DB.alerts = rows.map(function(r){ return Object.assign({},r,{read:r.read==='true'||r.read===true}); }); }
+  }
+
+  // 모든 시트를 동시에 fetch (병렬)
+  keys.forEach(function(key) {
+    fetch(CFG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'getAll', sheet: sheetMap[key] })
+    })
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      var json; try{ json=JSON.parse(txt); }catch(e){ json={ok:false}; }
+      if (json && json.ok && json.rows) applyRow(key, json.rows);
+    })
+    .catch(function(){})
+    .finally(function(){
+      done++;
+      if (done >= total && onComplete) onComplete();
+    });
+  });
+}
+
+
+function showLoadingOverlay(msg) {
+  var el = document.getElementById('_loadOverlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = '_loadOverlay';
+    el.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    el.innerHTML =
+      '<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2B6CB0,#553C9A);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 14px rgba(43,108,176,.35)">🏗️</div>' +
+      '<div style="font-size:14px;font-weight:700;color:var(--t9)" id="_loadMsg">' + (msg||'로딩 중...') + '</div>' +
+      '<div style="width:180px;height:3px;background:var(--border);border-radius:2px;overflow:hidden">' +
+        '<div style="height:100%;background:linear-gradient(90deg,#2B6CB0,#553C9A);border-radius:2px;animation:_ldBar 1.2s ease-in-out infinite"></div>' +
+      '</div>';
+    document.body.appendChild(el);
+    // 애니메이션 keyframe 주입
+    if (!document.getElementById('_ldStyle')) {
+      var st = document.createElement('style');
+      st.id = '_ldStyle';
+      st.textContent = '@keyframes _ldBar{0%{width:0;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0;margin-left:100%}}';
+      document.head.appendChild(st);
+    }
+  } else {
+    var msgEl = document.getElementById('_loadMsg');
+    if (msgEl) msgEl.textContent = msg || '로딩 중...';
+    el.style.display = 'flex';
+  }
+}
+
+function hideLoadingOverlay() {
+  var el = document.getElementById('_loadOverlay');
+  if (el) el.style.display = 'none';
+}
 
 </script>
 </body> </html>
