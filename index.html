@@ -386,6 +386,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -425,6 +427,7 @@ return map;
 }
 /* ═══ 초기화 ═══ */
 function init() {
+  loadDefCats();  // 사용자 정의 분류 복원
   var _su = localStorage.getItem('bas_script_url');
   var _sv = localStorage.getItem('bas_sheet_url');
   if (_su) CFG.APPS_SCRIPT_URL = _su;
@@ -1289,30 +1292,42 @@ btn.classList.add('on'); DB.defCat=(cat==='전체'?'all':cat); rDefs();
 /* 하자 분류 관리 */
 function openDefCatMgr() { renderDefCatList(); openOv('ovDefCat'); }
 function renderDefCatList() {
-document.getElementById('defCatList').innerHTML = DEF_CATS.map(c=>
-'<span class="code-chip">'+c+
-'<span class="code-chip-del" onclick="delDefCat(\''+c+'\')">✕</span></span>'
-).join('');
+  var el = document.getElementById('defCatList'); if (!el) return;
+  if (!DEF_CATS.length) {
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--t3);font-size:12px">분류가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = DEF_CATS.map(function(c){
+    var cnt = DB.defects.filter(function(d){return d.category===c;}).length;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid var(--border)">' +
+      '<span style="font-size:13px;font-weight:700;color:var(--t9);flex:1">' + c + '</span>' +
+      '<span style="font-size:10px;color:var(--t5);margin-right:4px">' + (cnt ? cnt+'개' : '') + '</span>' +
+      '<button class="btn btn-danger btn-sm" data-cat="' + c + '" onclick="delDefCat(this.dataset.cat)" style="padding:3px 8px;font-size:11px">&#128465;</button>' +
+    '</div>';
+  }).join('');
 }
 function addDefCat() {
-const nm = document.getElementById('newDefCat').value.trim();
-if (!nm) { toast('분류명을 입력하세요.','err'); return; }
-if (DEF_CATS.includes(nm)) { toast('이미 존재하는 분류입니다.','err'); return; }
-DEF_CATS.push(nm);
-document.getElementById('newDefCat').value='';
-renderDefCatList(); rDefs();
-const sel=document.getElementById('f-dCat');
-if(sel) sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
-toast('"'+nm+'" 분류가 추가되었습니다.','ok');
+  var nm = document.getElementById('newDefCat').value.trim();
+  if (!nm) { toast('분류명을 입력하세요.','err'); return; }
+  if (DEF_CATS.indexOf(nm) >= 0) { toast('이미 존재하는 분류입니다.','err'); return; }
+  DEF_CATS.push(nm);
+  saveDefCats();
+  document.getElementById('newDefCat').value = '';
+  renderDefCatList(); rDefs();
+  var sel = document.getElementById('f-dCat');
+  if (sel) sel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  toast('"'+nm+'" 분류가 추가되었습니다.','ok');
 }
 function delDefCat(cat) {
-const cnt = DB.defects.filter(d=>d.category===cat).length;
-if (cnt) { toast('"'+cat+'" 분류에 '+cnt+'개 하자유형이 있습니다. 먼저 하자유형을 다른 분류로 변경하세요.','err'); return; }
-DEF_CATS = DEF_CATS.filter(c=>c!==cat);
-renderDefCatList(); rDefs();
-const sel=document.getElementById('f-dCat');
-if(sel) sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
-toast('"'+cat+'" 분류가 삭제되었습니다.','ok');
+  var cnt = DB.defects.filter(function(d){return d.category===cat;}).length;
+  if (cnt) { toast('"'+cat+'" 분류에 '+cnt+'개 하자유형이 있습니다. 먼저 하자유형을 다른 분류로 변경하세요.','err'); return; }
+  if (!confirm('"'+cat+'" 분류를 삭제하시겠습니까?')) return;
+  DEF_CATS = DEF_CATS.filter(function(c){return c!==cat;});
+  saveDefCats();
+  renderDefCatList(); rDefs();
+  var sel = document.getElementById('f-dCat');
+  if (sel) sel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  toast('"'+cat+'" 분류가 삭제되었습니다.','ok');
 }
 /* 하자유형 폼 – 연계 공종 체크박스 렌더 */
 function renderLinkedProcCbs(selected) {
@@ -2290,6 +2305,21 @@ function hideLoadingOverlay() {
 }
 
 
+
+
+
+function saveDefCats() {
+  try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+}
+function loadDefCats() {
+  try {
+    var saved = localStorage.getItem('bas_def_cats');
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) DEF_CATS = parsed;
+    }
+  } catch(e) {}
+}
 
 
 </script>
