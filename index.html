@@ -253,7 +253,21 @@ button,input,select,textarea{font-family:inherit}
 .fgrid{grid-template-columns:1fr}.cg{grid-template-columns:1fr}
 }
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}</style>
-</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div> <div class="fg"><label class="f-lbl">위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구"></div> <div class="fg"><label class="f-lbl">발주처</label><input class="fi" id="f-sCli" placeholder="예) ○○건설(주)"></div> <div class="fg"><label class="f-lbl">공사 시작일</label><input class="fi" id="f-sSt" type="date"></div> <div class="fg"><label class="f-lbl">공사 종료일</label><input class="fi" id="f-sEn" type="date"></div> <div class="fg"><label class="f-lbl">공사금액(억)</label><input class="fi" id="f-sAmt" type="number" placeholder="예) 320"></div> <div class="fg"><label class="f-lbl">상태</label><select class="fs" id="f-sStat"><option value="진행중">진행중</option><option value="예정">예정</option><option value="완료">완료</option><option value="일시중단">일시중단</option></select></div> <div class="fg"><label class="f-lbl">현장소장</label><input class="fi" id="f-sMgr" placeholder="예) 김현장"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-sOfc" placeholder="예) 이담당"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-sNote" rows="2" placeholder="특이사항 입력"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSite')">취소</button><button class="btn btn-primary" onclick="saveSite()">💾 저장</button></div> </div> </div> <!-- 공종 폼 --> <div class="ov" id="ovProc"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="procTitle">📅 공종 등록</div><button class="m-x" onclick="closeOv('ovProc')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장<span class="f-req">*</span></label><select class="fs" id="f-pSite"></select></div> <div class="fg"><label class="f-lbl">공종명<span class="f-req">*</span></label><input class="fi" id="f-pNm" placeholder="예) 방수공사"></div> <div class="fg"><label class="f-lbl">공종코드</label><select class="fs" id="f-pCode"></select></div> <div class="fg"><label class="f-lbl">시작일<span class="f-req">*</span></label><input class="fi" id="f-pSt" type="date"></div> <div class="fg"><label class="f-lbl">종료일<span class="f-req">*</span></label><input class="fi" id="f-pEn" type="date"></div> <div class="fg"><label class="f-lbl">진행률(%)</label><input class="fi" id="f-pProg" type="number" min="0" max="100" value="0"></div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-pRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">담당업체</label><input class="fi" id="f-pCo" placeholder="예) ○○방수(주)"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-pMgr" placeholder="예) 김방수"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-pNote" rows="2" placeholder="특이사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovProc')">취소</button><button class="btn btn-primary" onclick="saveProc()">💾 저장</button></div> </div> </div> <!-- 간트 CSV/엑셀 업로드 모달 --> <div class="ov" id="ovGanttUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 공정 데이터 업로드</div><button class="m-x" onclick="closeOv('ovGanttUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종명, 공종코드, 시작일(YYYY-MM-DD), 종료일(YYYY-MM-DD) &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadGanttTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('ganttFileInput').click()" ondrop="handleGanttDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📊</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV, XLSX 지원</div> </div> <input type="file" id="ganttFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleGanttFile(this)"> <div id="ganttUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearGanttUpload()">✕ 취소</button></div><div class="upload-preview" id="ganttPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovGanttUpload')">닫기</button><button class="btn btn-primary" id="ganttImportBtn" onclick="importGanttData()" style="display:none">✅ 간트에 반영</button></div> </div></div> <!-- 체크리스트 항목 폼 --> <div class="ov" id="ovCL"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="clTitle">✅ 체크항목 등록</div><button class="m-x" onclick="closeOv('ovCL')">✕</button></div>
+</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div>
+<div class="fgrid">
+  <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div>
+  <div class="fg"><label class="f-lbl">현장 위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구 천호동"></div>
+  <div class="fg"><label class="f-lbl">발주처</label><input class="fi" id="f-sCli" placeholder="예) ○○건설(주)"></div>
+  <div class="fg"><label class="f-lbl">착공일자</label><input class="fi" id="f-sSt" type="date"></div>
+  <div class="fg"><label class="f-lbl">준공일자</label><input class="fi" id="f-sEn" type="date"></div>
+  <div class="fg"><label class="f-lbl">공사금액</label><input class="fi" id="f-sAmt" type="text" placeholder="예) 320억, 3,200,000천원"></div>
+  <div class="fg"><label class="f-lbl">상태</label><select class="fs" id="f-sStat"><option value="진행중">진행중</option><option value="예정">예정</option><option value="완료">완료</option><option value="일시중단">일시중단</option></select></div>
+  <div class="fg"><label class="f-lbl">현장대리인</label><input class="fi" id="f-sMgr" placeholder="예) 홍길동"></div>
+  <div class="fg"><label class="f-lbl">담당 PM</label><input class="fi" id="f-sOfc" placeholder="예) 이담당"></div>
+  <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-sNote" rows="2" placeholder="특이사항 입력"></textarea></div>
+</div>
+<div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovSite')">취소</button><button class="btn btn-primary" onclick="saveSite()">💾 저장</button></div>
+</div> </div> <!-- 공종 폼 --> <div class="ov" id="ovProc"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="procTitle">📅 공종 등록</div><button class="m-x" onclick="closeOv('ovProc')">✕</button></div> <div class="fgrid"> <div class="fg fspan"><label class="f-lbl">현장<span class="f-req">*</span></label><select class="fs" id="f-pSite"></select></div> <div class="fg"><label class="f-lbl">공종명<span class="f-req">*</span></label><input class="fi" id="f-pNm" placeholder="예) 방수공사"></div> <div class="fg"><label class="f-lbl">공종코드</label><select class="fs" id="f-pCode"></select></div> <div class="fg"><label class="f-lbl">시작일<span class="f-req">*</span></label><input class="fi" id="f-pSt" type="date"></div> <div class="fg"><label class="f-lbl">종료일<span class="f-req">*</span></label><input class="fi" id="f-pEn" type="date"></div> <div class="fg"><label class="f-lbl">진행률(%)</label><input class="fi" id="f-pProg" type="number" min="0" max="100" value="0"></div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-pRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">담당업체</label><input class="fi" id="f-pCo" placeholder="예) ○○방수(주)"></div> <div class="fg"><label class="f-lbl">담당자</label><input class="fi" id="f-pMgr" placeholder="예) 김방수"></div> <div class="fg fspan"><label class="f-lbl">비고</label><textarea class="fta" id="f-pNote" rows="2" placeholder="특이사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovProc')">취소</button><button class="btn btn-primary" onclick="saveProc()">💾 저장</button></div> </div> </div> <!-- 간트 CSV/엑셀 업로드 모달 --> <div class="ov" id="ovGanttUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 공정 데이터 업로드</div><button class="m-x" onclick="closeOv('ovGanttUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종명, 공종코드, 시작일(YYYY-MM-DD), 종료일(YYYY-MM-DD) &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadGanttTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('ganttFileInput').click()" ondrop="handleGanttDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📊</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV, XLSX 지원</div> </div> <input type="file" id="ganttFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleGanttFile(this)"> <div id="ganttUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearGanttUpload()">✕ 취소</button></div><div class="upload-preview" id="ganttPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovGanttUpload')">닫기</button><button class="btn btn-primary" id="ganttImportBtn" onclick="importGanttData()" style="display:none">✅ 간트에 반영</button></div> </div></div> <!-- 체크리스트 항목 폼 --> <div class="ov" id="ovCL"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="clTitle">✅ 체크항목 등록</div><button class="m-x" onclick="closeOv('ovCL')">✕</button></div>
 <div class="fgrid">
   <div class="fg"><label class="f-lbl">공종코드<span class="f-req">*</span></label><select class="fs" id="f-clCode"></select></div>
   <div class="fg"><label class="f-lbl">필수여부</label><select class="fs" id="f-clReq"><option value="필수">필수</option><option value="권장">권장</option></select></div>
@@ -387,6 +401,8 @@ button,input,select,textarea{font-family:inherit}
 </div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
   <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
+
 
 
 
@@ -1511,31 +1527,37 @@ return Array.from(chips.querySelectorAll('[data-code]')).map(function(b){return 
 ════════════════════════════════ */
 const SITE_COLORS=['#3B6CE0','#7050D8','#E8721C','#22A85E','#DC4C4C','#169090'];
 function rSites() {
-document.getElementById('siteCount').textContent = DB.sites.length+'개';
-document.getElementById('siteGrid').innerHTML = DB.sites.map((s,i)=>{
-const ps=DB.processes.filter(p=>p.siteId===s.id).map(enrich);
-const done=ps.filter(p=>p.ts==='완료').length;
-const pct=ps.length?Math.round(ps.reduce(function(sm,p){return sm+(p.progress||0);},0)/ps.length):0;
-const hr=ps.filter(p=>p.riskLevel==='상'&&p.ts!=='완료').length;
-const c=SITE_COLORS[i%SITE_COLORS.length];
-const dur=Math.round((new Date(s.endDate)-new Date(s.startDate))/86400000);
-return '<div class="site-card">' +
-'<div class="site-top" style="background:linear-gradient(90deg,'+c+','+c+'88)"></div>' +
-'<div class="site-hd"><div><div class="site-nm">'+s.name+'</div><div class="site-loc">📍 '+s.location+'</div></div>' +
-'<div class="site-acts"><button class="btn btn-ghost btn-icon btn-sm" onclick="editSite(\''+s.id+'\')">✏️</button>' +
-'<button class="btn btn-danger btn-icon btn-sm" onclick="askDel(\'site\',\''+s.id+'\',\''+escQ(s.name)+'\')">🗑️</button></div></div>' +
-'<div class="site-info">' +
-'<div class="si-box"><div class="si-l">발주처</div><div class="si-v">'+(s.client||'—')+'</div></div>' +
-'<div class="si-box"><div class="si-l">상태</div><div class="si-v">'+s.status+'</div></div>' +
-'<div class="si-box"><div class="si-l">공사금액</div><div class="si-v">'+(s.amount||'—')+'억</div></div>' +
-'<div class="si-box"><div class="si-l">공사기간</div><div class="si-v">'+dur+'일</div></div>' +
-'<div class="si-box"><div class="si-l">현장소장</div><div class="si-v">'+(s.manager||'—')+'</div></div>' +
-'<div class="si-box"><div class="si-l">위험 공종</div><div class="si-v">'+(hr>0?hr+'개':'없음')+'</div></div>' +
-'</div>' +
-'<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--t5);margin-bottom:3px"><span>공정 진행률</span><span style="color:'+c+'">'+pct+'%</span></div>' +
-'<div class="pb"><div class="pb-f" style="width:'+pct+'%;background:'+c+'"></div></div>' +
-'</div>';
-}).join('');
+  document.getElementById('siteCount').textContent = DB.sites.length+'개';
+  document.getElementById('siteGrid').innerHTML = DB.sites.map(function(s,i){
+    var ps  = DB.processes.filter(function(p){return p.siteId===s.id;}).map(enrich);
+    var pct = ps.length ? Math.round(ps.reduce(function(sm,p){return sm+(p.progress||0);},0)/ps.length) : 0;
+    var hr  = ps.filter(function(p){return p.riskLevel==='상'&&p.ts!=='완료';}).length;
+    var c   = SITE_COLORS[i%SITE_COLORS.length];
+    var dur = calcDuration(s.startDate, s.endDate);
+    var stCls = s.status==='진행중'?'br':s.status==='완료'?'bg':s.status==='예정'?'bb':'bx';
+    return '<div class="site-card">' +
+      '<div class="site-top" style="background:linear-gradient(90deg,'+c+','+c+'88)"></div>' +
+      '<div class="site-hd">' +
+        '<div style="min-width:0"><div class="site-nm">'+s.name+'</div><div class="site-loc">&#128205; '+(s.location||'위치 미입력')+'</div></div>' +
+        '<div class="site-acts">' +
+          '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+s.id+'" onclick="editSite(this.dataset.id)">&#9998;</button>' +
+          '<button class="btn btn-danger btn-icon btn-sm" data-id="'+s.id+'" data-nm="'+escQ(s.name)+'" onclick="askDel(\'site\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="site-info">' +
+        '<div class="si-box"><div class="si-l">발주처</div><div class="si-v">'+(s.client||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">상태</div><div class="si-v"><span class="bdg '+stCls+'">'+s.status+'</span></div></div>' +
+        '<div class="si-box"><div class="si-l">착공일자</div><div class="si-v">'+(s.startDate||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">준공일자</div><div class="si-v">'+(s.endDate||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">공사기간</div><div class="si-v">'+dur+'</div></div>' +
+        '<div class="si-box"><div class="si-l">공사금액</div><div class="si-v">'+(s.amount||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">현장대리인</div><div class="si-v">'+(s.manager||'—')+'</div></div>' +
+        '<div class="si-box"><div class="si-l">담당 PM</div><div class="si-v">'+(s.officer||'—')+'</div></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--t5);margin-bottom:3px;margin-top:10px"><span>공정 진행률</span><span style="color:'+c+'">'+pct+'%</span></div>' +
+      '<div class="pb"><div class="pb-f" style="width:'+pct+'%;background:'+c+'"></div></div>' +
+    '</div>';
+  }).join('');
 }
 /* ════════════════════════════════
 통계 차트
@@ -1718,8 +1740,31 @@ function openCLForCode(code,name){DB.clCode=code;nav('checklist');setTimeout(rCL
 /* ════════════════════════════════
 CRUD – 현장
 ════════════════════════════════ */
-function openSiteForm(){DB.editId=null;document.getElementById('siteFormTitle').textContent='🏗️ 신규 현장 등록';['f-sNm','f-sLoc','f-sCli','f-sSt','f-sEn','f-sAmt','f-sMgr','f-sOfc','f-sNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sStat').value='진행중';openOv('ovSite');}
-function editSite(id){const s=DB.sites.find(x=>x.id===id);if(!s)return;DB.editId=id;document.getElementById('siteFormTitle').textContent='✏️ 현장 정보 수정';document.getElementById('f-sNm').value=s.name||'';document.getElementById('f-sLoc').value=s.location||'';document.getElementById('f-sCli').value=s.client||'';document.getElementById('f-sSt').value=s.startDate||'';document.getElementById('f-sEn').value=s.endDate||'';document.getElementById('f-sAmt').value=s.amount||'';document.getElementById('f-sStat').value=s.status||'진행중';document.getElementById('f-sMgr').value=s.manager||'';document.getElementById('f-sOfc').value=s.officer||'';document.getElementById('f-sNote').value=s.note||'';openOv('ovSite');}
+function openSiteForm() {
+  DB.editId = null;
+  document.getElementById('siteFormTitle').textContent = '🏗️ 신규 현장 등록';
+  ['f-sNm','f-sLoc','f-sCli','f-sSt','f-sEn','f-sAmt','f-sMgr','f-sOfc','f-sNote'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('f-sStat').value = '진행중';
+  openOv('ovSite');
+}
+function editSite(id) {
+  var s = DB.sites.find(function(x){return x.id===id;}); if(!s) return;
+  DB.editId = id;
+  document.getElementById('siteFormTitle').textContent = '✏️ 현장 정보 수정';
+  document.getElementById('f-sNm').value    = s.name      || '';
+  document.getElementById('f-sLoc').value   = s.location  || '';
+  document.getElementById('f-sCli').value   = s.client    || '';
+  document.getElementById('f-sSt').value    = s.startDate || '';
+  document.getElementById('f-sEn').value    = s.endDate   || '';
+  document.getElementById('f-sAmt').value   = s.amount    || '';
+  document.getElementById('f-sStat').value  = s.status    || '진행중';
+  document.getElementById('f-sMgr').value   = s.manager   || '';
+  document.getElementById('f-sOfc').value   = s.officer   || '';
+  document.getElementById('f-sNote').value  = s.note      || '';
+  openOv('ovSite');
+}
 function saveSite() {
   var nm = document.getElementById('f-sNm').value.trim();
   if (!nm) { toast('현장명을 입력하세요.', 'err'); return; }
@@ -2560,6 +2605,21 @@ function parseCatsRows(rows) {
 }
 
 
+
+
+
+function calcDuration(startDate, endDate) {
+  if (!startDate || !endDate) return '—';
+  var s = new Date(startDate), e = new Date(endDate);
+  if (isNaN(s) || isNaN(e)) return '—';
+  var months = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+  if (months < 0) return '—';
+  var years  = Math.floor(months / 12);
+  var remain = months % 12;
+  if (years === 0) return remain + '개월';
+  if (remain === 0) return years + '년';
+  return years + '년 ' + remain + '개월';
+}
 
 
 </script>
