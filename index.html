@@ -459,6 +459,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1227,15 +1229,13 @@ else items.forEach(c=>DB.selCLIds.add(c.id));
 rCLContent();
 }
 function bulkDelCL() {
-if (!DB.selCLIds.size) { toast('선택된 항목이 없습니다.','err'); return; }
-DB.checklists = DB.checklists.filter(c=>!DB.selCLIds.has(c.id));
-toast(DB.selCLIds.size+'개 항목이 삭제되었습니다.','ok');
-DB.selCLIds.clear(); rCLContent();
-
-  DB.selCLIds.forEach(function(id){
-    syncToSheet('deleteRow',{sheet:CFG.SHEET.checklists,id:id});
-  });
+  if (!DB.selCLIds.size) { toast('선택된 항목이 없습니다.','err'); return; }
+  var ids = Array.from(DB.selCLIds);
+  DB.checklists = DB.checklists.filter(function(c){return !DB.selCLIds.has(c.id);});
+  ids.forEach(function(id){ syncToSheet('deleteRow',{sheet:CFG.SHEET.checklists,id:id}); });
+  toast(ids.length+'개 항목이 삭제되었습니다.','ok');
   DB.selCLIds = new Set();
+  rCLContent();
 }
 function delGroupCL(did) {
 const cnt = DB.checklists.filter(c=>c.code===DB.clCode&&c.did===did).length;
@@ -1417,29 +1417,49 @@ rCL(); toast(added+'개 체크항목이 추가되었습니다.'+(skipped?' ('+sk
 }
 function clearCLUpload(){DB.pendingCLRows=[];var p=document.getElementById("clUploadPreview");if(p)p.style.display="none";var b=document.getElementById("clImportBtn");if(b)b.style.display="none";}
 function rDefs() {
-document.getElementById('defCount').textContent = DB.defects.length+'개';
-document.getElementById('defFb').innerHTML = ['전체'].concat(DEF_CATS).map(c=>
-'<button class="fb '+(DB.defCat===(c==='전체'?'all':c)?'on':'')+'" onclick="setDefCat(this,\''+c+'\')">'+c+'</button>'
-).join('');
-const defCatSel = document.getElementById('f-dCat');
-if (defCatSel) defCatSel.innerHTML = DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
-const list = DB.defCat==='all' ? DB.defects : DB.defects.filter(d=>d.category===DB.defCat);
-document.getElementById('defBody').innerHTML = list.map(d=>
-'<tr onclick="openDefDetail(\''+d.id+'\')">' +
-'<td><strong>'+d.name+'</strong></td>' +
-'<td><span class="bdg bt">'+d.category+'</span></td>' +
-'<td>'+rkBdg(d.riskLevel)+'</td>' +
-'<td style="max-width:120px">'+( (d.linkedCodes||[]).map(c=>'<span class="bdg bb" style="margin:1px">'+( PROC_CODES[c]||c)+'</span>').join('') || '<span class="bdg bx">—</span>' )+'</td>' +
-'<td style="max-width:120px;color:var(--t7)">'+d.mainCause+'</td>' +
-'<td style="font-size:11px;color:var(--t5)">'+d.occurrenceTime+'</td>' +
-'<td><span class="bdg '+ligBdg(d.litigationFreq)+'">'+d.litigationFreq+'</span></td>' +
-'<td style="font-weight:700">'+(parseInt(d.avgCost)||0).toLocaleString()+'만원</td>' +
-'<td onclick="event.stopPropagation()" style="white-space:nowrap">' +
-'<button class="btn btn-ghost btn-icon btn-sm" onclick="editDef(\''+d.id+'\')">✏️</button>' +
-'<button class="btn btn-danger btn-icon btn-sm" onclick="askDel(\'defect\',\''+d.id+'\',\''+escQ(d.name)+'\')">🗑️</button>' +
-'</td>' +
-'</tr>'
-).join('');
+  var el = document.getElementById('defCount');
+  if (el) el.textContent = DB.defects.length+'개';
+
+  var fbEl = document.getElementById('defFb');
+  if (fbEl) {
+    var cats = ['전체'].concat(DEF_CATS);
+    fbEl.innerHTML = cats.map(function(c){
+      var val = c==='전체' ? 'all' : c;
+      return '<button class="fb '+(DB.defCat===val?'on':'')+'" data-cat="'+val+'" onclick="setDefCatByData(this)">'+c+'</button>';
+    }).join('');
+  }
+
+  var defCatSel = document.getElementById('f-dCat');
+  if (defCatSel) defCatSel.innerHTML = DEF_CATS.map(function(c){
+    return '<option value="'+c+'">'+c+'</option>';
+  }).join('');
+
+  var list = DB.defCat==='all' ? DB.defects : DB.defects.filter(function(d){return d.category===DB.defCat;});
+  var bodyEl = document.getElementById('defBody');
+  if (!bodyEl) return;
+  if (!list.length) {
+    bodyEl.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--t5)">등록된 하자유형이 없습니다</td></tr>';
+    return;
+  }
+  bodyEl.innerHTML = list.map(function(d){
+    var linked = (d.linkedCodes||[]).map(function(c){
+      return '<span class="bdg bb" style="margin:1px">'+(PROC_CODES[c]||c)+'</span>';
+    }).join('') || '<span class="bdg bx">&#8212;</span>';
+    return '<tr data-id="'+d.id+'" onclick="openDefDetail(this.dataset.id)">' +
+      '<td style="font-weight:700">'+d.name+'</td>' +
+      '<td><span class="bdg bt">'+d.category+'</span></td>' +
+      '<td>'+rkBdg(d.riskLevel)+'</td>' +
+      '<td style="max-width:120px">'+linked+'</td>' +
+      '<td style="max-width:130px;color:var(--t7)">'+d.mainCause+'</td>' +
+      '<td>'+d.occurrenceTime+'</td>' +
+      '<td><span class="bdg '+ligBdg(d.litigationFreq)+'">'+d.litigationFreq+'</span></td>' +
+      '<td style="font-weight:700">'+(parseInt(d.avgCost)||0).toLocaleString()+'&#47791;&#50896;</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+d.id+'" onclick="event.stopPropagation();editDef(this.dataset.id)">&#9998;</button>' +
+        '<button class="btn btn-danger btn-icon btn-sm" data-id="'+d.id+'" data-nm="'+escQ(d.name)+'" onclick="event.stopPropagation();askDel(\'defect\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
 }
 function setDefCat(btn,cat){
 document.querySelectorAll('#defFb .fb').forEach(b=>b.classList.remove('on'));
@@ -2676,6 +2696,15 @@ function toDateStr(v) {
 }
 
 
+
+
+
+function setDefCatByData(btn) {
+  document.querySelectorAll('#defFb .fb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  DB.defCat = btn.dataset.cat;
+  rDefs();
+}
 
 
 </script>
