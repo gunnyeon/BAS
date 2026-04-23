@@ -383,6 +383,9 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -496,7 +499,7 @@ DB.checklists = [
 {id:'C007',code:'WINDOW',    did:'D006',item:'창호 주변 실링 상태',      std:'전면 균일 실링',            method:'육안검사',   pass:'연속 실링',   req:'필수',checked:false},
 {id:'C008',code:'PIPING',    did:'D007',item:'배관 압력시험',            std:'수압시험',                  method:'시험기록',   pass:'누수 없음',   req:'필수',checked:false}
 ];
-autoGenAlerts();
+DB.alerts = [];
 }
 function timeStatus(p) {
 const now = new Date();
@@ -885,7 +888,7 @@ let html = '<div class="card">' +
 '<div style="display:flex;gap:6px">' +
 (DB.bulkMode?'<button class="btn btn-ghost btn-sm" onclick="selectAllCL()">'+( allSel?'전체해제':'전체선택')+'</button>':'') +
 '<button class="btn btn-ghost btn-sm" onclick="resetCL()">🔄 초기화</button>' +
-'<button class="btn btn-success btn-sm" onclick="submitCL()">✅ 점검 제출</button>' +
+'<button class="btn btn-primary" onclick="submitCL()" style="padding:7px 16px;font-size:12px;font-weight:700">📋 점검 보고서 출력</button>' +
 '</div>' +
 '</div>';
 if (!Object.keys(groups).length) {
@@ -927,7 +930,124 @@ function tglCL(id) {
   });
 }
 function resetCL(){ DB.checklists.filter(c=>c.code===DB.clCode).forEach(c=>c.checked=false); rCLContent(); toast('초기화되었습니다.','info'); }
-function submitCL(){ const d=DB.checklists.filter(c=>c.code===DB.clCode).filter(c=>c.checked).length; toast('점검 제출 완료! ('+d+'/'+DB.checklists.filter(c=>c.code===DB.clCode).length+' 항목)','ok'); }
+function submitCL() {
+  var items  = DB.checklists.filter(function(c){return c.code===DB.clCode;});
+  var done   = items.filter(function(c){return c.checked;});
+  var undone = items.filter(function(c){return !c.checked;});
+  var pct    = items.length ? Math.round(done.length/items.length*100) : 0;
+  var codeName = PROC_CODES[DB.clCode] || DB.clCode;
+  var today  = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  var now    = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  var barColor = pct>=80?'#276749':pct>=50?'#B7791F':'#C53030';
+
+  var groups = {};
+  items.forEach(function(c){ if(!groups[c.did]) groups[c.did]=[]; groups[c.did].push(c); });
+
+  function td(v,align,bold){
+    return '<td style="padding:7px 10px;font-size:11px;color:#2D3748;text-align:'+(align||'left')+(bold?';font-weight:700':'')+'">' + v + '</td>';
+  }
+
+  var groupRows = '';
+  Object.keys(groups).forEach(function(did){
+    var gItems = groups[did];
+    var def = DB.defects.find(function(d){return d.id===did;});
+    var defNm = def ? def.name : did;
+    groupRows += '<tr><td colspan="5" style="padding:9px 10px 5px;font-size:11px;font-weight:700;color:#2B6CB0;background:#EBF8FF;border-bottom:1px solid #BEE3F8">&#9888; ' + defNm + ' 예방 점검</td></tr>';
+    gItems.forEach(function(c){
+      var result = c.checked
+        ? '<span style="color:#276749;font-weight:700">&#10003; 완료</span>'
+        : '<span style="color:#C53030;font-weight:700">&#10005; 미완료</span>';
+      var reqColor = c.req==='필수' ? '#C53030' : '#276749';
+      var reqBg    = c.req==='필수' ? '#FFF5F5' : '#F0FFF4';
+      groupRows += '<tr style="border-bottom:1px solid #E2E8F0">' +
+        td(c.item,'left',false) + td(c.std) + td(c.method,'center') +
+        '<td style="padding:7px 10px;text-align:center">' + result + '</td>' +
+        '<td style="padding:7px 10px;text-align:center"><span style="padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:' + reqBg + ';color:' + reqColor + '">' + c.req + '</span></td>' +
+      '</tr>';
+    });
+  });
+
+  var undoneHtml = '';
+  if (undone.length) {
+    var ul = undone.map(function(c){return '<div style="font-size:11px;color:#C53030;padding:2px 0">&#8226; '+c.item+'</div>';}).join('');
+    undoneHtml = '<div style="background:#FFF5F5;border:1px solid #FEB2B2;border-radius:8px;padding:12px 14px;margin-bottom:14px">' +
+      '<div style="font-size:12px;font-weight:700;color:#C53030;margin-bottom:8px">&#9888; 미완료 항목 ('+undone.length+'개)</div>' + ul + '</div>';
+  }
+
+  var html =
+    '<div id="clReportPrint" style="font-family:sans-serif;color:#1A202C">' +
+    '<div style="text-align:center;padding:20px 0 14px;border-bottom:2px solid #2B6CB0;margin-bottom:16px">' +
+      '<div style="font-size:18px;font-weight:800;color:#2B6CB0">하자 예방 체크리스트 점검 보고서</div>' +
+      '<div style="font-size:12px;color:#718096;margin-top:4px">건축사업본부</div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+      '<div style="background:#F7FAFC;border-radius:7px;padding:10px 13px">' +
+        '<div style="font-size:10px;color:#A0AEC0;font-weight:700;margin-bottom:2px">공종</div>' +
+        '<div style="font-size:13px;font-weight:700">' + codeName + '</div></div>' +
+      '<div style="background:#F7FAFC;border-radius:7px;padding:10px 13px">' +
+        '<div style="font-size:10px;color:#A0AEC0;font-weight:700;margin-bottom:2px">점검일시</div>' +
+        '<div style="font-size:13px;font-weight:700">' + today + ' ' + now + '</div></div>' +
+    '</div>' +
+    '<div style="background:#F7FAFC;border-radius:9px;padding:14px 16px;margin-bottom:14px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+        '<span style="font-size:12px;font-weight:700;color:#2D3748">점검 완료율</span>' +
+        '<span style="font-size:20px;font-weight:800;color:' + barColor + '">' + pct + '%</span>' +
+      '</div>' +
+      '<div style="height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;margin-bottom:10px">' +
+        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px"></div>' +
+      '</div>' +
+      '<div style="display:flex;gap:16px">' +
+        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#276749">' + done.length + '</div><div style="font-size:10px;color:#718096">완료</div></div>' +
+        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#C53030">' + undone.length + '</div><div style="font-size:10px;color:#718096">미완료</div></div>' +
+        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#2B6CB0">' + items.length + '</div><div style="font-size:10px;color:#718096">전체</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:12px;font-weight:700;color:#2D3748;margin-bottom:6px">&#128203; 점검 항목 상세</div>' +
+    '<div style="border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;margin-bottom:14px">' +
+      '<table style="width:100%;border-collapse:collapse">' +
+      '<thead><tr style="background:#EBF8FF">' +
+        '<th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#2B6CB0;width:35%">점검항목</th>' +
+        '<th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#2B6CB0;width:28%">기준내용</th>' +
+        '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:15%">검사방법</th>' +
+        '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:12%">결과</th>' +
+        '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:10%">구분</th>' +
+      '</tr></thead>' +
+      '<tbody>' + groupRows + '</tbody>' +
+      '</table></div>' +
+    undoneHtml +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px">' +
+      '<div style="border:1px solid #E2E8F0;border-radius:7px;padding:10px;text-align:center"><div style="font-size:10px;color:#A0AEC0;margin-bottom:20px">작 성 자</div><div style="border-top:1px solid #E2E8F0;padding-top:4px;font-size:10px;color:#A0AEC0">(서명)</div></div>' +
+      '<div style="border:1px solid #E2E8F0;border-radius:7px;padding:10px;text-align:center"><div style="font-size:10px;color:#A0AEC0;margin-bottom:20px">검 토 자</div><div style="border-top:1px solid #E2E8F0;padding-top:4px;font-size:10px;color:#A0AEC0">(서명)</div></div>' +
+      '<div style="border:1px solid #E2E8F0;border-radius:7px;padding:10px;text-align:center"><div style="font-size:10px;color:#A0AEC0;margin-bottom:20px">승 인 자</div><div style="border-top:1px solid #E2E8F0;padding-top:4px;font-size:10px;color:#A0AEC0">(서명)</div></div>' +
+    '</div>' +
+    '</div>';
+
+  document.getElementById('detailTitle').textContent = '📋 ' + codeName + ' 점검 보고서';
+  document.getElementById('detailBody').innerHTML = html +
+    '<div class="m-ft" style="border-top:1.5px solid var(--border);margin-top:16px;padding-top:14px;display:flex;justify-content:flex-end;gap:8px">' +
+      '<button class="btn btn-ghost" onclick="closeOv(\'ovDetail\')">닫기</button>' +
+      '<button class="btn btn-primary" onclick="printReport()">&#128438; 인쇄 / PDF 저장</button>' +
+    '</div>';
+  openOv('ovDetail');
+}
+
+
+
+function printReport() {
+  var el = document.getElementById('clReportPrint');
+  if (!el) return;
+  var win = window.open('','_blank','width=800,height=900');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<title>점검 보고서</title>' +
+    '<style>body{margin:20px;font-family:"Apple SD Gothic Neo","맑은 고딕",sans-serif;color:#1A202C}' +
+    '@media print{body{margin:10mm}button{display:none!important}}' +
+    'table{width:100%;border-collapse:collapse}' +
+    '</style></head><body>' +
+    el.outerHTML +
+    '<script>window.onload=function(){window.print();}<\/script>' +
+    '</body></html>');
+  win.document.close();
+}
 /* 선택 모드 */
 function toggleBulkMode() {
 DB.bulkMode = !DB.bulkMode;
@@ -2168,6 +2288,9 @@ function hideLoadingOverlay() {
   var el = document.getElementById('_loadOverlay');
   if (el) el.style.display = 'none';
 }
+
+
+
 
 </script>
 </body> </html>
