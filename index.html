@@ -388,12 +388,13 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyT8Clt4ymw21Lf9JKIadzXaqXrupXyoBmnw-bDpbeLldpnCQPwOspT5Rtyi-QrgorF/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyUtROJ8fmPpffHImFmWcygyY2Ye1IkvDio7WXnv8RlfhZK5BTaECE-7bimotpavyMZ/exec',
   SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
-  SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림' }
+  SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림', cats:'하자분류' }
 };
 /* ═══ 공종코드 레지스트리 (추가/삭제 가능) ═══ */
 let PROC_CODES = {
@@ -404,7 +405,7 @@ FOUNDATION:'기초공사', TEMP:'가설공사', FIRE:'방화공사',
 PAINT:'도장공사', OTHER:'기타'
 };
 /* ═══ 하자 분류 레지스트리 (추가/삭제 가능) ═══ */
-let DEF_CATS = ['누수','균열','결로','마감','창호','외벽','설비','구조','차음','단열','전기','방화','기타'];
+var DEF_CATS = ['누수','균열','결로','마감','창호','외벽','설비','구조','차음','단열','전기','방화','기타'];
 /* ═══ 전역 상태 ═══ */
 const DB = {
 sites:[], processes:[], defects:[], checklists:[], alerts:[],
@@ -2019,6 +2020,7 @@ function pushSheet(key) {
   else if (key === 'codes')  rows = Object.entries(PROC_CODES).map(function(e){return {code:e[0], name:e[1]};});
   else if (key === 'gantt')  rows = DB.processes;
   else if (key === 'alerts') rows = DB.alerts;
+  else if (key === 'cats')   rows = [{id:'DEF_CATS', cats:DEF_CATS.join('|')}];
   else { toast('알 수 없는 키: '+key,'err'); return; }
   addSyncLog(sheetName + ' 업로드 시작 (' + rows.length + '건)...');
   toast(sheetName + ' 업로드 중...', 'info');
@@ -2126,7 +2128,7 @@ function pollAllSheets() {
 function pollSheet(key) {
   if (!sheetEnabled()) return;
   var sheetName = CFG.SHEET[key];
-  var nextKeys = { sites:'defects', defects:'checklists', checklists:'codes', codes:'gantt', gantt:'alerts', alerts:null };
+  var nextKeys = { sites:'defects', defects:'checklists', checklists:'codes', codes:'gantt', gantt:'alerts', alerts:'cats', cats:null };
 
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
@@ -2184,6 +2186,16 @@ function applySheetData(key, rows) {
   } else if (key === 'gantt') {
     var pg = rows.map(function(r){return Object.assign({},r,{progress:parseInt(r.progress)||0});});
     if (JSON.stringify(DB.processes) !== JSON.stringify(pg)) { DB.processes = pg; changed = true; }
+  } else if (key === 'cats') {
+    var catRow = rows.find(function(r){return r.id==='DEF_CATS';});
+    if (catRow && catRow.cats) {
+      var newCats = catRow.cats.split('|').filter(Boolean);
+      if (newCats.length>0 && JSON.stringify(DEF_CATS)!==JSON.stringify(newCats)) {
+        DEF_CATS = newCats;
+        try{localStorage.setItem('bas_def_cats',JSON.stringify(DEF_CATS));}catch(e){}
+        changed = true;
+      }
+    }
   } else if (key === 'alerts') {
     var pa = rows.map(function(r){return Object.assign({},r,{read:r.read==='true'||r.read===true});});
     if (JSON.stringify(DB.alerts) !== JSON.stringify(pa)) { DB.alerts = pa; changed = true; }
@@ -2236,7 +2248,8 @@ function loadAllFromSheet(onComplete) {
     checklists: CFG.SHEET.checklists,
     codes:      CFG.SHEET.codes,
     gantt:      CFG.SHEET.gantt,
-    alerts:     CFG.SHEET.alerts
+    alerts:     CFG.SHEET.alerts,
+    cats:       CFG.SHEET.cats
   };
   var keys = Object.keys(sheetMap);
   var done = 0;
@@ -2249,9 +2262,18 @@ function loadAllFromSheet(onComplete) {
     else if (key==='codes')      { var nc={}; rows.forEach(function(r){if(r.code&&r.name)nc[r.code.trim().toUpperCase()]=r.name.trim();}); if(Object.keys(nc).length) PROC_CODES=nc; }
     else if (key==='gantt')      { DB.processes = rows.map(function(r){ return Object.assign({},r,{progress:parseInt(r.progress)||0}); }); }
     else if (key==='alerts')     { DB.alerts = rows.map(function(r){ return Object.assign({},r,{read:r.read==='true'||r.read===true}); }); }
+    else if (key==='cats')       {
+      var row = rows.find(function(r){return r.id==='DEF_CATS';});
+      if (row && row.cats) {
+        var parsed = row.cats.split('|').filter(Boolean);
+        if (parsed.length > 0) {
+          DEF_CATS = parsed;
+          try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+        }
+      }
+    }
   }
 
-  // 모든 시트를 동시에 fetch (병렬)
   keys.forEach(function(key) {
     fetch(CFG.APPS_SCRIPT_URL, {
       method: 'POST',
@@ -2310,16 +2332,24 @@ function hideLoadingOverlay() {
 
 function saveDefCats() {
   try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+  syncToSheet('upsertRow', {
+    sheet: CFG.SHEET.cats, id: 'DEF_CATS',
+    row: { id:'DEF_CATS', cats: DEF_CATS.join('|') }
+  });
 }
 function loadDefCats() {
   try {
     var saved = localStorage.getItem('bas_def_cats');
     if (saved) {
       var parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) DEF_CATS = parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        DEF_CATS = parsed;
+        return;
+      }
     }
   } catch(e) {}
 }
+
 
 
 </script>
