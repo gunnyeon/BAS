@@ -458,6 +458,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1018,10 +1019,17 @@ function rCLContent() {
         var selCls  = isSel   ? ' sel'  : '';
 
         var badges = '';
-        if (c.freq)      badges += '<span style="padding:3px 9px;border-radius:4px;background:#EBF8FF;color:#2B6CB0;font-size:10px;font-weight:600;border:1px solid #BEE3F8;white-space:nowrap">🔁 '+c.freq+'</span>';
-        if (c.pass)      badges += '<span style="padding:3px 9px;border-radius:4px;background:#F0FFF4;color:#276749;font-size:10px;font-weight:600;border:1px solid #9AE6B4;white-space:nowrap">&#10003; '+c.pass+'</span>';
-        if (c.method)    badges += '<span style="padding:3px 9px;border-radius:4px;background:#FAF5FF;color:#553C9A;font-size:10px;font-weight:600;border:1px solid #D6BCFA;white-space:nowrap">&#128269; '+c.method+'</span>';
-        if (c.inspector) badges += '<span style="padding:3px 9px;border-radius:4px;background:#FFFFF0;color:#B7791F;font-size:10px;font-weight:600;border:1px solid #F6E05E;white-space:nowrap">&#128100; '+c.inspector+'</span>';
+        // 항목명 : 내용 형식으로 표시
+        function mkBadge(bg, color, border, icon, label, val) {
+          return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;background:'+bg+';color:'+color+';font-size:10px;font-weight:600;border:1px solid '+border+';white-space:nowrap">' +
+            '<span style="opacity:.7">'+icon+' '+label+' :</span> ' +
+            '<span>'+val+'</span>' +
+          '</span>';
+        }
+        if (c.freq)      badges += mkBadge('#EBF8FF','#2B6CB0','#BEE3F8','🔁','검사시기',c.freq);
+        if (c.pass)      badges += mkBadge('#F0FFF4','#276749','#9AE6B4','&#10003;','합격기준',c.pass);
+        if (c.method)    badges += mkBadge('#FAF5FF','#553C9A','#D6BCFA','&#128269;','검사방법',c.method);
+        if (c.inspector) badges += mkBadge('#FFFFF0','#B7791F','#F6E05E','&#128100;','실명확인',c.inspector);
 
         html +=
           '<div class="cl-item'+doneCls+selCls+'" id="cli-'+c.id+'" style="border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:1px solid var(--border);margin-bottom:0;padding:12px 18px">' +
@@ -2666,6 +2674,7 @@ function toDateStr(v) {
   }
   return v;
 }
+
 
 
 
