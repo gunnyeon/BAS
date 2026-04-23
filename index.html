@@ -433,10 +433,12 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw0XpYBXQpSrqroKTiSpGOs5QtM5K_zXzN6eLYJCjNUU_F8q2TkrJiyU02GdAIJEGta/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzwPg883wCe3-tW73emaUyL-m9EiUXE5g6Janw-eNhupMYPxRHuoL8r7tNlHWHzeSF-/exec',
   SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
   SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림', cats:'하자분류' }
 };
@@ -2321,12 +2323,7 @@ function applySheetData(key, rows) {
     var pg = rows.map(function(r){return Object.assign({},r,{progress:parseInt(r.progress)||0});});
     if (JSON.stringify(DB.processes) !== JSON.stringify(pg)) { DB.processes = pg; changed = true; }
   } else if (key === 'cats') {
-    var newCats = rows
-      .map(function(r){ return (r.name||r.cats||'').trim(); })
-      .filter(Boolean);
-    if (newCats.length===1 && newCats[0].indexOf('|')>=0) {
-      newCats = newCats[0].split('|').filter(Boolean);
-    }
+    var newCats = parseCatsRows(rows);
     if (newCats.length > 0 && JSON.stringify(DEF_CATS) !== JSON.stringify(newCats)) {
       DEF_CATS = newCats;
       try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
@@ -2396,14 +2393,9 @@ function loadAllFromSheet(onComplete) {
 
   function applyRow(key, rows) {
     if (key==='cats') {
-      var newCats = rows
-        .map(function(r){ return (r.name||r.cats||'').trim(); })
-        .filter(Boolean);
-      if (newCats.length===1 && newCats[0].indexOf('|')>=0) {
-        newCats = newCats[0].split('|').filter(Boolean);
-      }
-      if (newCats.length > 0) {
-        DEF_CATS = newCats;
+      var newCatsL = parseCatsRows(rows);
+      if (newCatsL.length > 0) {
+        DEF_CATS = newCatsL;
         try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
       }
     }
@@ -2474,8 +2466,8 @@ function hideLoadingOverlay() {
 function saveDefCats() {
   try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
   if (!sheetEnabled()) return;
-  var rows = DEF_CATS.map(function(cat, i) {
-    return { id: 'CAT_' + String(i+1).padStart(3,'0'), name: cat };
+  var rows = DEF_CATS.map(function(cat) {
+    return { name: cat };
   });
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
@@ -2513,6 +2505,29 @@ function loadDefCats() {
 
 
 
+
+
+
+function parseCatsRows(rows) {
+  // 시트 구조가 어떻든 모든 셀값 중 비어있지 않은 것을 분류로 인식
+  // id열 있어도 없어도 동작 (값이 'CAT_'로 시작하면 id로 판단, 아니면 분류명)
+  var result = [];
+  rows.forEach(function(r) {
+    var vals = Object.values(r).map(function(v){ return String(v||'').trim(); }).filter(Boolean);
+    vals.forEach(function(v) {
+      // id 패턴(CAT_xxx) 또는 시스템 값 제외
+      if (v && !/^CAT_\d+$/i.test(v) && v !== 'id' && v !== 'name' && v !== 'cats') {
+        // | 구분자 방식(구버전) 처리
+        if (v.indexOf('|') >= 0) {
+          v.split('|').filter(Boolean).forEach(function(c){ if(result.indexOf(c)<0) result.push(c); });
+        } else {
+          if (result.indexOf(v) < 0) result.push(v);
+        }
+      }
+    });
+  });
+  return result;
+}
 
 
 </script>
