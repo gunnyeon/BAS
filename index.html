@@ -454,6 +454,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1557,6 +1558,7 @@ function rSites() {
       '</div>' +
       '<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--t5);margin-bottom:3px;margin-top:10px"><span>공정 진행률</span><span style="color:'+c+'">'+pct+'%</span></div>' +
       '<div class="pb"><div class="pb-f" style="width:'+pct+'%;background:'+c+'"></div></div>' +
+      (s.note ? '<div style="margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;border-left:2px solid var(--border2);font-size:11px;color:var(--t7);line-height:1.5">&#128221; '+s.note+'</div>' : '') +
     '</div>';
   }).join('');
 }
@@ -2632,6 +2634,7 @@ function fmtDate(d) {
     String(dt.getMonth()+1).padStart(2,'0') + '.' +
     String(dt.getDate()).padStart(2,'0');
 }
+
 
 </script>
 </body> </html>
