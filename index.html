@@ -435,6 +435,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -457,7 +459,7 @@ const DB = {
 sites:[], processes:[], defects:[], checklists:[], alerts:[],
 riskProcs:[],
 charts:{},
-selSite:'all', riskF:'all', alertF:'all', clCode:'WATERPROOF',
+selSite:'all', riskF:'all', alertF:'all', clCode:'',
 defCat:'all', editId:null, delTarget:null, curAlertId:null,
 bulkMode:false, selCLIds:new Set(),
 pendingGanttRows:[], pendingCLRows:[],
@@ -492,6 +494,10 @@ function init() {
       // DEF_CATS 기반 UI 갱신 (시트에서 로드된 분류 반영)
       var dCatSel = document.getElementById('f-dCat');
       if (dCatSel) dCatSel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+      // 체크리스트 첫 공종코드 자동 선택
+      if (!DB.clCode || !PROC_CODES[DB.clCode]) {
+        DB.clCode = Object.keys(PROC_CODES)[0] || '';
+      }
       renderAll();
       autoGenAlerts();
       startRealtimeSync();
@@ -920,16 +926,27 @@ return entry ? entry[0] : 'OTHER';
 }
 function clearGanttUpload(){DB.pendingGanttRows=[];var p=document.getElementById("ganttUploadPreview");if(p)p.style.display="none";var b=document.getElementById("ganttImportBtn");if(b)b.style.display="none";}
 function rCL() {
-document.getElementById('clFb').innerHTML = Object.entries(PROC_CODES).map(([k,v])=>
-'<button class="fb '+(DB.clCode===k?'on':'')+'" onclick="setClCode(this,\''+k+'\')">'+v+'</button>'
-).join('');
-rCLContent();
+  var codes = Object.keys(PROC_CODES);
+  // clCode가 비어있거나 존재하지 않는 코드면 첫 번째 코드로 자동 설정
+  if (!DB.clCode || !PROC_CODES[DB.clCode]) {
+    DB.clCode = codes.length > 0 ? codes[0] : '';
+  }
+  var fbEl = document.getElementById('clFb');
+  if (fbEl) fbEl.innerHTML = codes.map(function(k){
+    return '<button class="fb '+(DB.clCode===k?'on':'')+'" data-k="'+k+'" onclick="setClCode(this,this.dataset.k)">'+PROC_CODES[k]+'</button>';
+  }).join('');
+  rCLContent();
 }
 function setClCode(btn, code) {
 document.querySelectorAll('#clFb .fb').forEach(b=>b.classList.remove('on'));
 btn.classList.add('on'); DB.clCode=code; rCLContent();
 }
 function rCLContent() {
+  if (!DB.clCode) {
+    var el = document.getElementById('clContent');
+    if (el) el.innerHTML = '<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">공종코드를 선택하세요</div></div>';
+    return;
+  }
   var items  = DB.checklists.filter(function(c){return c.code===DB.clCode;});
   var groups = {};
   items.forEach(function(c){ if(!groups[c.did]) groups[c.did]=[]; groups[c.did].push(c); });
@@ -1040,6 +1057,14 @@ function submitCL() {
   var codeName = PROC_CODES[DB.clCode] || DB.clCode;
   var today  = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
   var now    = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  // 현장명 가져오기
+  var siteName = '';
+  if (DB.selSite && DB.selSite !== 'all') {
+    var siteObj = DB.sites.find(function(s){return s.id===DB.selSite;});
+    siteName = siteObj ? siteObj.name : '';
+  } else if (DB.sites.length === 1) {
+    siteName = DB.sites[0].name;
+  }
   var barColor = pct>=80?'#276749':pct>=50?'#B7791F':'#C53030';
 
   var groups = {};
@@ -1089,6 +1114,9 @@ function submitCL() {
       '<div style="background:#F7FAFC;border-radius:7px;padding:10px 13px">' +
         '<div style="font-size:10px;color:#A0AEC0;font-weight:700;margin-bottom:2px">점검일시</div>' +
         '<div style="font-size:13px;font-weight:700">' + today + ' ' + now + '</div></div>' +
+      (siteName ? '<div style="background:#F7FAFC;border-radius:7px;padding:10px 13px;grid-column:1/-1">' +
+        '<div style="font-size:10px;color:#A0AEC0;font-weight:700;margin-bottom:2px">현장명</div>' +
+        '<div style="font-size:13px;font-weight:700">&#127959; ' + siteName + '</div></div>' : '') +
     '</div>' +
     '<div style="background:#F7FAFC;border-radius:9px;padding:14px 16px;margin-bottom:14px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
@@ -1124,7 +1152,7 @@ function submitCL() {
     '</div>' +
     '</div>';
 
-  document.getElementById('detailTitle').textContent = '📋 ' + codeName + ' 점검 보고서';
+  document.getElementById('detailTitle').textContent = '📋 ' + (siteName ? siteName + ' · ' : '') + codeName + ' 점검 보고서';
   document.getElementById('detailBody').innerHTML = html +
     '<div class="m-ft" style="border-top:1.5px solid var(--border);margin-top:16px;padding-top:14px;display:flex;justify-content:flex-end;gap:8px">' +
       '<button class="btn btn-ghost" onclick="closeOv(\'ovDetail\')">닫기</button>' +
@@ -1767,7 +1795,9 @@ function openCLForm() {
   });
   var sel = document.getElementById('f-clCode');
   refreshCLCodeSel(sel);
-  sel.value = DB.clCode || '';
+  // 현재 선택된 코드 또는 첫 번째 코드
+  var defaultCode = DB.clCode && PROC_CODES[DB.clCode] ? DB.clCode : Object.keys(PROC_CODES)[0] || '';
+  sel.value = defaultCode;
   document.getElementById('f-clReq').value = '필수';
   openOv('ovCL');
 }
@@ -2528,6 +2558,8 @@ function parseCatsRows(rows) {
   });
   return result;
 }
+
+
 
 
 </script>
