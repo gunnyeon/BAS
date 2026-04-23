@@ -455,6 +455,9 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1756,16 +1759,16 @@ function editSite(id) {
   var s = DB.sites.find(function(x){return x.id===id;}); if(!s) return;
   DB.editId = id;
   document.getElementById('siteFormTitle').textContent = '✏️ 현장 정보 수정';
-  document.getElementById('f-sNm').value    = s.name      || '';
-  document.getElementById('f-sLoc').value   = s.location  || '';
-  document.getElementById('f-sCli').value   = s.client    || '';
-  document.getElementById('f-sSt').value    = s.startDate || '';
-  document.getElementById('f-sEn').value    = s.endDate   || '';
-  document.getElementById('f-sAmt').value   = s.amount    || '';
-  document.getElementById('f-sStat').value  = s.status    || '진행중';
-  document.getElementById('f-sMgr').value   = s.manager   || '';
-  document.getElementById('f-sOfc').value   = s.officer   || '';
-  document.getElementById('f-sNote').value  = s.note      || '';
+  document.getElementById('f-sNm').value    = s.name               || '';
+  document.getElementById('f-sLoc').value   = s.location           || '';
+  document.getElementById('f-sCli').value   = s.client             || '';
+  document.getElementById('f-sSt').value    = toDateStr(s.startDate);
+  document.getElementById('f-sEn').value    = toDateStr(s.endDate);
+  document.getElementById('f-sAmt').value   = s.amount             || '';
+  document.getElementById('f-sStat').value  = s.status             || '진행중';
+  document.getElementById('f-sMgr').value   = s.manager            || '';
+  document.getElementById('f-sOfc').value   = s.officer            || '';
+  document.getElementById('f-sNote').value  = s.note               || '';
   openOv('ovSite');
 }
 function saveSite() {
@@ -2374,8 +2377,14 @@ function pollSheet(key) {
 function applySheetData(key, rows) {
   var changed = false;
   if (key === 'sites') {
-    if (JSON.stringify(DB.sites) !== JSON.stringify(rows)) {
-      DB.sites = rows; buildSiteSel(); changed = true;
+    var normSites = rows.map(function(r){
+      return Object.assign({}, r, {
+        startDate: toDateStr(r.startDate),
+        endDate:   toDateStr(r.endDate)
+      });
+    });
+    if (JSON.stringify(DB.sites) !== JSON.stringify(normSites)) {
+      DB.sites = normSites; buildSiteSel(); changed = true;
     }
   } else if (key === 'defects') {
     var pd = rows.map(function(r){
@@ -2477,7 +2486,11 @@ function loadAllFromSheet(onComplete) {
         try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
       }
     }
-    else if (key==='sites')      { DB.sites = rows; }
+    else if (key==='sites') {
+      DB.sites = rows.map(function(r){
+        return Object.assign({},r,{startDate:toDateStr(r.startDate),endDate:toDateStr(r.endDate)});
+      });
+    }
     else if (key==='defects')    { DB.defects = rows.map(function(r){ return Object.assign({},r,{linkedCodes:r.linkedCodes?String(r.linkedCodes).split('|').filter(Boolean):[]}); }); }
     else if (key==='checklists') { DB.checklists = rows.map(function(r){ return Object.assign({},r,{checked:r.checked==='true'||r.checked===true}); }); }
     else if (key==='codes')      { var nc={}; rows.forEach(function(r){if(r.code&&r.name)nc[r.code.trim().toUpperCase()]=r.name.trim();}); if(Object.keys(nc).length) PROC_CODES=nc; }
@@ -2634,6 +2647,26 @@ function fmtDate(d) {
     String(dt.getMonth()+1).padStart(2,'0') + '.' +
     String(dt.getDate()).padStart(2,'0');
 }
+
+
+
+function toDateStr(v) {
+  // 이미 YYYY-MM-DD 형식이면 그대로
+  if (!v) return '';
+  v = String(v).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  // YYYY.MM.DD → YYYY-MM-DD
+  if (/^\d{4}\.\d{2}\.\d{2}$/.test(v)) return v.replace(/\./g, '-');
+  // Date 객체로 파싱 후 변환
+  var d = new Date(v);
+  if (!isNaN(d)) {
+    return d.getFullYear() + '-' +
+      String(d.getMonth()+1).padStart(2,'0') + '-' +
+      String(d.getDate()).padStart(2,'0');
+  }
+  return v;
+}
+
 
 
 </script>
