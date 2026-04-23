@@ -428,6 +428,11 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
+
+
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -482,6 +487,9 @@ function init() {
       hideLoadingOverlay();
       buildSiteSel();
       DB.riskProcs = getRiskProcs();
+      // DEF_CATS 기반 UI 갱신 (시트에서 로드된 분류 반영)
+      var dCatSel = document.getElementById('f-dCat');
+      if (dCatSel) dCatSel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
       renderAll();
       autoGenAlerts();
       startRealtimeSync();
@@ -2313,20 +2321,18 @@ function applySheetData(key, rows) {
     var pg = rows.map(function(r){return Object.assign({},r,{progress:parseInt(r.progress)||0});});
     if (JSON.stringify(DB.processes) !== JSON.stringify(pg)) { DB.processes = pg; changed = true; }
   } else if (key === 'cats') {
-    // 각 행의 name 컬럼을 분류 목록으로 사용
     var newCats = rows
       .map(function(r){ return (r.name||r.cats||'').trim(); })
       .filter(Boolean);
-    // 구버전 호환: 단일행 | 구분자 방식도 처리
     if (newCats.length===1 && newCats[0].indexOf('|')>=0) {
       newCats = newCats[0].split('|').filter(Boolean);
     }
     if (newCats.length > 0 && JSON.stringify(DEF_CATS) !== JSON.stringify(newCats)) {
       DEF_CATS = newCats;
       try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
-      // 하자유형 폼 셀렉트 갱신
       var dCatSel = document.getElementById('f-dCat');
       if (dCatSel) dCatSel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+      if (document.getElementById('defCatList')) renderDefCatList();
       changed = true;
     }
   } else if (key === 'alerts') {
@@ -2376,38 +2382,37 @@ function delAllReadAlerts() {
 
 function loadAllFromSheet(onComplete) {
   var sheetMap = {
+    cats:       CFG.SHEET.cats,
     sites:      CFG.SHEET.sites,
     defects:    CFG.SHEET.defects,
     checklists: CFG.SHEET.checklists,
     codes:      CFG.SHEET.codes,
     gantt:      CFG.SHEET.gantt,
-    alerts:     CFG.SHEET.alerts,
-    cats:       CFG.SHEET.cats
+    alerts:     CFG.SHEET.alerts
   };
-  var keys = Object.keys(sheetMap);
-  var done = 0;
+  var keys  = Object.keys(sheetMap);
+  var done  = 0;
   var total = keys.length;
 
   function applyRow(key, rows) {
-    if      (key==='sites')      { DB.sites = rows; }
+    if (key==='cats') {
+      var newCats = rows
+        .map(function(r){ return (r.name||r.cats||'').trim(); })
+        .filter(Boolean);
+      if (newCats.length===1 && newCats[0].indexOf('|')>=0) {
+        newCats = newCats[0].split('|').filter(Boolean);
+      }
+      if (newCats.length > 0) {
+        DEF_CATS = newCats;
+        try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+      }
+    }
+    else if (key==='sites')      { DB.sites = rows; }
     else if (key==='defects')    { DB.defects = rows.map(function(r){ return Object.assign({},r,{linkedCodes:r.linkedCodes?String(r.linkedCodes).split('|').filter(Boolean):[]}); }); }
     else if (key==='checklists') { DB.checklists = rows.map(function(r){ return Object.assign({},r,{checked:r.checked==='true'||r.checked===true}); }); }
     else if (key==='codes')      { var nc={}; rows.forEach(function(r){if(r.code&&r.name)nc[r.code.trim().toUpperCase()]=r.name.trim();}); if(Object.keys(nc).length) PROC_CODES=nc; }
     else if (key==='gantt')      { DB.processes = rows.map(function(r){ return Object.assign({},r,{progress:parseInt(r.progress)||0}); }); }
     else if (key==='alerts')     { DB.alerts = rows.map(function(r){ return Object.assign({},r,{read:r.read==='true'||r.read===true}); }); }
-    else if (key==='cats')       {
-      var newCatsL = rows
-        .map(function(r){ return (r.name||r.cats||'').trim(); })
-        .filter(Boolean);
-      // 구버전 호환
-      if (newCatsL.length===1 && newCatsL[0].indexOf('|')>=0) {
-        newCatsL = newCatsL[0].split('|').filter(Boolean);
-      }
-      if (newCatsL.length > 0) {
-        DEF_CATS = newCatsL;
-        try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
-      }
-    }
   }
 
   keys.forEach(function(key) {
@@ -2496,6 +2501,11 @@ function loadDefCats() {
     }
   } catch(e) {}
 }
+
+
+
+
+
 
 
 
