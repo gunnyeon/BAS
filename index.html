@@ -427,10 +427,11 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwCyu0xKZoZsLnzddlt8hOgkoujuYmiK2AB_eTQoFVYzHxUnbZJ-X7iv5g2lMA2Pl59/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw0XpYBXQpSrqroKTiSpGOs5QtM5K_zXzN6eLYJCjNUU_F8q2TkrJiyU02GdAIJEGta/exec',
   SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
   SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림', cats:'하자분류' }
 };
@@ -1399,6 +1400,8 @@ function addDefCat() {
   if (!nm) { toast('분류명을 입력하세요.','err'); return; }
   if (DEF_CATS.indexOf(nm) >= 0) { toast('이미 존재하는 분류입니다.','err'); return; }
   DEF_CATS.push(nm);
+  try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+  // 시트: 전체 교체 방식으로 저장
   saveDefCats();
   document.getElementById('newDefCat').value = '';
   renderDefCatList(); rDefs();
@@ -1411,6 +1414,7 @@ function delDefCat(cat) {
   if (cnt) { toast('"'+cat+'" 분류에 '+cnt+'개 하자유형이 있습니다. 먼저 하자유형을 다른 분류로 변경하세요.','err'); return; }
   if (!confirm('"'+cat+'" 분류를 삭제하시겠습니까?')) return;
   DEF_CATS = DEF_CATS.filter(function(c){return c!==cat;});
+  try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
   saveDefCats();
   renderDefCatList(); rDefs();
   var sel = document.getElementById('f-dCat');
@@ -2309,14 +2313,21 @@ function applySheetData(key, rows) {
     var pg = rows.map(function(r){return Object.assign({},r,{progress:parseInt(r.progress)||0});});
     if (JSON.stringify(DB.processes) !== JSON.stringify(pg)) { DB.processes = pg; changed = true; }
   } else if (key === 'cats') {
-    var catRow = rows.find(function(r){return r.id==='DEF_CATS';});
-    if (catRow && catRow.cats) {
-      var newCats = catRow.cats.split('|').filter(Boolean);
-      if (newCats.length>0 && JSON.stringify(DEF_CATS)!==JSON.stringify(newCats)) {
-        DEF_CATS = newCats;
-        try{localStorage.setItem('bas_def_cats',JSON.stringify(DEF_CATS));}catch(e){}
-        changed = true;
-      }
+    // 각 행의 name 컬럼을 분류 목록으로 사용
+    var newCats = rows
+      .map(function(r){ return (r.name||r.cats||'').trim(); })
+      .filter(Boolean);
+    // 구버전 호환: 단일행 | 구분자 방식도 처리
+    if (newCats.length===1 && newCats[0].indexOf('|')>=0) {
+      newCats = newCats[0].split('|').filter(Boolean);
+    }
+    if (newCats.length > 0 && JSON.stringify(DEF_CATS) !== JSON.stringify(newCats)) {
+      DEF_CATS = newCats;
+      try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
+      // 하자유형 폼 셀렉트 갱신
+      var dCatSel = document.getElementById('f-dCat');
+      if (dCatSel) dCatSel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+      changed = true;
     }
   } else if (key === 'alerts') {
     var pa = rows.map(function(r){return Object.assign({},r,{read:r.read==='true'||r.read===true});});
@@ -2385,13 +2396,16 @@ function loadAllFromSheet(onComplete) {
     else if (key==='gantt')      { DB.processes = rows.map(function(r){ return Object.assign({},r,{progress:parseInt(r.progress)||0}); }); }
     else if (key==='alerts')     { DB.alerts = rows.map(function(r){ return Object.assign({},r,{read:r.read==='true'||r.read===true}); }); }
     else if (key==='cats')       {
-      var row = rows.find(function(r){return r.id==='DEF_CATS';});
-      if (row && row.cats) {
-        var parsed = row.cats.split('|').filter(Boolean);
-        if (parsed.length > 0) {
-          DEF_CATS = parsed;
-          try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
-        }
+      var newCatsL = rows
+        .map(function(r){ return (r.name||r.cats||'').trim(); })
+        .filter(Boolean);
+      // 구버전 호환
+      if (newCatsL.length===1 && newCatsL[0].indexOf('|')>=0) {
+        newCatsL = newCatsL[0].split('|').filter(Boolean);
+      }
+      if (newCatsL.length > 0) {
+        DEF_CATS = newCatsL;
+        try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
       }
     }
   }
@@ -2454,10 +2468,21 @@ function hideLoadingOverlay() {
 
 function saveDefCats() {
   try { localStorage.setItem('bas_def_cats', JSON.stringify(DEF_CATS)); } catch(e) {}
-  syncToSheet('upsertRow', {
-    sheet: CFG.SHEET.cats, id: 'DEF_CATS',
-    row: { id:'DEF_CATS', cats: DEF_CATS.join('|') }
+  if (!sheetEnabled()) return;
+  var rows = DEF_CATS.map(function(cat, i) {
+    return { id: 'CAT_' + String(i+1).padStart(3,'0'), name: cat };
   });
+  fetch(CFG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'replaceAll', sheet: CFG.SHEET.cats, rows: rows })
+  })
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    var json; try{ json=JSON.parse(txt); }catch(e){ return; }
+    if (json && json.ok) addSyncLog('✅ 하자분류 저장 완료 (' + rows.length + '건)');
+  })
+  .catch(function(){});
 }
 function loadDefCats() {
   try {
@@ -2471,6 +2496,7 @@ function loadDefCats() {
     }
   } catch(e) {}
 }
+
 
 
 
