@@ -302,7 +302,7 @@ button,input,select,textarea{font-family:inherit}
   </div>
 </div>
 <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCL')">취소</button><button class="btn btn-primary" onclick="saveCL()">💾 저장</button></div>
-</div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 수정 시 코드와 공종명 모두 변경 가능합니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="number" placeholder="예) 500"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
+</div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 수정 시 코드와 공종명 모두 변경 가능합니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자 코드(ID) <span style="font-size:10px;color:var(--t3);font-weight:400">자동생성 또는 직접입력</span></label><input class="fi" id="f-dId" placeholder="예) D00001" style="font-family:monospace"></div> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="text" placeholder="예) 500 (숫자만 입력, 단위: 만원)"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
 <div class="ov" id="ovSync">
 <div class="modal lg">
 <div class="m-hd">
@@ -398,9 +398,23 @@ button,input,select,textarea{font-family:inherit}
   <div id="dashSiteSummary"></div>
 </div>
 </div>
-</div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button> <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button> </div> </div> <div class="fb-wrap" id="defFb"></div> <div class="card" style="padding:0"> <div class="tw"> <table class="tbl"> <thead><tr><th>하자명</th><th>분류</th><th>위험등급</th><th>연계 공종</th><th>주요원인</th><th>발생시기</th><th>소송빈도</th><th>보수비용</th><th style="width:76px">관리</th></tr></thead> <tbody id="defBody"></tbody> </table> </div> </div> </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
+</div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+  <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div>
+  <div style="display:flex;gap:6px">
+    <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button>
+    <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button>
+  </div>
+</div>
+<!-- 공종 필터바 -->
+<div class="fb-wrap" id="defCodeFb" style="margin-bottom:14px"></div>
+<!-- 공종별 아코디언 목록 -->
+<div id="defAccordion"></div>
+</div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
   <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
+
 
 
 
@@ -483,7 +497,7 @@ const DB = {
 sites:[], processes:[], defects:[], checklists:[], alerts:[],
 riskProcs:[],
 charts:{},
-selSite:'all', riskF:'all', alertF:'all', clCode:'',
+selSite:'all', riskF:'all', alertF:'all', clCode:'', defCodeF:'all',
 defCat:'all', editId:null, delTarget:null, curAlertId:null,
 bulkMode:false, selCLIds:new Set(),
 pendingGanttRows:[], pendingCLRows:[],
@@ -1420,46 +1434,133 @@ function rDefs() {
   var el = document.getElementById('defCount');
   if (el) el.textContent = DB.defects.length+'개';
 
-  var fbEl = document.getElementById('defFb');
+  // 공종 필터바 (PROC_CODES 기반)
+  var fbEl = document.getElementById('defCodeFb');
   if (fbEl) {
-    var cats = ['전체'].concat(DEF_CATS);
-    fbEl.innerHTML = cats.map(function(c){
-      var val = c==='전체' ? 'all' : c;
-      return '<button class="fb '+(DB.defCat===val?'on':'')+'" data-cat="'+val+'" onclick="setDefCatByData(this)">'+c+'</button>';
-    }).join('');
+    var codeKeys = Object.keys(PROC_CODES);
+    fbEl.innerHTML =
+      '<button class="fb '+(DB.defCodeF==='all'?'on':'')+'" data-f="all" onclick="setDefCodeFilter(this)">전체</button>' +
+      codeKeys.map(function(k){
+        var cnt = DB.defects.filter(function(d){return (d.linkedCodes||[]).indexOf(k)>=0;}).length;
+        return '<button class="fb '+(DB.defCodeF===k?'on':'')+'" data-f="'+k+'" onclick="setDefCodeFilter(this)">'+PROC_CODES[k]+(cnt?'<span style="margin-left:4px;background:rgba(0,0,0,.12);border-radius:10px;padding:0 5px;font-size:10px">'+cnt+'</span>':'')+'</button>';
+      }).join('');
   }
 
+  // 하자유형 폼 분류 셀렉트 갱신
   var defCatSel = document.getElementById('f-dCat');
   if (defCatSel) defCatSel.innerHTML = DEF_CATS.map(function(c){
     return '<option value="'+c+'">'+c+'</option>';
   }).join('');
 
-  var list = DB.defCat==='all' ? DB.defects : DB.defects.filter(function(d){return d.category===DB.defCat;});
-  var bodyEl = document.getElementById('defBody');
-  if (!bodyEl) return;
-  if (!list.length) {
-    bodyEl.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--t5)">등록된 하자유형이 없습니다</td></tr>';
+  // 공종별 그룹화
+  var allDefs = DB.defects;
+  var accEl = document.getElementById('defAccordion');
+  if (!accEl) return;
+
+  if (!allDefs.length) {
+    accEl.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">등록된 하자유형이 없습니다</div><div class="empty-s">＋ 유형 추가 버튼을 눌러 등록하세요</div></div>';
     return;
   }
-  bodyEl.innerHTML = list.map(function(d){
-    var linked = (d.linkedCodes||[]).map(function(c){
-      return '<span class="bdg bb" style="margin:1px">'+(PROC_CODES[c]||c)+'</span>';
-    }).join('') || '<span class="bdg bx">&#8212;</span>';
-    return '<tr data-id="'+d.id+'" onclick="openDefDetail(this.dataset.id)">' +
-      '<td style="font-weight:700">'+d.name+'</td>' +
-      '<td><span class="bdg bt">'+d.category+'</span></td>' +
-      '<td>'+rkBdg(d.riskLevel)+'</td>' +
-      '<td style="max-width:120px">'+linked+'</td>' +
-      '<td style="max-width:130px;color:var(--t7)">'+d.mainCause+'</td>' +
-      '<td>'+d.occurrenceTime+'</td>' +
-      '<td><span class="bdg '+ligBdg(d.litigationFreq)+'">'+d.litigationFreq+'</span></td>' +
-      '<td style="font-weight:700">'+(parseInt(d.avgCost)||0).toLocaleString()+'&#47791;&#50896;</td>' +
-      '<td style="white-space:nowrap">' +
-        '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+d.id+'" onclick="event.stopPropagation();editDef(this.dataset.id)">&#9998;</button>' +
-        '<button class="btn btn-danger btn-icon btn-sm" data-id="'+d.id+'" data-nm="'+escQ(d.name)+'" onclick="event.stopPropagation();askDel(\'defect\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
-      '</td>' +
-    '</tr>';
+
+  // 공종별로 그룹화 (linkedCodes 기준)
+  var groups = {};
+  groups['_none'] = [];
+  Object.keys(PROC_CODES).forEach(function(k){ groups[k] = []; });
+
+  allDefs.forEach(function(d){
+    var codes = d.linkedCodes || [];
+    if (!codes.length) {
+      groups['_none'].push(d);
+    } else {
+      codes.forEach(function(c){
+        if (groups[c]) groups[c].push(d);
+        else { groups[c] = [d]; }
+      });
+    }
+  });
+
+  // 필터 적용
+  var filterKeys;
+  if (DB.defCodeF === 'all') {
+    filterKeys = Object.keys(PROC_CODES).filter(function(k){ return groups[k] && groups[k].length; });
+    if (groups['_none'].length) filterKeys.push('_none');
+  } else {
+    filterKeys = [DB.defCodeF];
+  }
+
+  if (!filterKeys.length || filterKeys.every(function(k){ return !groups[k] || !groups[k].length; })) {
+    accEl.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">해당 공종의 하자유형이 없습니다</div></div>';
+    return;
+  }
+
+  accEl.innerHTML = filterKeys.map(function(key){
+    var list = groups[key] || [];
+    if (!list.length) return '';
+    var grpNm = key === '_none' ? '공종 미지정' : (PROC_CODES[key] || key);
+    var grpCls = key === '_none' ? 'var(--t3)' : 'var(--blue)';
+    var rows = list.map(function(d){
+      var cost = d.avgCost && String(d.avgCost).replace(/[^0-9]/g,'') !== '0' && String(d.avgCost).trim() !== ''
+        ? (parseInt(d.avgCost)||0).toLocaleString()+'만원'
+        : '—';
+      var riskCls = d.riskLevel==='상'?'br':d.riskLevel==='중'?'bo':'bg';
+      return '<tr data-id="'+d.id+'" onclick="openDefDetail(this.dataset.id)" style="cursor:pointer">' +
+        '<td style="font-size:10px;color:var(--t3);font-family:monospace;white-space:nowrap">'+d.id+'</td>' +
+        '<td style="font-weight:700;color:var(--t9)">'+d.name+'</td>' +
+        '<td><span class="bdg bt" style="font-size:10px">'+d.category+'</span></td>' +
+        '<td>'+rkBdg(d.riskLevel)+'</td>' +
+        '<td style="color:var(--t7);font-size:11px;max-width:160px">'+d.mainCause+'</td>' +
+        '<td style="font-size:11px;color:var(--t5)">'+d.occurrenceTime+'</td>' +
+        '<td style="font-weight:700;color:var(--t9)">'+cost+'</td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+d.id+'" onclick="event.stopPropagation();editDef(this.dataset.id)">&#9998;</button>' +
+          '<button class="btn btn-danger btn-icon btn-sm" data-id="'+d.id+'" data-nm="'+escQ(d.name)+'" onclick="event.stopPropagation();askDel(\'defect\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    return '<div class="card" style="padding:0;margin-bottom:10px;overflow:hidden">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card2);border-bottom:1.5px solid var(--border);cursor:pointer" data-grp="'+key+'" onclick="toggleDefGrp(this)">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div style="width:10px;height:10px;border-radius:50%;background:'+grpCls+';flex-shrink:0"></div>' +
+          '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+grpNm+'</span>' +
+          '<span style="font-size:11px;color:var(--t5)">하자유형 '+list.length+'개</span>' +
+        '</div>' +
+        '<span style="font-size:12px;color:var(--t3)" id="defGrpArr-'+key+'">▼</span>' +
+      '</div>' +
+      '<div id="defGrpBody-'+key+'">' +
+        '<div class="tw"><table class="tbl">' +
+          '<thead><tr>' +
+            '<th style="width:80px">코드(ID)</th>' +
+            '<th>하자명</th>' +
+            '<th style="width:90px">분류</th>' +
+            '<th style="width:80px">위험등급</th>' +
+            '<th>주요원인</th>' +
+            '<th style="width:100px">발생시기</th>' +
+            '<th style="width:90px">보수비용</th>' +
+            '<th style="width:76px">관리</th>' +
+          '</tr></thead>' +
+          '<tbody>'+rows+'</tbody>' +
+        '</table></div>' +
+      '</div>' +
+    '</div>';
   }).join('');
+}
+
+function setDefCodeFilter(btn) {
+  document.querySelectorAll('#defCodeFb .fb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  DB.defCodeF = btn.dataset.f;
+  rDefs();
+}
+
+function toggleDefGrp(hdr) {
+  var key = hdr.dataset.grp;
+  var body = document.getElementById('defGrpBody-'+key);
+  var arr  = document.getElementById('defGrpArr-'+key);
+  if (!body) return;
+  var isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? '' : 'none';
+  if (arr) arr.textContent = isHidden ? '▼' : '▶';
 }
 function setDefCat(btn,cat){
 document.querySelectorAll('#defFb .fb').forEach(b=>b.classList.remove('on'));
@@ -1938,25 +2039,75 @@ function saveCL() {
 CRUD – 하자유형
 ════════════════════════════════ */
 function openDefForm(){DB.editId=null;document.getElementById('defTitle').textContent='🔍 하자유형 등록';['f-dNm','f-dCause','f-dPrev','f-dCost','f-dTime'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dRisk').value='상';document.getElementById('f-dLitig').value='높음';renderLinkedProcCbs([]);openOv('ovDef');}
-function editDef(id){const d=DB.defects.find(x=>x.id===id);if(!d)return;DB.editId=id;document.getElementById('defTitle').textContent='✏️ 하자유형 수정';const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dNm').value=d.name||'';document.getElementById('f-dCat').value=d.category||'누수';document.getElementById('f-dRisk').value=d.riskLevel||'상';document.getElementById('f-dLitig').value=d.litigationFreq||'높음';document.getElementById('f-dCost').value=d.avgCost||'';document.getElementById('f-dTime').value=d.occurrenceTime||'';document.getElementById('f-dCause').value=d.mainCause||'';document.getElementById('f-dPrev').value=d.prevention||'';renderLinkedProcCbs(d.linkedCodes||[]);openOv('ovDef');}
+function editDef(id) {
+  var d = DB.defects.find(function(x){return x.id===id;}); if(!d) return;
+  DB.editId = id;
+  document.getElementById('defTitle').textContent = '✏️ 하자유형 수정';
+  var sel = document.getElementById('f-dCat');
+  if (sel) sel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  document.getElementById('f-dId').value        = d.id           || '';
+  document.getElementById('f-dNm').value        = d.name         || '';
+  document.getElementById('f-dCat').value       = d.category     || '';
+  document.getElementById('f-dRisk').value      = d.riskLevel    || '상';
+  document.getElementById('f-dLitig').value     = d.litigationFreq || '높음';
+  document.getElementById('f-dCost').value      = d.avgCost      || '';
+  document.getElementById('f-dTime').value      = d.occurrenceTime || '';
+  document.getElementById('f-dCause').value     = d.mainCause    || '';
+  document.getElementById('f-dPrev').value      = d.prevention   || '';
+  // linkedCodes: 배열로 정규화 후 chip 렌더링
+  var linked = d.linkedCodes;
+  if (typeof linked === 'string') linked = linked.split('|').filter(Boolean);
+  if (!Array.isArray(linked)) linked = [];
+  renderLinkedProcCbs(linked);
+  openOv('ovDef');
+}
 function saveDef() {
   var nm = gv('f-dNm').trim();
   if (!nm) { toast('하자명을 입력하세요.', 'err'); return; }
   var codes = getLinkedCodes();
+  var costVal = gv('f-dCost').trim().replace(/[^0-9]/g, '');
   var data = {
-    name:nm, category:gv('f-dCat'), riskLevel:gv('f-dRisk'),
-    litigationFreq:gv('f-dLitig'), avgCost:gv('f-dCost'),
-    occurrenceTime:gv('f-dTime'), mainCause:gv('f-dCause'),
-    prevention:gv('f-dPrev'), linkedCodes:codes
+    name:           nm,
+    category:       gv('f-dCat'),
+    riskLevel:      gv('f-dRisk'),
+    litigationFreq: gv('f-dLitig'),
+    avgCost:        costVal,
+    occurrenceTime: gv('f-dTime'),
+    mainCause:      gv('f-dCause'),
+    prevention:     gv('f-dPrev'),
+    linkedCodes:    codes
   };
   var isEdit = !!DB.editId;
   var rowId;
   if (isEdit) {
     rowId = DB.editId;
-    Object.assign(DB.defects.find(function(d){return d.id===DB.editId;}), data);
+    // 사용자가 ID를 변경했으면 업데이트
+    var newId = gv('f-dId').trim();
+    if (newId && newId !== rowId) {
+      // ID 변경: 기존 삭제 후 새 ID로 추가
+      DB.defects = DB.defects.filter(function(d){return d.id!==rowId;});
+      syncToSheet('deleteRow', {sheet:CFG.SHEET.defects, id:rowId});
+      rowId = newId;
+      DB.defects.push(Object.assign({id:rowId}, data));
+    } else {
+      Object.assign(DB.defects.find(function(d){return d.id===rowId;})||{}, data);
+    }
     toast('"'+nm+'" 수정 완료', 'ok');
   } else {
-    rowId = 'D' + String(Date.now()).slice(-5);
+    var inputId = gv('f-dId').trim();
+    if (inputId) {
+      rowId = inputId;
+    } else {
+      // 공종코드 기반 자동 ID 생성
+      var firstCode = codes.length > 0 ? codes[0] : '';
+      var prefix = firstCode ? firstCode.slice(0,3) : 'D';
+      var seq = String(Date.now()).slice(-4);
+      rowId = prefix + '_' + seq;
+    }
+    // 중복 ID 체크
+    if (DB.defects.find(function(d){return d.id===rowId;})) {
+      rowId = 'D' + String(Date.now()).slice(-5);
+    }
     DB.defects.push(Object.assign({id:rowId}, data));
     toast('"'+nm+'" 등록 완료', 'ok');
   }
@@ -2416,7 +2567,10 @@ function applySheetData(key, rows) {
     }
   } else if (key === 'defects') {
     var pd = rows.map(function(r){
-      return Object.assign({},r,{linkedCodes:r.linkedCodes?String(r.linkedCodes).split('|').filter(Boolean):[]});
+      var lc = r.linkedCodes;
+      if (typeof lc === 'string') lc = lc.split('|').filter(Boolean);
+      else if (!Array.isArray(lc)) lc = [];
+      return Object.assign({},r,{linkedCodes:lc});
     });
     if (JSON.stringify(DB.defects) !== JSON.stringify(pd)) { DB.defects = pd; changed = true; }
   } else if (key === 'checklists') {
@@ -2705,6 +2859,8 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
+
 
 
 </script>
