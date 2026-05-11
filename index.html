@@ -475,6 +475,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1434,15 +1435,26 @@ function rDefs() {
   var el = document.getElementById('defCount');
   if (el) el.textContent = DB.defects.length+'개';
 
-  // 공종 필터바 (PROC_CODES 기반)
+  // 공종 필터바: linkedCodes 기반으로 실제 사용된 코드만 표시
   var fbEl = document.getElementById('defCodeFb');
   if (fbEl) {
-    var codeKeys = Object.keys(PROC_CODES);
+    // 실제 사용 중인 공종코드 집합
+    var usedCodes = {};
+    DB.defects.forEach(function(d){
+      var raw = d.linkedCodes;
+      var codes = Array.isArray(raw) ? raw : (typeof raw==='string' && raw ? raw.split('|') : []);
+      codes.forEach(function(c){ c = c.trim(); if(c) usedCodes[c] = (usedCodes[c]||0)+1; });
+    });
+    // PROC_CODES에 있는 것 우선, 없는 것도 포함
+    var allCodeKeys = Object.keys(PROC_CODES);
+    Object.keys(usedCodes).forEach(function(k){ if(allCodeKeys.indexOf(k)<0) allCodeKeys.push(k); });
+    var displayKeys = allCodeKeys.filter(function(k){ return usedCodes[k]; });
     fbEl.innerHTML =
       '<button class="fb '+(DB.defCodeF==='all'?'on':'')+'" data-f="all" onclick="setDefCodeFilter(this)">전체</button>' +
-      codeKeys.map(function(k){
-        var cnt = DB.defects.filter(function(d){return (d.linkedCodes||[]).indexOf(k)>=0;}).length;
-        return '<button class="fb '+(DB.defCodeF===k?'on':'')+'" data-f="'+k+'" onclick="setDefCodeFilter(this)">'+PROC_CODES[k]+(cnt?'<span style="margin-left:4px;background:rgba(0,0,0,.12);border-radius:10px;padding:0 5px;font-size:10px">'+cnt+'</span>':'')+'</button>';
+      displayKeys.map(function(k){
+        var nm = PROC_CODES[k] || k;
+        var cnt = usedCodes[k] || 0;
+        return '<button class="fb '+(DB.defCodeF===k?'on':'')+'" data-f="'+k+'" onclick="setDefCodeFilter(this)">'+nm+'<span style="margin-left:4px;background:rgba(0,0,0,.12);border-radius:10px;padding:0 5px;font-size:10px">'+cnt+'</span></button>';
       }).join('');
   }
 
@@ -1462,20 +1474,36 @@ function rDefs() {
     return;
   }
 
-  // 공종별로 그룹화 (linkedCodes 기준)
+  // 공종별로 그룹화 (linkedCodes 기준) - 형태 무관하게 정규화
   var groups = {};
   groups['_none'] = [];
   Object.keys(PROC_CODES).forEach(function(k){ groups[k] = []; });
 
   allDefs.forEach(function(d){
-    var codes = d.linkedCodes || [];
+    // linkedCodes 정규화: 배열, | 구분 문자열, 빈값 모두 처리
+    var raw = d.linkedCodes;
+    var codes = [];
+    if (Array.isArray(raw)) {
+      codes = raw.filter(Boolean);
+    } else if (typeof raw === 'string' && raw.trim()) {
+      codes = raw.split('|').map(function(c){return c.trim();}).filter(Boolean);
+    }
+
     if (!codes.length) {
       groups['_none'].push(d);
     } else {
+      var matched = false;
       codes.forEach(function(c){
-        if (groups[c]) groups[c].push(d);
-        else { groups[c] = [d]; }
+        if (groups[c] !== undefined) {
+          groups[c].push(d);
+          matched = true;
+        } else {
+          // PROC_CODES에 없는 코드도 동적 추가
+          groups[c] = [d];
+          matched = true;
+        }
       });
+      if (!matched) groups['_none'].push(d);
     }
   });
 
@@ -2859,6 +2887,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
