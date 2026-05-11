@@ -476,6 +476,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1435,26 +1436,25 @@ function rDefs() {
   var el = document.getElementById('defCount');
   if (el) el.textContent = DB.defects.length+'개';
 
-  // 공종 필터바: linkedCodes 기반으로 실제 사용된 코드만 표시
+  // 공종 필터바: PROC_CODES 전체 표시 + 하자유형 카운트
   var fbEl = document.getElementById('defCodeFb');
   if (fbEl) {
-    // 실제 사용 중인 공종코드 집합
-    var usedCodes = {};
+    // 공종별 하자유형 카운트
+    var cntMap = {};
     DB.defects.forEach(function(d){
       var raw = d.linkedCodes;
-      var codes = Array.isArray(raw) ? raw : (typeof raw==='string' && raw ? raw.split('|') : []);
-      codes.forEach(function(c){ c = c.trim(); if(c) usedCodes[c] = (usedCodes[c]||0)+1; });
+      var codes = Array.isArray(raw) ? raw : (typeof raw==='string' && raw ? raw.split('|').map(function(c){return c.trim();}) : []);
+      codes.filter(Boolean).forEach(function(c){ cntMap[c] = (cntMap[c]||0)+1; });
     });
-    // PROC_CODES에 있는 것 우선, 없는 것도 포함
-    var allCodeKeys = Object.keys(PROC_CODES);
-    Object.keys(usedCodes).forEach(function(k){ if(allCodeKeys.indexOf(k)<0) allCodeKeys.push(k); });
-    var displayKeys = allCodeKeys.filter(function(k){ return usedCodes[k]; });
+    var codeKeys = Object.keys(PROC_CODES);
     fbEl.innerHTML =
       '<button class="fb '+(DB.defCodeF==='all'?'on':'')+'" data-f="all" onclick="setDefCodeFilter(this)">전체</button>' +
-      displayKeys.map(function(k){
-        var nm = PROC_CODES[k] || k;
-        var cnt = usedCodes[k] || 0;
-        return '<button class="fb '+(DB.defCodeF===k?'on':'')+'" data-f="'+k+'" onclick="setDefCodeFilter(this)">'+nm+'<span style="margin-left:4px;background:rgba(0,0,0,.12);border-radius:10px;padding:0 5px;font-size:10px">'+cnt+'</span></button>';
+      codeKeys.map(function(k){
+        var cnt = cntMap[k] || 0;
+        return '<button class="fb '+(DB.defCodeF===k?'on':'')+'" data-f="'+k+'" onclick="setDefCodeFilter(this)">' +
+          PROC_CODES[k] +
+          (cnt ? '<span style="margin-left:4px;background:rgba(43,108,176,.15);border-radius:10px;padding:0 5px;font-size:10px;color:var(--blue)">'+cnt+'</span>' : '') +
+        '</button>';
       }).join('');
   }
 
@@ -2887,6 +2887,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
