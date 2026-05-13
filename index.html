@@ -498,6 +498,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1998,6 +1999,7 @@ function saveSite() {
     toast('"'+nm+'" 등록 완료', 'ok');
     buildSiteSel();
   }
+  setWriteLock('sites', 8000);
   syncToSheet('upsertRow', {
     sheet: CFG.SHEET.sites, id: rowId,
     row: Object.assign({id:rowId}, data)
@@ -2106,6 +2108,7 @@ function saveCL() {
     DB.clCode = data.code;
     toast('등록 완료', 'ok');
   }
+  setWriteLock('checklists', 8000);  // 8초 잠금
   syncToSheet('upsertRow', {
     sheet: CFG.SHEET.checklists, id: rowId,
     row: Object.assign({id:rowId}, data)
@@ -2206,6 +2209,7 @@ function saveDef() {
     DB.defects.push(Object.assign({id:rowId}, data));
     toast('"'+nm+'" 등록 완료', 'ok');
   }
+  setWriteLock('defects', 8000);
   syncToSheet('upsertRow', {
     sheet: CFG.SHEET.defects, id: rowId,
     row: Object.assign({id:rowId}, data, {linkedCodes: codes.join('|')})
@@ -2244,6 +2248,8 @@ function confirmDel() {
     sheetKey = CFG.SHEET.defects;
   }
   if (sheetKey) {
+    var delLockKey = Object.entries(CFG.SHEET).find(function(e){return e[1]===sheetKey;});
+    if (delLockKey) setWriteLock(delLockKey[0], 8000);
     syncToSheet('deleteRow', { sheet: sheetKey, id: id });
     addSyncLog('삭제: ' + type + ' id=' + id);
   }
@@ -2268,6 +2274,12 @@ function getSyncPayload(t){return {};}
 function applySyncData(t,data){}
 function syncToSheet(action, data, onDone) {
   if (!sheetEnabled()) { if (onDone) onDone(null); return; }
+  // 해당 시트 폴링 잠금 (6초)
+  var sheetToKey = {};
+  Object.entries(CFG.SHEET).forEach(function(e){ sheetToKey[e[1]] = e[0]; });
+  var lockKey = sheetToKey[data && data.sheet];
+  if (lockKey) setWriteLock(lockKey, 6000);
+
   var payload = JSON.stringify(Object.assign({ action: action }, data));
   fetch(CFG.APPS_SCRIPT_URL, {
     method: 'POST',
@@ -2622,6 +2634,13 @@ function pollAllSheets() {
 
 function pollSheet(key) {
   if (!sheetEnabled()) return;
+  if (isLocked(key)) {
+    // 잠금 중: 다음 시트로 진행
+    var nextKeys2 = { sites:'defects', defects:'checklists', checklists:'codes', codes:'gantt', gantt:'alerts', alerts:'cats', cats:null };
+    var nk = nextKeys2[key];
+    if (nk) pollSheet(nk);
+    return;
+  }
   var sheetName = CFG.SHEET[key];
   var nextKeys = { sites:'defects', defects:'checklists', checklists:'codes', codes:'gantt', gantt:'alerts', alerts:'cats', cats:null };
 
@@ -2971,6 +2990,23 @@ function setDefCatByData(btn) {
 
 
 
+
+
+var _writeLock = {};  // key별 쓰기 잠금 타이머
+
+function setWriteLock(key, ms) {
+  // 해당 key의 폴링을 ms 동안 건너뜀
+  _writeLock[key] = Date.now() + (ms || 6000);
+  // 해시도 무효화하여 잠금 해제 후 재비교
+  _lastHash[key] = null;
+}
+
+function isLocked(key) {
+  if (!_writeLock[key]) return false;
+  if (Date.now() < _writeLock[key]) return true;
+  delete _writeLock[key];
+  return false;
+}
 
 </script>
 </body> </html>
