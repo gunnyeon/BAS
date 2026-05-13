@@ -503,6 +503,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -2103,8 +2104,7 @@ function saveCL() {
   if (isEdit) {
     rowId = DB.editId;
     var existing = DB.checklists.find(function(c){return c.id===DB.editId;});
-    if (existing) data.checked = existing.checked;
-    Object.assign(existing, data);
+    if (existing) { data.checked = existing.checked; Object.assign(existing, data); }
     toast('수정 완료', 'ok');
   } else {
     rowId = 'C' + Date.now();
@@ -2112,16 +2112,29 @@ function saveCL() {
     DB.clCode = data.code;
     toast('등록 완료', 'ok');
   }
-  setWriteLock('checklists', 8000);  // 8초 잠금
+
+  // 1. 모달 즉시 닫기
+  closeOv('ovCL');
+
+  // 2. 화면 즉시 갱신 (DB는 이미 업데이트됨)
+  rCLContent();
+
+  // 3. 필터바 업데이트 (코드 버튼 카운트 갱신)
+  var fbEl = document.getElementById('clFb');
+  if (fbEl) {
+    var codes = Object.keys(PROC_CODES);
+    fbEl.innerHTML = codes.map(function(k){
+      return '<button class="fb '+(DB.clCode===k?'on':'')+'" data-k="'+k+'" onclick="setClCode(this,this.dataset.k)">'+PROC_CODES[k]+'</button>';
+    }).join('');
+  }
+
+  // 4. 시트 반영 (비동기, UI와 무관)
+  setWriteLock('checklists', 8000);
   syncToSheet('upsertRow', {
     sheet: CFG.SHEET.checklists, id: rowId,
     row: Object.assign({id:rowId}, data)
   });
   addSyncLog((isEdit?'수정':'등록') + ': 체크리스트 "'+item+'"');
-  closeOv('ovCL');
-  // 즉시 재렌더링
-  rCLContent();
-  rCL();
 }
 /* ════════════════════════════════
 CRUD – 하자유형
@@ -3011,6 +3024,7 @@ function isLocked(key) {
   delete _writeLock[key];
   return false;
 }
+
 
 
 </script>
