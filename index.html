@@ -281,11 +281,14 @@ button,input,select,textarea{font-family:inherit}
   <div class="fgrid">
     <div class="fg">
       <label class="f-lbl">🔁 검사/시험 주기 및 빈도</label>
-      <input class="fi" id="f-clFreq" placeholder="예) 매일, 주 1회, 공종 시작 전, 각 단계별 등">
+      <textarea class="fta" id="f-clFreq" rows="2" placeholder="예) 타설전 마다
+거푸집 탈형후" style="resize:vertical;min-height:54px"></textarea>
     </div>
     <div class="fg">
       <label class="f-lbl">✅ 합격 기준</label>
-      <input class="fi" id="f-clPass" placeholder="예) 완전 청소 상태, 누수 없음">
+      <textarea class="fta" id="f-clPass" rows="3" placeholder="예) 1. 완전 청소 상태
+2. 누수 없음
+3. 두께 기준 충족" style="resize:vertical;min-height:70px"></textarea>
     </div>
     <div class="fg">
       <label class="f-lbl">검사방법</label>
@@ -424,6 +427,7 @@ button,input,select,textarea{font-family:inherit}
 </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
   <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
 
 
 
@@ -1124,20 +1128,44 @@ function rCLContent() {
 }
 function tglCL(id) {
   var c = DB.checklists.find(function(x){return x.id===id;}); if(!c) return;
-  c.checked = !c.checked;
 
-  // 해당 행 즉시 갱신
+  // 1. DB 즉시 업데이트
+  c.checked = !c.checked;
+  var isDone = c.checked;
+
+  // 2. 진행률 즉시 계산 및 갱신 (가장 먼저)
+  var items    = DB.checklists.filter(function(x){return x.code===DB.clCode;});
+  var done     = items.filter(function(x){return x.checked;}).length;
+  var pct      = items.length ? Math.round(done/items.length*100) : 0;
+  var pctColor = pct>=80?'#276749':pct>=50?'#B7791F':'#2B6CB0';
+  var pctBg    = pct>=80?'#F0FFF4':pct>=50?'#FFFFF0':'#EBF8FF';
+
+  var bar = document.getElementById('clPctBar');
+  if (bar) { bar.style.width = pct+'%'; bar.style.background = pctColor; }
+
+  var txt = document.getElementById('clPctTxt');
+  if (txt) { txt.textContent = done+'/'+items.length; txt.style.color = pctColor; txt.style.background = pctBg; }
+
+  // 3. 행 즉시 갱신
   var row = document.getElementById('cli-'+id);
   if (row) {
-    var isDone = c.checked;
     row.style.background = isDone ? '#F0FFF4' : 'var(--card)';
+
+    // 체크박스
     var cb = row.querySelector('div[style*="border-radius:5px"]');
     if (cb) {
       cb.style.background  = isDone ? '#276749' : '#fff';
       cb.style.borderColor = isDone ? '#276749' : 'var(--border2)';
       cb.innerHTML         = isDone ? '&#10003;' : '';
     }
-    var badge = row.querySelector('span[style*="border-radius:4px"]');
+
+    // 완료/미완료 뱃지
+    var badge = row.querySelector('span[style*="FFF5F5"], span[style*="F0FFF4"][style*="C53030"], span[style*="F0FFF4"][style*="276749"]');
+    if (!badge) {
+      // fallback: 결과 컬럼의 첫 번째 span
+      var lastCell = row.lastElementChild;
+      if (lastCell) badge = lastCell.querySelector('span');
+    }
     if (badge) {
       badge.textContent      = isDone ? '완료' : '미완료';
       badge.style.background = isDone ? '#F0FFF4' : '#FFF5F5';
@@ -1146,30 +1174,8 @@ function tglCL(id) {
     }
   }
 
-  // 진행률 즉시 갱신 (id로 직접 접근)
-  var items    = DB.checklists.filter(function(x){return x.code===DB.clCode;});
-  var done     = items.filter(function(x){return x.checked;}).length;
-  var pct      = items.length ? Math.round(done/items.length*100) : 0;
-  var pctColor = pct>=80?'#276749':pct>=50?'#B7791F':'#2B6CB0';
-  var pctBg    = pct>=80?'#F0FFF4':pct>=50?'#FFFFF0':'#EBF8FF';
-
-  var bar = document.getElementById('clPctBar');
-  if (bar) {
-    bar.style.width      = pct+'%';
-    bar.style.background = pctColor;
-  }
-  var txt = document.getElementById('clPctTxt');
-  if (txt) {
-    txt.textContent      = done+'/'+items.length;
-    txt.style.color      = pctColor;
-    txt.style.background = pctBg;
-  }
-
-  // 시트 반영
-  syncToSheet('upsertRow', {
-    sheet: CFG.SHEET.checklists, id: c.id,
-    row: Object.assign({}, c)
-  });
+  // 4. 시트 반영 (비동기, UI 갱신 완료 후)
+  syncToSheet('upsertRow', { sheet: CFG.SHEET.checklists, id: c.id, row: Object.assign({}, c) });
 }
 function resetCL(){ DB.checklists.filter(c=>c.code===DB.clCode).forEach(c=>c.checked=false); rCLContent(); toast('초기화되었습니다.','info'); }
 function submitCL() {
@@ -2977,6 +2983,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
