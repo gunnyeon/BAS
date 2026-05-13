@@ -1055,7 +1055,7 @@ function rCLContent() {
         '</div>' +
 
         // ── 테이블 헤더
-        '<div style="display:grid;grid-template-columns:36px 1fr 220px 140px 160px 120px 80px;background:var(--card2);border-bottom:1.5px solid var(--border);border-top:1px solid var(--border)">' +
+        '<div style="display:grid;grid-template-columns:36px minmax(180px,2fr) minmax(100px,1fr) minmax(100px,1fr) minmax(100px,1fr) minmax(90px,1fr) 80px;background:var(--card2);border-bottom:1.5px solid var(--border);border-top:1px solid var(--border)">' +
           '<div style="padding:8px 10px"></div>' +
           '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">점검 항목 / 기준내용</div>' +
           '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">검사시기</div>' +
@@ -1074,7 +1074,7 @@ function rCLContent() {
           : '<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:#F0FFF4;color:#276749;border:1px solid #9AE6B4">권장</span>';
 
         html +=
-          '<div id="cli-'+c.id+'" data-id="'+c.id+'" style="display:grid;grid-template-columns:36px 1fr 220px 140px 160px 120px 80px;border-bottom:1px solid var(--border);'+rowBg+';transition:background .15s;cursor:pointer" onclick="tglCL(this.dataset.id)">' +
+          '<div id="cli-'+c.id+'" data-id="'+c.id+'" style="display:grid;grid-template-columns:36px minmax(180px,2fr) minmax(100px,1fr) minmax(100px,1fr) minmax(100px,1fr) minmax(90px,1fr) 80px;border-bottom:1px solid var(--border);'+rowBg+';transition:background .15s;cursor:pointer" onclick="tglCL(this.dataset.id)">' +
 
           // 체크박스
           '<div style="display:flex;align-items:center;justify-content:center;padding:12px 0">' +
