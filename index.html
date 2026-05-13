@@ -302,7 +302,18 @@ button,input,select,textarea{font-family:inherit}
   </div>
 </div>
 <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCL')">취소</button><button class="btn btn-primary" onclick="saveCL()">💾 저장</button></div>
-</div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 수정 시 코드와 공종명 모두 변경 가능합니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자 코드(ID) <span style="font-size:10px;color:var(--t3);font-weight:400">자동생성 또는 직접입력</span></label><input class="fi" id="f-dId" placeholder="예) D00001" style="font-family:monospace"></div> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="text" placeholder="예) 500 (숫자만 입력, 단위: 만원)"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan"> <label class="f-lbl">연계 공종 (복수 선택 가능)</label> <div id="f-dProcWrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);min-height:38px"></div> </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
+</div> </div> <!-- 체크리스트 엑셀 업로드 모달 --> <div class="ov" id="ovCLUpload"> <div class="modal lg"> <div class="m-hd"><div class="m-title">📂 체크리스트 업로드</div><button class="m-x" onclick="closeOv('ovCLUpload')">✕</button></div> <div style="font-size:12px;color:var(--t5);margin-bottom:10px"><strong>필수 컬럼:</strong> 공종코드, 하자ID, 체크항목, 기준내용 &nbsp;<button class="btn btn-ghost btn-sm" onclick="downloadCLTemplate()">📥 양식 다운로드</button></div> <div class="upload-zone" onclick="document.getElementById('clFileInput').click()" ondrop="handleCLDrop(event)" ondragover="event.preventDefault()" style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--card2)"> <div style="font-size:28px;margin-bottom:6px">📋</div> <div style="font-size:13px;font-weight:700;color:var(--t7)">파일 드래그 또는 클릭하여 업로드</div> <div style="font-size:11px;color:var(--t3);margin-top:4px">CSV 지원</div> </div> <input type="file" id="clFileInput" accept=".csv" style="display:none" onchange="handleCLFile(this)"> <div id="clUploadPreview" style="display:none;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700">미리보기</span><button class="btn btn-ghost btn-sm" onclick="clearCLUpload()">✕ 취소</button></div><div class="upload-preview" id="clPreviewTable"></div></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCLUpload')">닫기</button><button class="btn btn-primary" id="clImportBtn" onclick="importCLData()" style="display:none">✅ 반영</button></div> </div></div> <!-- 공종코드 관리 모달 --> <div class="ov" id="ovCodeMgr"> <div class="modal md"> <div class="m-hd"><div class="m-title">⚙️ 공종코드 관리</div><button class="m-x" onclick="closeOv('ovCodeMgr')">✕</button></div> <p style="font-size:12px;color:var(--t5);margin-bottom:12px">공종코드를 추가·수정·삭제할 수 있습니다. 수정 시 코드와 공종명 모두 변경 가능합니다.</p> <div style="display:flex;gap:7px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card2);border-radius:9px;border:1.5px solid var(--border)"> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">코드 (영문 대문자)</label> <input class="fi" id="newCodeKey" placeholder="예) EXCAVATION" oninput="this.value=this.value.toUpperCase()"> </div> <div class="fg" style="flex:1;margin-bottom:0"> <label class="f-lbl">공종명</label> <input class="fi" id="newCodeName" placeholder="예) 굴착공사"> </div> <button class="btn btn-primary btn-sm" onclick="addProcCode()" style="white-space:nowrap;flex-shrink:0">＋ 추가</button> </div> <div id="codeTableWrap"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovCodeMgr')">닫기</button></div> </div> </div> <!-- 하자유형 폼 --> <div class="ov" id="ovDef"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="defTitle">🔍 하자유형 등록</div><button class="m-x" onclick="closeOv('ovDef')">✕</button></div> <div class="fgrid"> <div class="fg"><label class="f-lbl">하자 코드(ID) <span style="font-size:10px;color:var(--t3);font-weight:400">자동생성 또는 직접입력</span></label><input class="fi" id="f-dId" placeholder="예) D00001" style="font-family:monospace"></div> <div class="fg"><label class="f-lbl">하자명<span class="f-req">*</span></label><input class="fi" id="f-dNm" placeholder="예) 욕실 누수"></div> <div class="fg"><label class="f-lbl">분류</label> <div style="display:flex;gap:5px"> <select class="fs" id="f-dCat" style="flex:1"></select> <button class="btn btn-ghost btn-sm" onclick="openDefCatMgr()">⚙️</button> </div> </div> <div class="fg"><label class="f-lbl">위험등급</label><select class="fs" id="f-dRisk"><option value="상">상</option><option value="중">중</option><option value="하">하</option></select></div> <div class="fg"><label class="f-lbl">소송빈도</label><select class="fs" id="f-dLitig"><option value="매우높음">매우높음</option><option value="높음">높음</option><option value="중간">중간</option><option value="낮음">낮음</option></select></div> <div class="fg"><label class="f-lbl">평균보수비용(만원)</label><input class="fi" id="f-dCost" type="text" placeholder="예) 500 (숫자만 입력, 단위: 만원)"></div> <div class="fg"><label class="f-lbl">발생시기</label><input class="fi" id="f-dTime" placeholder="예) 입주 후 1~2년"></div> <div class="fg fspan">
+  <label class="f-lbl">연계 공종 (복수 선택 가능)</label>
+  <div style="border:1.5px solid var(--border2);border-radius:7px;background:var(--card2);padding:10px">
+    <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+      <select id="linkedProcSel" class="fs" style="flex:1;padding:6px 8px;font-size:12px">
+        <option value="">-- 공종 선택 후 추가 --</option>
+      </select>
+      <button type="button" class="btn btn-primary btn-sm" onclick="addLinkedProc()">＋ 추가</button>
+    </div>
+    <div id="linkedChips" style="display:flex;flex-wrap:wrap;gap:5px;min-height:24px"></div>
+  </div>
+</div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
 <div class="ov" id="ovSync">
 <div class="modal lg">
 <div class="m-hd">
@@ -413,6 +424,7 @@ button,input,select,textarea{font-family:inherit}
 </div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
   <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
 
 
 
@@ -1639,29 +1651,25 @@ function delDefCat(cat) {
 }
 /* 하자유형 폼 – 연계 공종 체크박스 렌더 */
 function renderLinkedProcCbs(selected) {
-var wrap = document.getElementById('f-dProcWrap'); if (!wrap) return;
-// 현재 선택된 codes (기존 chip에서 data-code 읽기)
-var current = selected || [];
-// 셀렉트 + chip 방식
-wrap.innerHTML =
-  '<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">' +
-    '<select id="linkedProcSel" class="fs" style="flex:1;padding:5px 8px;font-size:12px">' +
-      '<option value="">-- 공종 선택 --</option>' +
+  // linkedProcSel 옵션 갱신
+  var sel = document.getElementById('linkedProcSel');
+  if (sel) {
+    sel.innerHTML = '<option value="">-- 공종 선택 후 추가 --</option>' +
       Object.entries(PROC_CODES).map(function(e){
         return '<option value="'+e[0]+'">'+e[1]+'</option>';
-      }).join('') +
-    '</select>' +
-    '<button type="button" class="btn btn-primary btn-sm" onclick="addLinkedProc()" style="white-space:nowrap">＋ 추가</button>' +
-  '</div>' +
-  '<div id="linkedChips" style="display:flex;flex-wrap:wrap;gap:5px;min-height:28px">' +
-    current.map(function(k){
-      var nm = PROC_CODES[k] || k;
-      return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">' +
-        nm +
-        '<button type="button" data-code="'+k+'" onclick="removeLinkedProc(this)" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--blue);padding:0;line-height:1">✕</button>' +
-      '</span>';
-    }).join('') +
-  '</div>';
+      }).join('');
+  }
+  // chips 갱신
+  var chips = document.getElementById('linkedChips');
+  if (!chips) return;
+  var current = selected || [];
+  chips.innerHTML = current.map(function(k){
+    var nm = PROC_CODES[k] || k;
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">' +
+      nm +
+      '<button type="button" data-code="'+k+'" onclick="removeLinkedProc(this)" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--blue);padding:0;line-height:1">✕</button>' +
+    '</span>';
+  }).join('');
 }
 function addLinkedProc() {
 var sel = document.getElementById('linkedProcSel'); if (!sel) return;
@@ -1681,8 +1689,12 @@ function removeLinkedProc(btn) {
 var chip = btn.parentElement; if (chip) chip.remove();
 }
 function getLinkedCodes() {
-var chips = document.getElementById('linkedChips'); if (!chips) return [];
-return Array.from(chips.querySelectorAll('[data-code]')).map(function(b){return b.dataset.code;});
+  var chips = document.getElementById('linkedChips');
+  if (!chips) return [];
+  var btns = chips.querySelectorAll('[data-code]');
+  var result = [];
+  btns.forEach(function(b){ if(b.dataset.code) result.push(b.dataset.code); });
+  return result;
 }
 /* ════════════════════════════════
 현장 관리
@@ -2066,7 +2078,20 @@ function saveCL() {
 /* ════════════════════════════════
 CRUD – 하자유형
 ════════════════════════════════ */
-function openDefForm(){DB.editId=null;document.getElementById('defTitle').textContent='🔍 하자유형 등록';['f-dNm','f-dCause','f-dPrev','f-dCost','f-dTime'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const sel=document.getElementById('f-dCat');if(sel)sel.innerHTML=DEF_CATS.map(c=>'<option value="'+c+'">'+c+'</option>').join('');document.getElementById('f-dRisk').value='상';document.getElementById('f-dLitig').value='높음';renderLinkedProcCbs([]);openOv('ovDef');}
+function openDefForm() {
+  DB.editId = null;
+  document.getElementById('defTitle').textContent = '🔍 하자유형 등록';
+  var idEl = document.getElementById('f-dId'); if(idEl) idEl.value = '';
+  ['f-dNm','f-dCause','f-dPrev','f-dCost','f-dTime'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  var sel = document.getElementById('f-dCat');
+  if (sel) sel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  document.getElementById('f-dRisk').value = '상';
+  document.getElementById('f-dLitig').value = '높음';
+  renderLinkedProcCbs([]);
+  openOv('ovDef');
+}
 function editDef(id) {
   var d = DB.defects.find(function(x){return x.id===id;}); if(!d) return;
   DB.editId = id;
@@ -2093,6 +2118,7 @@ function saveDef() {
   var nm = gv('f-dNm').trim();
   if (!nm) { toast('하자명을 입력하세요.', 'err'); return; }
   var codes = getLinkedCodes();
+  console.log('[saveDef] linkedCodes:', codes);  // 디버그용
   var costVal = gv('f-dCost').trim().replace(/[^0-9]/g, '');
   var data = {
     name:           nm,
@@ -2887,6 +2913,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
