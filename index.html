@@ -491,6 +491,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1022,9 +1023,9 @@ function rCLContent() {
         // 진행률 바
         '<div style="display:flex;align-items:center;gap:8px;flex:1;max-width:260px">' +
           '<div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">' +
-            '<div style="height:100%;width:'+pct+'%;background:'+pctColor+';border-radius:4px;transition:width .4s"></div>' +
+            '<div id="clPctBar" style="height:100%;width:'+pct+'%;background:'+pctColor+';border-radius:4px;transition:width .4s"></div>' +
           '</div>' +
-          '<span style="font-size:12px;font-weight:700;color:'+pctColor+';white-space:nowrap;background:'+pctBg+';padding:2px 8px;border-radius:4px">'+done+'/'+items.length+'</span>' +
+          '<span id="clPctTxt" style="font-size:12px;font-weight:700;color:'+pctColor+';white-space:nowrap;background:'+pctBg+';padding:2px 8px;border-radius:4px">'+done+'/'+items.length+'</span>' +
         '</div>' +
       '</div>' +
       '<div style="display:flex;gap:6px;flex-shrink:0">' +
@@ -1125,44 +1126,43 @@ function tglCL(id) {
   var c = DB.checklists.find(function(x){return x.id===id;}); if(!c) return;
   c.checked = !c.checked;
 
-  // 해당 행 즉시 시각적 갱신
+  // 해당 행 즉시 갱신
   var row = document.getElementById('cli-'+id);
   if (row) {
     var isDone = c.checked;
-    // 행 배경색
     row.style.background = isDone ? '#F0FFF4' : 'var(--card)';
-    // 체크박스 갱신
     var cb = row.querySelector('div[style*="border-radius:5px"]');
     if (cb) {
-      cb.style.background    = isDone ? '#276749' : '#fff';
-      cb.style.borderColor   = isDone ? '#276749' : 'var(--border2)';
-      cb.innerHTML           = isDone ? '&#10003;' : '';
+      cb.style.background  = isDone ? '#276749' : '#fff';
+      cb.style.borderColor = isDone ? '#276749' : 'var(--border2)';
+      cb.innerHTML         = isDone ? '&#10003;' : '';
     }
-    // 완료/미완료 뱃지 갱신
     var badge = row.querySelector('span[style*="border-radius:4px"]');
     if (badge) {
-      badge.textContent     = isDone ? '완료' : '미완료';
-      badge.style.background= isDone ? '#F0FFF4' : '#FFF5F5';
-      badge.style.color     = isDone ? '#276749' : '#C53030';
-      badge.style.border    = '1px solid ' + (isDone ? '#9AE6B4' : '#FEB2B2');
+      badge.textContent      = isDone ? '완료' : '미완료';
+      badge.style.background = isDone ? '#F0FFF4' : '#FFF5F5';
+      badge.style.color      = isDone ? '#276749' : '#C53030';
+      badge.style.border     = '1px solid ' + (isDone ? '#9AE6B4' : '#FEB2B2');
     }
   }
 
-  // 상단 진행률 즉시 갱신
-  var items = DB.checklists.filter(function(x){return x.code===DB.clCode;});
-  var done  = items.filter(function(x){return x.checked;}).length;
-  var pct   = items.length ? Math.round(done/items.length*100) : 0;
+  // 진행률 즉시 갱신 (id로 직접 접근)
+  var items    = DB.checklists.filter(function(x){return x.code===DB.clCode;});
+  var done     = items.filter(function(x){return x.checked;}).length;
+  var pct      = items.length ? Math.round(done/items.length*100) : 0;
   var pctColor = pct>=80?'#276749':pct>=50?'#B7791F':'#2B6CB0';
   var pctBg    = pct>=80?'#F0FFF4':pct>=50?'#FFFFF0':'#EBF8FF';
-  // 진행률 바
-  var bar = document.querySelector('#clContent .pb-f, #clContent [style*="transition:width"]');
-  if (bar) { bar.style.width = pct+'%'; bar.style.background = pctColor; }
-  // 진행률 텍스트
-  var txt = document.querySelector('#clContent [style*="border-radius:4px"][style*="font-weight:700"]');
-  if (txt && txt.textContent.includes('/')) {
-    txt.textContent     = done+'/'+items.length;
-    txt.style.color     = pctColor;
-    txt.style.background= pctBg;
+
+  var bar = document.getElementById('clPctBar');
+  if (bar) {
+    bar.style.width      = pct+'%';
+    bar.style.background = pctColor;
+  }
+  var txt = document.getElementById('clPctTxt');
+  if (txt) {
+    txt.textContent      = done+'/'+items.length;
+    txt.style.color      = pctColor;
+    txt.style.background = pctBg;
   }
 
   // 시트 반영
@@ -2977,6 +2977,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
