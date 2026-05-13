@@ -1100,16 +1100,16 @@ function rCLContent() {
           '</div>' +
 
           // 검사시기
-          (function(){ var v=c.freq; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
+          (function(){ var v=c.freq; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:normal;word-break:keep-all;line-height:1.6">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
 
           // 합격기준
-          (function(){ var v=c.pass; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
+          (function(){ var v=c.pass; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:normal;word-break:keep-all;line-height:1.6">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
 
           // 검사방법
-          (function(){ var v=c.method; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
+          (function(){ var v=c.method; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:normal;word-break:keep-all;line-height:1.6">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
 
           // 실명확인
-          (function(){ var v=c.inspector; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
+          (function(){ var v=c.inspector; return '<div style="padding:10px 12px;font-size:12px;color:var(--t7);line-height:1.7">'+(v ? v.split('\n').map(function(l){return l?'<div style="white-space:normal;word-break:keep-all;line-height:1.6">'+l+'</div>':'<div style="height:4px"></div>';}).join('') : '<span style="color:var(--t3)">—</span>')+'</div>'; })()+
 
           // 완료/관리 버튼
           '<div style="padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px" onclick="event.stopPropagation()">' +
