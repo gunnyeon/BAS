@@ -489,6 +489,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -999,24 +1000,30 @@ function rCLContent() {
     if (el) el.innerHTML = '<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">공종코드를 선택하세요</div></div>';
     return;
   }
-  var items  = DB.checklists.filter(function(c){return c.code===DB.clCode;});
-  var groups = {};
+  var items   = DB.checklists.filter(function(c){return c.code===DB.clCode;});
+  var groups  = {};
   items.forEach(function(c){ if(!groups[c.did]) groups[c.did]=[]; groups[c.did].push(c); });
   var done    = items.filter(function(c){return c.checked;}).length;
-  var allSel  = items.length > 0 && items.every(function(c){return DB.selCLIds.has(c.id);});
+  var allSel  = items.length>0 && items.every(function(c){return DB.selCLIds.has(c.id);});
   var pct     = items.length ? Math.round(done/items.length*100) : 0;
-  var pctColor= pct>=80?'var(--green)':pct>=50?'var(--yellow)':'var(--blue)';
+  var pctColor= pct>=80?'#276749':pct>=50?'#B7791F':'#2B6CB0';
+  var pctBg   = pct>=80?'#F0FFF4':pct>=50?'#FFFFF0':'#EBF8FF';
 
+  // ── 상단 헤더
   var html =
-    '<div class="card" style="padding:0;overflow:hidden">' +
-    '<div style="padding:14px 18px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px">' +
-      '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:700;color:var(--t9)">📋 '+(PROC_CODES[DB.clCode]||DB.clCode)+'</div>' +
-        '<div style="display:flex;align-items:center;gap:7px;flex:1;max-width:200px">' +
-          '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">' +
-            '<div style="height:100%;width:'+pct+'%;background:'+pctColor+';border-radius:3px"></div>' +
+    '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)">' +
+    // 헤더
+    '<div style="padding:16px 20px;border-bottom:2px solid var(--border);background:var(--card2);display:flex;align-items:center;justify-content:space-between;gap:12px">' +
+      '<div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0">' +
+        '<div style="font-size:15px;font-weight:800;color:var(--t9);letter-spacing:-.01em">'+
+          (PROC_CODES[DB.clCode]||DB.clCode)+
+        '</div>' +
+        // 진행률 바
+        '<div style="display:flex;align-items:center;gap:8px;flex:1;max-width:260px">' +
+          '<div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">' +
+            '<div style="height:100%;width:'+pct+'%;background:'+pctColor+';border-radius:4px;transition:width .4s"></div>' +
           '</div>' +
-          '<span style="font-size:11px;font-weight:700;color:'+pctColor+';white-space:nowrap">'+done+'/'+items.length+'</span>' +
+          '<span style="font-size:12px;font-weight:700;color:'+pctColor+';white-space:nowrap;background:'+pctBg+';padding:2px 8px;border-radius:4px">'+done+'/'+items.length+'</span>' +
         '</div>' +
       '</div>' +
       '<div style="display:flex;gap:6px;flex-shrink:0">' +
@@ -1030,65 +1037,82 @@ function rCLContent() {
     html += '<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">체크리스트 없음</div><div class="empty-s">+ 항목 추가를 눌러 추가하세요</div></div>';
   } else {
     Object.keys(groups).forEach(function(did) {
-      var list   = groups[did];
-      var defNm  = (DB.defects.find(function(d){return d.id===did;})||{}).name || did;
-      var grpDone= list.filter(function(c){return c.checked;}).length;
+      var list    = groups[did];
+      var defObj  = DB.defects.find(function(d){return d.id===did;}) || {};
+      var defNm   = defObj.name || did;
+      var grpDone = list.filter(function(c){return c.checked;}).length;
+      var grpPct  = Math.round(grpDone/list.length*100);
+      var grpColor= grpPct===100?'#276749':grpPct>=50?'#B7791F':'#2B6CB0';
 
+      // ── 그룹 헤더
       html +=
-        '<div style="margin-bottom:2px">' +
-        '<div style="display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--blue-l);border-bottom:1px solid #BEE3F8">' +
-          '<span class="bdg bb" style="font-size:10px">'+did+'</span>' +
-          '<span style="font-size:12px;font-weight:700;color:var(--blue);flex:1">'+defNm+' 예방 점검</span>' +
-          '<span style="font-size:11px;color:var(--t5);margin-right:8px">'+grpDone+'/'+list.length+' 완료</span>' +
-          '<button class="btn btn-warn btn-sm" data-did="'+did+'" onclick="delGroupCL(this.dataset.did)" style="padding:2px 8px;font-size:11px">🗑️ 삭제</button>' +
+        '<div style="border-bottom:1px solid var(--border)">' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px 20px;background:linear-gradient(90deg,#EBF8FF,var(--card2))">' +
+          '<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--blue);color:#fff;flex-shrink:0">'+did+'</span>' +
+          '<span style="font-size:13px;font-weight:700;color:var(--blue);flex:1">'+defNm+' 예방 점검</span>' +
+          '<span style="font-size:11px;font-weight:700;color:'+grpColor+';background:'+(grpPct===100?'#F0FFF4':grpPct>=50?'#FFFFF0':'var(--blue-l)')+';padding:2px 10px;border-radius:4px">'+grpDone+'/'+list.length+' 완료</span>' +
+          '<button class="btn btn-warn btn-sm" data-did="'+did+'" onclick="delGroupCL(this.dataset.did)" style="padding:2px 8px;font-size:10px">🗑️ 삭제</button>' +
+        '</div>' +
+
+        // ── 테이블 헤더
+        '<div style="display:grid;grid-template-columns:36px 1fr 220px 140px 160px 120px 80px;background:var(--card2);border-bottom:1.5px solid var(--border);border-top:1px solid var(--border)">' +
+          '<div style="padding:8px 10px"></div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">점검 항목 / 기준내용</div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">검사시기</div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">합격기준</div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">검사방법</div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5)">실명확인</div>' +
+          '<div style="padding:8px 12px;font-size:11px;font-weight:700;color:var(--t5);text-align:center">결과</div>' +
         '</div>';
 
       list.forEach(function(c) {
         var isSel   = DB.selCLIds.has(c.id);
-        var doneCls = c.checked ? ' done' : '';
-        var selCls  = isSel   ? ' sel'  : '';
-
-        var badges = '';
-        // 항목명 : 내용 형식으로 표시
-        function mkBadge(bg, color, border, icon, label, val) {
-          return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;background:'+bg+';color:'+color+';font-size:10px;font-weight:600;border:1px solid '+border+';white-space:nowrap">' +
-            '<span style="opacity:.7">'+icon+' '+label+' :</span> ' +
-            '<span>'+val+'</span>' +
-          '</span>';
-        }
-        if (c.freq)      badges += mkBadge('#EBF8FF','#2B6CB0','#BEE3F8','🔁','검사시기',c.freq);
-        if (c.pass)      badges += mkBadge('#F0FFF4','#276749','#9AE6B4','&#10003;','합격기준',c.pass);
-        if (c.method)    badges += mkBadge('#FAF5FF','#553C9A','#D6BCFA','&#128269;','검사방법',c.method);
-        if (c.inspector) badges += mkBadge('#FFFFF0','#B7791F','#F6E05E','&#128100;','실명확인',c.inspector);
+        var isDone  = c.checked;
+        var rowBg   = isDone ? 'background:#F0FFF4' : (isSel ? 'background:#FFFAF0' : 'background:var(--card)');
+        var reqHtml = c.req==='필수'
+          ? '<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:#FFF5F5;color:#C53030;border:1px solid #FEB2B2">필수</span>'
+          : '<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:#F0FFF4;color:#276749;border:1px solid #9AE6B4">권장</span>';
 
         html +=
-          '<div class="cl-item'+doneCls+selCls+'" id="cli-'+c.id+'" style="border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:1px solid var(--border);margin-bottom:0;padding:12px 18px">' +
-            (DB.bulkMode ? '<input type="checkbox" class="cl-sel-cb"'+(isSel?' checked':'')+' data-id="'+c.id+'" onchange="selCL(this.dataset.id,this.checked)" onclick="event.stopPropagation()">' : '') +
-            '<div class="cl-cb" data-id="'+c.id+'" onclick="tglCL(this.dataset.id)" style="flex-shrink:0;margin-top:2px">'+(c.checked?'&#10003;':'')+'</div>' +
-            '<div class="cl-body" style="flex:1;min-width:0">' +
-              '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
-                '<div style="font-size:13px;font-weight:700;color:var(--t9);line-height:1.4">'+c.item+'</div>' +
-                '<div style="flex-shrink:0">' +
-                  (c.req==='필수'
-                    ? '<span class="cl-req">필수</span>'
-                    : '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--green-l);color:var(--green);border:1px solid #9AE6B4">권장</span>') +
-                '</div>' +
-              '</div>' +
-              (c.std
-                ? '<div style="font-size:11px;color:var(--t7);margin-top:6px;line-height:1.6;padding:7px 11px;background:var(--card2);border-radius:6px;border-left:3px solid var(--border2)">'+c.std+'</div>'
-                : '') +
-              (badges
-                ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">'+badges+'</div>'
-                : '') +
-              (c.note
-                ? '<div style="font-size:11px;color:var(--t5);margin-top:6px;padding:5px 10px;background:#FFFDF0;border-radius:5px;border-left:2px solid #F6E05E">📝 '+c.note+'</div>'
-                : '') +
+          '<div id="cli-'+c.id+'" data-id="'+c.id+'" style="display:grid;grid-template-columns:36px 1fr 220px 140px 160px 120px 80px;border-bottom:1px solid var(--border);'+rowBg+';transition:background .15s;cursor:pointer" onclick="tglCL(this.dataset.id)">' +
+
+          // 체크박스
+          '<div style="display:flex;align-items:center;justify-content:center;padding:12px 0">' +
+            '<div style="width:20px;height:20px;border-radius:5px;border:2px solid '+(isDone?'#276749':'var(--border2)')+';background:'+(isDone?'#276749':'#fff')+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0">'+(isDone?'&#10003;':'')+'</div>' +
+          '</div>' +
+
+          // 항목명 + 기준내용
+          '<div style="padding:12px;min-width:0">' +
+            '<div style="display:flex;align-items:center;gap:6px;margin-bottom:'+(c.std?'5px':'0')+'">' +
+              '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+c.item+'</span>' +
+              reqHtml +
             '</div>' +
-            '<div class="cl-acts" style="flex-shrink:0;align-self:flex-start;margin-top:1px">' +
-              '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+c.id+'" onclick="editCL(this.dataset.id)">&#9998;</button>' +
-              '<button class="btn btn-danger btn-icon btn-sm" data-id="'+c.id+'" data-nm="'+escQ(c.item)+'" onclick="askDel(\'checklist\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+            (c.std ? '<div style="font-size:11px;color:var(--t5);line-height:1.5">'+c.std+'</div>' : '') +
+            (c.note ? '<div style="font-size:10px;color:#B7791F;margin-top:4px">📝 '+c.note+'</div>' : '') +
+          '</div>' +
+
+          // 검사시기
+          '<div style="padding:12px;font-size:12px;color:var(--t7);display:flex;align-items:center">'+(c.freq||'<span style="color:var(--t3)">—</span>')+'</div>' +
+
+          // 합격기준
+          '<div style="padding:12px;font-size:12px;color:var(--t7);display:flex;align-items:center">'+(c.pass||'<span style="color:var(--t3)">—</span>')+'</div>' +
+
+          // 검사방법
+          '<div style="padding:12px;font-size:12px;color:var(--t7);display:flex;align-items:center">'+(c.method||'<span style="color:var(--t3)">—</span>')+'</div>' +
+
+          // 실명확인
+          '<div style="padding:12px;font-size:12px;color:var(--t7);display:flex;align-items:center">'+(c.inspector||'<span style="color:var(--t3)">—</span>')+'</div>' +
+
+          // 완료/관리 버튼
+          '<div style="padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px" onclick="event.stopPropagation()">' +
+            '<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;'+(isDone?'background:#F0FFF4;color:#276749;border:1px solid #9AE6B4':'background:#FFF5F5;color:#C53030;border:1px solid #FEB2B2')+'">'+(isDone?'완료':'미완료')+'</span>' +
+            '<div style="display:flex;gap:2px">' +
+              '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+c.id+'" onclick="editCL(this.dataset.id)" style="padding:2px 5px">&#9998;</button>' +
+              '<button class="btn btn-danger btn-icon btn-sm" data-id="'+c.id+'" data-nm="'+escQ(c.item)+'" onclick="askDel(\'checklist\',this.dataset.id,this.dataset.nm)" style="padding:2px 5px">&#128465;</button>' +
             '</div>' +
-          '</div>';
+          '</div>' +
+
+        '</div>';
       });
       html += '</div>';
     });
@@ -2913,6 +2937,7 @@ function setDefCatByData(btn) {
   DB.defCat = btn.dataset.cat;
   rDefs();
 }
+
 
 
 
