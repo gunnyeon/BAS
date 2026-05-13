@@ -499,6 +499,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -1185,7 +1186,7 @@ function submitCL() {
       var reqColor = c.req==='필수' ? '#C53030' : '#276749';
       var reqBg    = c.req==='필수' ? '#FFF5F5' : '#F0FFF4';
       groupRows += '<tr style="border-bottom:1px solid #E2E8F0">' +
-        td(c.item,'left',false) + td(c.std) + td(c.method,'center') +
+        td(c.item,'left',false) + td(c.pass) + td(c.method,'center') +
         '<td style="padding:7px 10px;text-align:center">' + result + '</td>' +
         '<td style="padding:7px 10px;text-align:center"><span style="padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:' + reqBg + ';color:' + reqColor + '">' + c.req + '</span></td>' +
       '</tr>';
@@ -1235,7 +1236,7 @@ function submitCL() {
       '<table style="width:100%;border-collapse:collapse">' +
       '<thead><tr style="background:#EBF8FF">' +
         '<th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#2B6CB0;width:35%">점검항목</th>' +
-        '<th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#2B6CB0;width:28%">기준내용</th>' +
+        '<th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;color:#2B6CB0;width:28%">합격기준</th>' +
         '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:15%">검사방법</th>' +
         '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:12%">결과</th>' +
         '<th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:#2B6CB0;width:10%">구분</th>' +
@@ -3007,6 +3008,7 @@ function isLocked(key) {
   delete _writeLock[key];
   return false;
 }
+
 
 </script>
 </body> </html>
