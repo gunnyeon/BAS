@@ -504,6 +504,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 'use strict';
 /* ═══ 설정 ═══ */
 const CFG = {
@@ -890,38 +891,139 @@ if (c) c.checked = checked;
 ════════════════════════════════ */
 let dragId = null;
 function rGantt() {
-const list = filtered(DB.processes.map(enrich));
-if (!list.length) { document.getElementById('ganttBody').innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div></div>'; return; }
-const dates = list.flatMap(p=>[new Date(p.startDate),new Date(p.endDate)]);
-const minD  = new Date(dates.reduce(function(mn,b){var t=b.getTime();return t<mn?t:mn;},dates[0].getTime()));
-const maxD  = new Date(dates.reduce(function(mx,b){var t=b.getTime();return t>mx?t:mx;},dates[0].getTime()));
-minD.setDate(1); maxD.setMonth(maxD.getMonth()+1); maxD.setDate(0);
-const total = Math.max(1, Math.floor((maxD-minD)/86400000));
-const today = new Date();
-const tPct  = Math.max(0,Math.min(100,Math.floor((today-minD)/86400000)/total*100));
-const BAR   = {완료:'#22A85E',진행중:'#DC4C4C',예정_1주:'#E8721C',예정_2주:'#D9A000',예정:'#3B6CE0'};
-const cols  = '200px 110px 90px 94px 94px 1fr 72px';
-let html = '<div style="display:grid;grid-template-columns:'+cols+'" class="g-hdr">' +
-['공종명','현장','상태','시작일','종료일','일정 바','관리'].map((h,i)=>
-'<div class="g-cell"'+(i===5?' style="position:relative">'+h+'<div class="today-ln" style="left:'+tPct.toFixed(1)+'%"></div></div>':'>'+h+'</div>')).join('')+'</div>';
-const sm = smMap();
-list.forEach(p=>{
-const s=new Date(p.startDate),e=new Date(p.endDate);
-const lp=Math.max(0,Math.floor((s-minD)/86400000)/total*100);
-const wp=Math.max(.5,Math.floor((e-s)/86400000)/total*100);
-html+='<div style="display:grid;grid-template-columns:'+cols+'" class="g-row" draggable="true" data-id="'+p.id+'"'+
-' onclick="openProcDetail(\''+p.id+'\')"'+
-' ondragstart="ddStart(event,\''+p.id+'\')" ondragover="ddOver(event)" ondragleave="ddLeave(event)" ondrop="ddDrop(event,\''+p.id+'\')" ondragend="ddEnd(event)">' +
-'<div class="g-cell" style="font-weight:700">'+p.name+'</div>' +
-'<div class="g-cell" style="font-size:10px;color:var(--t5)">'+(sm[p.siteId]||'')+'</div>' +
-'<div class="g-cell">'+stsBdg(p.ts)+'</div>' +
-'<div class="g-cell" style="font-size:10px">'+p.startDate+'</div>' +
-'<div class="g-cell" style="font-size:10px">'+p.endDate+'</div>' +
-'<div class="g-cell" style="padding:0;position:relative;overflow:hidden"><div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 3px"><div style="position:relative;width:100%;height:34px"><div class="g-bar" style="left:'+lp.toFixed(1)+'%;width:'+wp.toFixed(1)+'%;background:'+(BAR[p.ts]||'#3B6CE0')+'" title="'+p.name+': '+p.startDate+' ~ '+p.endDate+'">'+p.name+'</div></div></div></div>' +
-'<div class="g-cell" onclick="event.stopPropagation()" style="justify-content:center;gap:3px"><button class="btn btn-ghost btn-icon btn-sm" onclick="editProc(\''+p.id+'\')">✏️</button><button class="btn btn-danger btn-icon btn-sm" onclick="askDel(\'process\',\''+p.id+'\',\''+escQ(p.name)+'\')">🗑️</button></div>' +
-'</div>';
-});
-document.getElementById('ganttBody').innerHTML = html;
+  var list = filtered(DB.processes.map(enrich));
+  var bodyEl = document.getElementById('ganttBody');
+  if (!list.length) {
+    bodyEl.innerHTML = '<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div></div>';
+    return;
+  }
+
+  // 날짜 범위 계산
+  var today = new Date(); today.setHours(0,0,0,0);
+  var allDates = [];
+  list.forEach(function(p){
+    var s=new Date(p.startDate), e=new Date(p.endDate);
+    if(!isNaN(s)) allDates.push(s);
+    if(!isNaN(e)) allDates.push(e);
+  });
+  if (!allDates.length) { bodyEl.innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">날짜 정보가 없습니다</div></div>'; return; }
+
+  var minD = new Date(Math.min.apply(null, allDates));
+  var maxD = new Date(Math.max.apply(null, allDates));
+  // 여유 추가
+  minD.setMonth(minD.getMonth()-1); minD.setDate(1);
+  maxD.setMonth(maxD.getMonth()+2); maxD.setDate(1);
+
+  var totalDays = Math.ceil((maxD - minD) / 86400000);
+  var BAR_W = 900; // 바 영역 px
+
+  function dayOffset(d) {
+    return Math.ceil((new Date(d) - minD) / 86400000);
+  }
+  function pct(d) {
+    return Math.max(0, Math.min(100, dayOffset(d) / totalDays * 100));
+  }
+
+  // 월 눈금 생성
+  var months = [];
+  var cur = new Date(minD);
+  while (cur <= maxD) {
+    months.push(new Date(cur));
+    cur.setMonth(cur.getMonth()+1);
+  }
+
+  // 공종별 색상 팔레트
+  var palette = [
+    '#2B6CB0','#276749','#553C9A','#C05621','#285E61',
+    '#B7791F','#2C7A7B','#744210','#1A365D','#22543D',
+    '#44337A','#7B341E','#065666','#5F370E','#1D4044'
+  ];
+
+  // 상태별 색상
+  function getBarColor(p, idx) {
+    if (p.ts === '완료') return '#276749';
+    if (p.ts === '진행중') return palette[idx % palette.length];
+    if (p.ts === '예정_1주') return '#C05621';
+    if (p.ts === '예정_2주') return '#B7791F';
+    return '#718096';
+  }
+
+  // 오늘 위치
+  var todayPct = pct(today);
+
+  // 헤더: 월 눈금
+  var monthHeader = '<div style="display:flex;position:relative;height:28px;background:var(--card2);border-bottom:1px solid var(--border);margin-left:560px">';
+  months.forEach(function(m, i) {
+    var left = pct(m)*100/100;
+    var label = (m.getFullYear()+'.'+(m.getMonth()+1+'').padStart(2,'0'));
+    monthHeader += '<div style="position:absolute;left:'+pct(m)+'%;font-size:10px;font-weight:700;color:var(--t5);white-space:nowrap;padding:6px 4px;border-left:1px solid var(--border)">'+label+'</div>';
+  });
+  // 오늘 표시
+  if (todayPct >= 0 && todayPct <= 100) {
+    monthHeader += '<div class="today-ln" style="left:'+todayPct+'%"></div>';
+  }
+  monthHeader += '</div>';
+
+  // 테이블 헤더
+  var tblHeader = '<div style="display:grid;grid-template-columns:180px 120px 80px 90px 90px 1fr 80px;background:var(--card2);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10">' +
+    '<div class="g-cell g-hdr">공종명</div>' +
+    '<div class="g-cell g-hdr">현장</div>' +
+    '<div class="g-cell g-hdr">상태</div>' +
+    '<div class="g-cell g-hdr">시작일</div>' +
+    '<div class="g-cell g-hdr">종료일</div>' +
+    '<div class="g-cell g-hdr" style="position:relative">일정 바</div>' +
+    '<div class="g-cell g-hdr">관리</div>' +
+  '</div>';
+
+  // 행 생성
+  var rows = list.map(function(p, idx) {
+    var sm = smMap();
+    var siteNm = sm[p.siteId] || '';
+    var stOk = p.startDate && !isNaN(new Date(p.startDate));
+    var enOk = p.endDate   && !isNaN(new Date(p.endDate));
+    var barHtml = '';
+    if (stOk && enOk) {
+      var left = pct(p.startDate);
+      var right = pct(p.endDate);
+      var width = Math.max(0.5, right - left);
+      var color = getBarColor(p, idx);
+      var progW = width * (p.progress||0) / 100;
+      barHtml =
+        // 전체 바 (연한 배경)
+        '<div style="position:absolute;left:'+left+'%;width:'+width+'%;height:20px;top:7px;background:'+color+'33;border-radius:4px;border:1px solid '+color+'55"></div>' +
+        // 진행률 바
+        '<div style="position:absolute;left:'+left+'%;width:'+progW+'%;height:20px;top:7px;background:'+color+';border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden">' +
+          '<span style="font-size:9px;font-weight:700;color:#fff;white-space:nowrap;padding:0 4px">'+(p.progress?p.progress+'%':p.name)+'</span>' +
+        '</div>';
+    }
+    // 오늘 라인
+    var todayLine = (todayPct>=0&&todayPct<=100) ?
+      '<div style="position:absolute;left:'+todayPct+'%;top:0;bottom:0;width:1.5px;background:rgba(197,48,48,.5);pointer-events:none;z-index:2"></div>' : '';
+
+    var stsCls = p.ts==='진행중'?'br':p.ts==='예정_1주'?'bo':p.ts==='완료'?'bg':'bb';
+    var stsTxt = p.ts==='진행중'?'진행중':p.ts==='예정_1주'?'1주내':p.ts==='예정_2주'?'2주내':p.ts==='완료'?'완료':'예정';
+
+    return '<div class="g-row" style="display:grid;grid-template-columns:180px 120px 80px 90px 90px 1fr 80px;border-bottom:1px solid var(--border)">' +
+      '<div class="g-cell" style="font-weight:700;font-size:12px">'+p.name+'</div>' +
+      '<div class="g-cell" style="font-size:11px;color:var(--t5)">'+siteNm+'</div>' +
+      '<div class="g-cell"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></div>' +
+      '<div class="g-cell" style="font-size:11px;color:var(--t7)">'+fmtDate(p.startDate)+'</div>' +
+      '<div class="g-cell" style="font-size:11px;color:var(--t7)">'+fmtDate(p.endDate)+'</div>' +
+      '<div class="g-cell" style="position:relative;padding:0;overflow:hidden">'+todayLine+barHtml+'</div>' +
+      '<div class="g-cell" style="justify-content:center;gap:3px">' +
+        '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+p.id+'" onclick="editProc(this.dataset.id)">&#9998;</button>' +
+        '<button class="btn btn-danger btn-icon btn-sm" data-id="'+p.id+'" data-nm="'+escQ(p.name)+'" onclick="askDel(\'process\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  bodyEl.innerHTML =
+    '<div class="card" style="padding:0;overflow:hidden">' +
+    monthHeader +
+    tblHeader +
+    rows +
+    '<button class="gantt-add" onclick="openProcForm()">+ 공종 추가하기</button>' +
+    '</div>';
 }
 function ddStart(e,id){dragId=id;e.currentTarget.classList.add("dragging");e.dataTransfer.effectAllowed="move";}
 function ddOver(e){e.preventDefault();e.currentTarget.classList.add("drop-here");}
@@ -955,35 +1057,53 @@ reader.readAsText(file,'utf-8');
 
 function importGanttData() {
   if (!DB.pendingGanttRows.length) { toast('업로드된 데이터가 없습니다.','err'); return; }
-  var added=0, skipped=0, errors=[];
+  var added=0, skipped=0;
   var siteSel = document.getElementById('siteSel');
   var siteId = (siteSel && siteSel.value !== 'all') ? siteSel.value : (DB.sites[0] && DB.sites[0].id) || '';
   if (!siteId) { toast('현장을 먼저 선택하거나 등록하세요.','err'); return; }
-  DB.pendingGanttRows.forEach(function(r, idx) {
-    var nm = (r['공종명']||r['name']||r['공종']||'').trim();
-    var st = (r['시작일']||r['startDate']||r['start']||'').trim();
-    var en = (r['종료일']||r['endDate']||r['end']||'').trim();
-    if (!nm) { skipped++; return; }
-    // 날짜 유연 파싱
-    if (!st || !en) { skipped++; errors.push((idx+2)+'행: 날짜 없음'); return; }
-    var code = matchCode(r['공종코드']||r['code']||r['코드']||'');
-    var prog = parseInt(r['진행률']||r['progress']||r['진행']||'0')||0;
-    var newId = 'P'+Date.now()+Math.random().toString(36).slice(2,5);
-    var row = { id:newId, siteId:siteId, name:nm, code:code,
-      startDate:st, endDate:en, progress:Math.min(100,Math.max(0,prog)),
-      riskLevel:'중', company:r['담당업체']||r['company']||'',
-      manager:r['담당자']||r['manager']||'', note:r['비고']||r['note']||'' };
+
+  DB.pendingGanttRows.forEach(function(r) {
+    var nm  = (r['공종명']||r['name']||r['공종']||'').trim();
+    var stR = r['시작일']||r['startDate']||r['start']||r['착공']||'';
+    var enR = r['종료일']||r['endDate']||r['end']||r['준공']||'';
+    var st  = parseDate(stR);
+    var en  = parseDate(enR);
+    if (!nm || !st || !en) { skipped++; return; }
+
+    var codeRaw = (r['공종코드']||r['code']||r['코드']||'').trim().toUpperCase();
+    // PROC_CODES에서 매핑: 코드가 있으면 사용, 없으면 공종명으로 검색
+    var code = '';
+    if (codeRaw && PROC_CODES[codeRaw]) {
+      code = codeRaw;
+    } else {
+      // 공종명으로 역매핑
+      Object.entries(PROC_CODES).forEach(function(e){
+        if (e[1] === nm || nm.indexOf(e[1]) >= 0) code = e[0];
+      });
+      if (!code) code = codeRaw || 'OTHER';
+    }
+
+    var progStr = (r['진행률']||r['progress']||'0').toString().replace('%','').trim();
+    var prog = Math.min(100, Math.max(0, parseInt(progStr)||0));
+
+    var newId = 'P'+Date.now()+Math.floor(Math.random()*1000);
+    var row = {
+      id: newId, siteId: siteId, name: nm, code: code,
+      startDate: st, endDate: en, progress: prog,
+      riskLevel: '중',
+      company: r['담당업체']||r['company']||'',
+      manager: r['담당자']||r['manager']||'',
+      note: r['비고']||r['note']||''
+    };
     DB.processes.push(row);
-    if (sheetEnabled()) syncToSheet('upsertRow',{sheet:'공정간트',id:newId,row:row});
+    if (sheetEnabled()) syncToSheet('upsertRow',{sheet:CFG.SHEET.gantt,id:newId,row:row});
     added++;
   });
+
   DB.pendingGanttRows = [];
   DB.riskProcs = getRiskProcs(); autoGenAlerts(); renderAll();
-  var msg = added+'개 추가 완료';
-  if (skipped) msg += ', '+skipped+'개 건너뜀';
-  if (errors.length) msg += '\n' + errors.slice(0,3).join('\n');
-  toast(msg, added>0?'ok':'err');
-  closeOv('ovGanttUpload'); clearGanttUpload();
+  toast(added+'개 공종 추가 완료'+(skipped?', '+skipped+'개 건너뜀':''), added>0?'ok':'err');
+  closeOv('ovGanttUpload');
 }
 function matchCode(raw) {
 const up = (raw||'').toUpperCase().trim();
@@ -3026,6 +3146,24 @@ function isLocked(key) {
 }
 
 
+
+
+function parseDate(v) {
+  if (!v) return '';
+  v = String(v).trim();
+  // 이미 YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  // YYYY. MM. DD 또는 YYYY.MM.DD
+  var m1 = v.match(/^(\d{4})[.\s/]+(\d{1,2})[.\s/]+(\d{1,2})/);
+  if (m1) return m1[1]+'-'+m1[2].padStart(2,'0')+'-'+m1[3].padStart(2,'0');
+  // MM/DD/YYYY
+  var m2 = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m2) return m2[3]+'-'+m2[1].padStart(2,'0')+'-'+m2[2].padStart(2,'0');
+  // Date 파싱 시도
+  var d = new Date(v);
+  if (!isNaN(d)) return d.toISOString().split('T')[0];
+  return v;
+}
 
 </script>
 </body> </html>
