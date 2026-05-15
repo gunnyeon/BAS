@@ -485,7 +485,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 <!-- ===== CHECKLIST ===== -->
-<div class="panel" id="panel-cl">
+<div class="panel" id="panel-checklist">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
     <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div>
     <div style="display:flex;gap:6px;align-items:center">
@@ -512,10 +512,44 @@ button,input,select,textarea{font-family:inherit}
   </div>
   <div id="ganttBody"></div>
 </div>
+<div class="panel" id="panel-sites">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div>
+    <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button>
+  </div>
+  <div class="site-grid" id="siteGrid"></div>
+</div>
 
-<div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
-  <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
+<!-- ===== STATS ===== -->
+<div class="panel" id="panel-stats">
+  <div class="sec-title">📈 하자 리스크 통계 분석</div>
+  <div class="cg" id="chartGrid"></div>
+</div>
+
+<!-- ===== ALERTS ===== -->
+<div class="panel" id="panel-alerts">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
+      <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button>
+    </div>
+  </div>
+  <div class="fb-wrap">
+    <button class="fb on" onclick="setAF(this,'all')">전체</button>
+    <button class="fb" onclick="setAF(this,'unread')">미확인</button>
+    <button class="fb" onclick="setAF(this,'read')">확인</button>
+    <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button>
+    <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button>
+  </div>
+  <div id="alertsList"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
 <script>
+
 
 
 
@@ -635,14 +669,16 @@ return map;
 }
 /* ═══ 초기화 ═══ */
 function init() {
-  loadDefCats();  // 사용자 정의 분류 복원
+  loadDefCats();
   var _su = localStorage.getItem('bas_script_url');
   var _sv = localStorage.getItem('bas_sheet_url');
   if (_su) CFG.APPS_SCRIPT_URL = _su;
   if (_sv) CFG.SPREADSHEET_URL = _sv;
 
+  // 대시보드 패널 초기 표시
+  nav('dashboard');
+
   if (sheetEnabled()) {
-    // 로딩 오버레이 표시 (샘플 데이터가 보이는 것을 차단)
     showLoadingOverlay('구글 스프레드시트에서 데이터를 불러오는 중...');
     initClock();
     setTimeout(updateSyncStatus, 50);
@@ -650,10 +686,8 @@ function init() {
       hideLoadingOverlay();
       buildSiteSel();
       DB.riskProcs = getRiskProcs();
-      // DEF_CATS 기반 UI 갱신 (시트에서 로드된 분류 반영)
       var dCatSel = document.getElementById('f-dCat');
       if (dCatSel) dCatSel.innerHTML = DEF_CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
-      // 체크리스트 첫 공종코드 자동 선택
       if (!DB.clCode || !PROC_CODES[DB.clCode]) {
         DB.clCode = Object.keys(PROC_CODES)[0] || '';
       }
@@ -771,9 +805,16 @@ function autoGenAlerts() {
 }
 /* ═══ 전체 렌더링 ═══ */
 function renderAll() {
-DB.riskProcs = getRiskProcs();
-rDash(); rRisk(); rGantt(); rCL(); rDefs(); rSites(); rStats(); rAlerts();
-updBadges();
+  DB.riskProcs = getRiskProcs();
+  try { rDash(); } catch(e) { console.warn('rDash', e); }
+  try { rRisk(); } catch(e) { console.warn('rRisk', e); }
+  try { rGantt(); } catch(e) { console.warn('rGantt', e); }
+  try { rCL(); } catch(e) { console.warn('rCL', e); }
+  try { rDefs(); } catch(e) { console.warn('rDefs', e); }
+  try { rSites(); } catch(e) { console.warn('rSites', e); }
+  try { rStats(); } catch(e) { console.warn('rStats', e); }
+  try { rAlerts(); } catch(e) { console.warn('rAlerts', e); }
+  updBadges();
 }
 function updBadges() {
 document.getElementById('riskBdg').textContent  = DB.riskProcs.filter(p=>p.ts==='진행중').length;
@@ -2716,14 +2757,30 @@ toast('CSV로 내보내졌습니다.','ok');
 /* ════════════════════════════════
 네비게이션
 ════════════════════════════════ */
-const PANEL_TITLES={dashboard:'📊 대시보드',risk:'⚠️ 주요 하자 공종 현황',gantt:'📅 공정 간트 차트',checklist:'✅ 체크리스트 관리',defects:'🔍 하자유형 관리',sites:'🏗️ 현장 관리',stats:'📈 통계 분석',alerts:'🔔 알림 현황'};
-function nav(name,btn){
-document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('on'));
-const p=document.getElementById('panel-'+name);if(p)p.classList.add('on');
-document.getElementById('topTitle').textContent=PANEL_TITLES[name]||name;
-if(btn){btn.classList.add('on');}else{document.querySelectorAll('.sb-btn').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"))b.classList.add('on');});}
-document.getElementById('sb').classList.remove('open');
+const PANEL_TITLES={dashboard:'📊 대시보드',checklist:'✅ 체크리스트 관리',cl:'✅ 체크리스트 관리',risk:'⚠️ 주요 하자 공종 현황',gantt:'📅 공정 간트 차트',checklist:'✅ 체크리스트 관리',defects:'🔍 하자유형 관리',sites:'🏗️ 현장 관리',stats:'📈 통계 분석',alerts:'🔔 알림 현황'};
+function nav(name, btn) {
+  // 패널명 별칭 처리
+  var alias = {'checklist':'checklist', 'cl':'checklist'};
+  var panelName = alias[name] || name;
+
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.sb-btn').forEach(function(b){ b.classList.remove('on'); });
+
+  var p = document.getElementById('panel-' + panelName);
+  if (p) p.classList.add('on');
+
+  var titleEl = document.getElementById('topTitle');
+  if (titleEl) titleEl.textContent = PANEL_TITLES[name] || PANEL_TITLES[panelName] || name;
+
+  if (btn) {
+    btn.classList.add('on');
+  } else {
+    document.querySelectorAll('.sb-btn').forEach(function(b){
+      var oc = b.getAttribute('onclick') || '';
+      if (oc.includes("'" + name + "'") || oc.includes("'" + panelName + "'")) b.classList.add('on');
+    });
+  }
+  document.getElementById('sb').classList.remove('open');
 }
 function setRF(btn,f){document.querySelectorAll('#riskFb .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.riskF=f;rRisk();}
 function setAF(btn,f){document.querySelectorAll('#panel-alerts .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.alertF=f;rAlerts();}
@@ -3435,6 +3492,7 @@ function parseDate(v) {
   if (!isNaN(d)) return d.toISOString().split('T')[0];
   return v;
 }
+
 
 
 
