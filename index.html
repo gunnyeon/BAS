@@ -252,7 +252,21 @@ button,input,select,textarea{font-family:inherit}
 .content{padding:14px}.topbar{padding:0 14px}
 .fgrid{grid-template-columns:1fr}.cg{grid-template-columns:1fr}
 }
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}</style>
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+/* 간트 차트 개선 */
+.g-row:hover { background: var(--blue-l) !important; }
+.g-cell { display:flex; align-items:center; padding:7px 10px; }
+.g-hdr  { font-size:11px; font-weight:700; color:var(--t5); padding:9px 10px; }
+.gantt-add { width:100%; padding:10px; background:none; border:none; color:var(--t5); font-size:12px; cursor:pointer; border-top:1px solid var(--border); }
+.gantt-add:hover { background:var(--blue-l); color:var(--blue); }
+
+/* 대시보드 통계 카드 */
+.sc { cursor:pointer; transition:box-shadow .15s, transform .12s; }
+.sc:hover { box-shadow:0 4px 16px rgba(0,0,0,.12); transform:translateY(-1px); }
+
+/* 위험 리스크 테이블 행 hover */
+#dashRiskTable tr:hover td { background: var(--blue-l); }
+</style>
 </head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div>
 <div class="fgrid">
   <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div>
@@ -402,34 +416,109 @@ button,input,select,textarea{font-family:inherit}
 </div>
 
 <!-- ═══ APPdiv> </div> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content"> <!-- ===== DASHBOARD ===== --> <div class="panel on" id="panel-dashboard">
-<div class="sg" id="statGrid"></div>
-<div class="sec-title" style="margin-top:4px">🏗️ 현장별 주요 하자 공종 진행 현황</div>
-<div id="siteProcGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;margin-bottom:20px"></div>
-<div class="two-col">
-<div class="card">
-  <div class="card-hd"><div class="card-title">🔔 미확인 알림</div><button class="btn btn-ghost btn-sm" onclick="nav('alerts')">전체 →</button></div>
-  <div id="dashAlerts"></div>
-</div>
-<div class="card">
-  <div class="card-hd"><div class="card-title">📊 현장 요약</div></div>
-  <div id="dashSiteSummary"></div>
-</div>
-</div>
-</div><!-- ===== 주요 하자 공종 현황 ===== --> <div class="panel" id="panel-risk"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">⚠️ 주요 하자 공종 현황 <span class="sec-sub" id="riskCount"></span></div> </div> <div class="fb-wrap" id="riskFb"> <button class="fb on" onclick="setRF(this,'all')">전체</button> <button class="fb" onclick="setRF(this,'진행중')">🔴 진행중</button> <button class="fb" onclick="setRF(this,'예정_1주')">🟠 1주내</button> <button class="fb" onclick="setRF(this,'예정_2주')">🟡 2주내</button> <button class="fb" onclick="setRF(this,'예정')">⚪ 예정</button> </div> <div id="riskList"></div> </div> <!-- ===== GANTT ===== --> <div class="panel" id="panel-gantt"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div> <div style="display:flex;gap:6px"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovGanttUpload')">📂 파일 업로드</button> <button class="btn btn-ghost btn-sm" onclick="exportGantt()">📤 CSV 내보내기</button> <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button> </div> </div> <div class="card" style="padding:0;overflow:hidden"> <div class="gantt-wrap"><div id="ganttBody"></div></div> <button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button> </div> </div> <!-- ===== CHECKLIST ===== --> <div class="panel" id="panel-checklist"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div> <div style="display:flex;gap:6px;flex-wrap:wrap"> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCodeMgr');renderCodeMgr()">⚙️ 공종코드 관리</button> <button class="btn btn-ghost btn-sm" onclick="openOv('ovCLUpload')">📂 엑셀 업로드</button> <button class="btn btn-warn btn-sm" id="bulkDelBtn" onclick="bulkDelCL()" style="display:none">🗑️ 선택 삭제</button> <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button> <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button> </div> </div> <div class="fb-wrap" id="clFb"></div> <div id="clContent"></div> </div> <!-- ===== DEFECTS ===== --> <div class="panel" id="panel-defects">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-  <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div>
-  <div style="display:flex;gap:6px">
-    <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button>
-    <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button>
+<!-- 통계 카드 -->
+<div class="sg" id="statGrid" style="margin-bottom:16px"></div>
+
+<!-- 현장별 진행 현황 + 알림 -->
+<div style="display:grid;grid-template-columns:1fr 320px;gap:14px;margin-bottom:16px">
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="card-hd" style="padding:14px 16px;border-bottom:1.5px solid var(--border);margin-bottom:0">
+      <div class="card-title">🏗️ 현장별 공종 진행 현황</div>
+    </div>
+    <div id="dashSiteProc" style="padding:14px 16px"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card" style="padding:0;overflow:hidden;flex:1">
+      <div class="card-hd" style="padding:12px 14px;border-bottom:1px solid var(--border);margin-bottom:0">
+        <div class="card-title" style="font-size:12px">🔔 미확인 알림</div>
+        <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="nav('alerts')">전체 →</button>
+      </div>
+      <div id="dashAlerts" style="padding:8px"></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="card-hd" style="padding:12px 14px;border-bottom:1px solid var(--border);margin-bottom:0">
+        <div class="card-title" style="font-size:12px">📊 현장 요약</div>
+      </div>
+      <div id="dashSiteSummary" style="padding:8px 14px"></div>
+    </div>
   </div>
 </div>
-<!-- 공종 필터바 -->
-<div class="fb-wrap" id="defCodeFb" style="margin-bottom:14px"></div>
-<!-- 공종별 아코디언 목록 -->
-<div id="defAccordion"></div>
-</div> <!-- ===== SITES ===== --> <div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
+
+<!-- 위험 공종 리스크 현황 (핵심) -->
+<div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
+  <div style="padding:14px 16px;border-bottom:2px solid var(--border);background:linear-gradient(90deg,var(--card2),var(--card));display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:14px;font-weight:800;color:var(--t9);display:flex;align-items:center;gap:8px">
+        ⚠️ 진행 공종 하자 리스크 관리
+        <span style="font-size:11px;font-weight:500;color:var(--t5)">공종 클릭 시 하자사례·예방대책·체크리스트 확인</span>
+      </div>
+    </div>
+    <div id="riskSummaryBadge"></div>
+  </div>
+  <div id="dashRiskTable" style="padding:0"></div>
+</div>
+
+<!-- ===== SITES ===== --> <!-- ===== RISK ===== -->
+<div class="panel" id="panel-risk">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="sec-title" style="margin-bottom:0">⚠️ 위험 공종 관리 <span class="sec-sub" id="riskCount"></span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm fb on" onclick="setRiskF('all',this)">전체</button>
+      <button class="btn btn-ghost btn-sm fb"    onclick="setRiskF('진행중',this)">진행중</button>
+      <button class="btn btn-ghost btn-sm fb"    onclick="setRiskF('예정_1주',this)">1주내</button>
+    </div>
+  </div>
+  <div id="riskList"></div>
+</div>
+<!-- ===== DEFECTS ===== -->
+<div class="panel" id="panel-defects">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button>
+      <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button>
+    </div>
+  </div>
+  <div class="fb-wrap" id="defCodeFb" style="margin-bottom:14px"></div>
+  <div id="defAccordion"></div>
+</div>
+
+
+<!-- ===== CHECKLIST ===== -->
+<div class="panel" id="panel-cl">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+    <div class="sec-title" style="margin-bottom:0">✅ 체크리스트 관리</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <select class="fs" id="siteSel" onchange="DB.selSite=this.value;rCL()" style="width:140px;font-size:12px"></select>
+      <button class="btn btn-ghost btn-sm" onclick="renderCodeMgr();openOv('ovCodeMgr')">⚙️ 공종코드 관리</button>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer">📁 엑셀 업로드<input type="file" accept=".csv,.xlsx" style="display:none" onchange="handleCLUpload(this)"></label>
+      <button class="btn btn-ghost btn-sm" id="bulkDelBtn" style="display:none" onclick="bulkDelCL()">🗑️ 선택 삭제</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleBulkMode()">☑️ 선택 모드</button>
+      <button class="btn btn-primary btn-sm" onclick="openCLForm()">＋ 항목 추가</button>
+    </div>
+  </div>
+  <div class="fb-wrap" id="clFb" style="margin-bottom:12px"></div>
+  <div id="clContent"></div>
+</div>
+<!-- ===== GANTT ===== -->
+<div class="panel" id="panel-gantt">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div>
+    <div style="display:flex;gap:6px">
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer">📁 파일 업로드<input type="file" accept=".csv" style="display:none" onchange="handleGanttFile(this)"></label>
+      <button class="btn btn-ghost btn-sm" onclick="exportGanttCSV()">📊 CSV 내보내기</button>
+      <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button>
+    </div>
+  </div>
+  <div id="ganttBody"></div>
+</div>
+
+<div class="panel" id="panel-sites"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"> <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div> <button class="btn btn-primary btn-sm" onclick="openSiteForm()">＋ 현장 등록</button> </div> <div class="site-grid" id="siteGrid"></div> </div> <!-- ===== STATS ===== --> <div class="panel" id="panel-stats"> <div class="sec-title">📈 하자 리스크 통계 분석</div> <div class="cg" id="chartGrid"></div> </div> <!-- ===== ALERTS ===== --> <div class="panel" id="panel-alerts"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"> <div class="sec-title" style="margin-bottom:0">🔔 알림 현황 <span class="sec-sub" id="alertCount"></span></div> <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✅ 전체 확인</button>
   <button class="btn btn-danger btn-sm" onclick="delAllReadAlerts()">🗑️ 확인된 알림 삭제</button> </div> <div class="fb-wrap"> <button class="fb on" onclick="setAF(this,'all')">전체</button> <button class="fb" onclick="setAF(this,'unread')">미확인</button> <button class="fb" onclick="setAF(this,'read')">확인</button> <button class="fb" onclick="setAF(this,'상')">🔴 고위험</button> <button class="fb" onclick="setAF(this,'중')">🟠 중위험</button> </div> <div id="alertsList"></div> </div> </div> </div> </div>
 <script>
+
+
+
 
 
 
@@ -700,88 +789,239 @@ function rDash() {
   var w1   = rp.filter(function(p){return p.ts==='예정_1주';}).length;
   var done = ap.filter(function(p){return p.ts==='완료';}).length;
   var unrd = DB.alerts.filter(function(a){return !a.read;}).length;
-  var cards = [
+  var cards=[
     {cls:'cr',ic:'🔴',val:inP,  lbl:'주요 하자 진행 공종', sub:'즉시 점검 필요',  tgt:'risk',f:'진행중'},
     {cls:'co',ic:'⏰',val:w1,   lbl:'1주내 예정 공종',     sub:'사전 체크 필요',  tgt:'risk',f:'예정_1주'},
     {cls:'cb',ic:'🏗️',val:DB.sites.length, lbl:'관리 현장 수', sub:'전체 현장', tgt:'sites',f:''},
     {cls:'cg',ic:'✅',val:done, lbl:'완료 공종',            sub:'정상 완료',      tgt:'gantt',f:''},
     {cls:'cp',ic:'🔔',val:unrd, lbl:'미확인 알림',          sub:'확인 필요',      tgt:'alerts',f:'unread'}
   ];
-  var sgEl = document.getElementById('statGrid');
-  if (sgEl) sgEl.innerHTML = cards.map(function(c){
+  var sg=document.getElementById('statGrid');
+  if(sg) sg.innerHTML=cards.map(function(c){
     return '<div class="sc '+c.cls+'" data-tgt="'+c.tgt+'" data-f="'+c.f+'" onclick="scClick(this.dataset.tgt,this.dataset.f)">' +
-      '<div class="sc-ic">'+c.ic+'</div>' +
-      '<div class="sc-val">'+c.val+'</div>' +
-      '<div class="sc-lbl">'+c.lbl+'</div>' +
-      '<div class="sc-sub">'+c.sub+'</div>' +
+      '<div class="sc-ic">'+c.ic+'</div><div class="sc-val">'+c.val+'</div>' +
+      '<div class="sc-lbl">'+c.lbl+'</div><div class="sc-sub">'+c.sub+'</div>' +
       '<div class="sc-arr">→</div></div>';
   }).join('');
 
-  var colors = ['#2B6CB0','#553C9A','#C05621','#276749','#285E61','#B7791F'];
-  var siteList = DB.selSite==='all' ? DB.sites : DB.sites.filter(function(s){return s.id===DB.selSite;});
-  var spgEl = document.getElementById('siteProcGrid');
-  if (spgEl) {
-    spgEl.innerHTML = siteList.map(function(s, si){
-      var procs = DB.processes.filter(function(p){return p.siteId===s.id;}).map(enrich);
-      var riskProcs = procs.filter(function(p){return p.riskLevel==='상' && p.ts!=='완료';});
-      var c = colors[si % colors.length];
-      var totalPct = procs.length ? Math.round(procs.reduce(function(sum,p){return sum+(p.progress||0);},0)/procs.length) : 0;
-      var procRows = riskProcs.slice(0,6).map(function(p){
-        var pct = p.progress || 0;
-        var barColor = p.ts==='진행중'?'#C53030':p.ts==='예정_1주'?'#C05621':'#2B6CB0';
-        var tsLabel = p.ts==='진행중'?'진행':p.ts==='예정_1주'?'1주내':p.ts==='예정_2주'?'2주내':'예정';
-        return '<div class="proc-row">' +
-          '<div class="proc-nm" title="'+p.name+'">'+p.name+'</div>' +
-          '<div style="flex:1;display:flex;align-items:center;gap:8px">' +
-            '<div class="proc-bar-wrap"><div class="proc-bar" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
-            '<span style="font-size:10px;font-weight:700;color:'+barColor+';width:28px;text-align:right">'+pct+'%</span>' +
+  var COLORS=['#2B6CB0','#553C9A','#C05621','#276749','#285E61','#B7791F'];
+
+  // ── 현장별 공종 진행 현황
+  var siteList=DB.selSite==='all'?DB.sites:DB.sites.filter(function(s){return s.id===DB.selSite;});
+  var dspEl=document.getElementById('dashSiteProc');
+  if(dspEl){
+    if(!siteList.length){
+      dspEl.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ic">🏗️</div><div class="empty-t">현장을 등록하세요</div></div>';
+    } else {
+      dspEl.innerHTML=siteList.map(function(s,si){
+        var procs=DB.processes.filter(function(p){return p.siteId===s.id;}).map(enrich);
+        var active=procs.filter(function(p){return p.ts!=='완료';});
+        var comp=procs.filter(function(p){return p.ts==='완료';}).length;
+        var pct=procs.length?Math.round(procs.reduce(function(sum,p){return sum+(p.progress||0);},0)/procs.length):0;
+        var color=COLORS[si%COLORS.length];
+        var hiRisk=procs.filter(function(p){return p.riskLevel==='상'&&p.ts!=='완료';}).length;
+        return '<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:box-shadow .12s" data-sid="'+s.id+'" onclick="goSiteGantt(this.dataset.sid)">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+            '<div style="display:flex;align-items:center;gap:8px">' +
+              '<div style="width:10px;height:10px;border-radius:50%;background:'+color+';flex-shrink:0"></div>' +
+              '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+s.name+'</span>' +
+              (hiRisk>0?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#FFF5F5;color:#C53030;border:1px solid #FEB2B2">⚠️ 위험 '+hiRisk+'개</span>':'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#F0FFF4;color:#276749;border:1px solid #9AE6B4">✅ 안전</span>') +
+            '</div>' +
+            '<span style="font-size:13px;font-weight:800;color:'+color+'">'+pct+'%</span>' +
           '</div>' +
-          '<span class="bdg '+(p.ts==='진행중'?'br':'bo')+'">'+tsLabel+'</span>' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+            '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">' +
+              '<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width .4s"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:10px;font-size:11px;color:var(--t5)">' +
+            '<span>전체 '+procs.length+'개</span><span>진행중 '+active.length+'개</span><span>완료 '+comp+'개</span>' +
+          '</div>' +
         '</div>';
       }).join('');
-      var moreCount = riskProcs.length > 6 ? '<div style="font-size:11px;color:var(--t5);padding:6px 0;text-align:center">외 '+(riskProcs.length-6)+'개 더보기</div>' : '';
-      var emptyMsg = riskProcs.length===0 ? '<div style="padding:14px 0;text-align:center;font-size:12px;color:var(--t5)">✅ 위험 공종 없음</div>' : '';
-      return '<div class="site-proc-card" data-sid="'+s.id+'" onclick="goSiteGantt(this.dataset.sid)" style="cursor:pointer">' +
-        '<div class="site-proc-head" style="border-top:3px solid '+c+'">' +
-          '<div><div class="site-proc-nm">'+s.name+'</div><div class="site-proc-loc">📍 '+s.location+'</div></div>' +
-          '<div style="text-align:right">' +
-            '<span class="bdg '+(riskProcs.length>0?'br':'bg')+'">'+(riskProcs.length>0?'⚠️ 위험 '+riskProcs.length+'개':'✅ 안전')+'</span>' +
-            '<div style="font-size:10px;color:var(--t5);margin-top:4px">전체 진행률 '+totalPct+'%</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="site-proc-body">' + (emptyMsg || procRows + moreCount) + '</div>' +
-      '</div>';
-    }).join('') || '<div class="empty"><div class="empty-ic">🏗️</div><div class="empty-t">현장을 등록하세요</div></div>';
+    }
   }
 
-  var unreadAl = DB.alerts.filter(function(a){return !a.read;}).slice(0,5);
-  var daEl = document.getElementById('dashAlerts');
-  if (daEl) daEl.innerHTML = unreadAl.length
-    ? unreadAl.map(function(a){
-        return '<div class="al-item unread lv-'+a.riskLevel+'" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)" style="margin-bottom:5px;padding:9px 12px">' +
-          '<div class="al-em">'+alEmoji(a.alertType)+'</div>' +
-          '<div class="al-body"><div class="al-t" style="font-size:12px">'+a.siteName+'</div>' +
-          '<div class="al-d" style="font-size:10px">'+a.processName+'</div></div>' +
+  // ── 미확인 알림
+  var unrdAl=DB.alerts.filter(function(a){return !a.read;}).slice(0,4);
+  var daEl=document.getElementById('dashAlerts');
+  if(daEl) daEl.innerHTML=unrdAl.length
+    ?unrdAl.map(function(a){
+        return '<div style="padding:7px 6px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:8px;align-items:flex-start" data-id="'+a.id+'" onclick="openAlertDetail(this.dataset.id)">' +
+          '<span style="font-size:14px;flex-shrink:0">'+alEmoji(a.alertType)+'</span>' +
+          '<div style="min-width:0"><div style="font-size:11px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a.siteName+'</div>' +
+          '<div style="font-size:10px;color:var(--t5)">'+a.processName+'</div></div>' +
         '</div>';
       }).join('')
-    : '<div class="empty" style="padding:20px"><div class="empty-ic">✅</div><div class="empty-t">미확인 알림 없음</div></div>';
+    :'<div style="text-align:center;padding:16px;color:var(--t5);font-size:11px">✅ 미확인 알림 없음</div>';
 
-  var dsEl = document.getElementById('dashSiteSummary');
-  if (dsEl) {
-    dsEl.innerHTML = DB.sites.map(function(s,i){
-      var ps = DB.processes.filter(function(p){return p.siteId===s.id;}).map(enrich);
-      var pct = ps.length ? Math.round(ps.reduce(function(sum,p){return sum+(p.progress||0);},0)/ps.length) : 0;
-      var hr = ps.filter(function(p){return p.riskLevel==='상'&&p.ts!=='완료';}).length;
-      var c = colors[i%colors.length];
-      return '<div style="padding:9px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer" data-sid="'+s.id+'" onclick="goSiteGantt(this.dataset.sid)">' +
-        '<div style="width:8px;height:8px;border-radius:50%;background:'+c+';flex-shrink:0"></div>' +
-        '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</div></div>' +
-        '<div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:700;color:'+c+'">'+pct+'%</div>' +
-          (hr>0?'<div style="font-size:10px;color:var(--red)">⚠️ '+hr+'개</div>':'<div style="font-size:10px;color:var(--green)">안전</div>') +
-        '</div>' +
-      '</div>';
-    }).join('') || '<div style="text-align:center;padding:16px;color:var(--t5);font-size:12px">현장 없음</div>';
+  // ── 현장 요약
+  var dsEl=document.getElementById('dashSiteSummary');
+  if(dsEl) dsEl.innerHTML=DB.sites.map(function(s,i){
+    var ps=DB.processes.filter(function(p){return p.siteId===s.id;}).map(enrich);
+    var pct=ps.length?Math.round(ps.reduce(function(sum,p){return sum+(p.progress||0);},0)/ps.length):0;
+    var hr=ps.filter(function(p){return p.riskLevel==='상'&&p.ts!=='완료';}).length;
+    var c=COLORS[i%COLORS.length];
+    return '<div style="padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer" data-sid="'+s.id+'" onclick="goSiteGantt(this.dataset.sid)">' +
+      '<div style="width:7px;height:7px;border-radius:50%;background:'+c+';flex-shrink:0"></div>' +
+      '<div style="flex:1;font-size:11px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</div>' +
+      '<div style="font-size:12px;font-weight:700;color:'+c+'">'+pct+'%</div>' +
+      (hr>0?'<div style="font-size:10px;color:#C53030">⚠️'+hr+'</div>':'') +
+    '</div>';
+  }).join('')||'<div style="text-align:center;padding:12px;color:var(--t5);font-size:11px">현장 없음</div>';
+
+  // ── 위험 공종 리스크 테이블 (핵심)
+  rDashRiskTable();
+}
+
+function rDashRiskTable() {
+  var el=document.getElementById('dashRiskTable');
+  var badgeEl=document.getElementById('riskSummaryBadge');
+  if(!el) return;
+
+  var procs=filtered(DB.processes.map(enrich)).filter(function(p){return p.ts!=='완료';});
+  var sm=smMap();
+
+  // 위험도 점수: 상태(진행중>1주내>2주내>예정) + riskLevel(상>중>하) + 하자유형 수
+  function riskScore(p){
+    var tsS={진행중:30,예정_1주:20,예정_2주:10,예정:5}[p.ts]||0;
+    var rvS={상:20,중:10,하:5}[p.riskLevel]||0;
+    var defS=(p.defs||[]).length*3;
+    return tsS+rvS+defS;
   }
+
+  procs.sort(function(a,b){return riskScore(b)-riskScore(a);});
+
+  var highRisk=procs.filter(function(p){return riskScore(p)>=40;});
+  var midRisk =procs.filter(function(p){return riskScore(p)>=20&&riskScore(p)<40;});
+
+  if(badgeEl){
+    badgeEl.innerHTML=
+      (highRisk.length?'<span style="padding:3px 10px;border-radius:4px;background:#FFF5F5;color:#C53030;border:1px solid #FEB2B2;font-size:11px;font-weight:700;margin-left:6px">🔴 High '+highRisk.length+'개</span>':'')+
+      (midRisk.length?'<span style="padding:3px 10px;border-radius:4px;background:#FFFAF0;color:#C05621;border:1px solid #FBD38D;font-size:11px;font-weight:700;margin-left:6px">🟠 Mid '+midRisk.length+'개</span>':'');
+  }
+
+  if(!procs.length){
+    el.innerHTML='<div class="empty" style="padding:24px"><div class="empty-ic">✅</div><div class="empty-t">진행 중인 공종이 없습니다</div></div>';
+    return;
+  }
+
+  // 테이블 헤더
+  var tbl=
+    '<table style="width:100%;border-collapse:collapse">' +
+    '<thead><tr style="background:var(--card2)">' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border);width:20px">위험도</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">공종명</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">현장</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">상태</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">진행률</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">주요 하자 유형</th>' +
+    '<th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">필수 점검 항목</th>' +
+    '<th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:700;color:var(--t5);border-bottom:1.5px solid var(--border)">상세</th>' +
+    '</tr></thead><tbody>';
+
+  procs.slice(0,20).forEach(function(p){
+    var sc=riskScore(p);
+    var lvl=sc>=40?['🔴','#C53030','#FFF5F5','#FEB2B2','High']:
+             sc>=20?['🟠','#C05621','#FFFAF0','#FBD38D','Mid']:
+                    ['🟡','#B7791F','#FFFFF0','#F6E05E','Low'];
+    var stsCls=p.ts==='진행중'?'br':p.ts==='예정_1주'?'bo':p.ts==='예정_2주'?'by':'bb';
+    var stsTxt={진행중:'진행중',예정_1주:'1주내',예정_2주:'2주내',예정:'예정'}[p.ts]||'예정';
+    var pcColor2={진행중:'#C53030',예정_1주:'#C05621',예정_2주:'#D69E2E',예정:'#718096'}[p.ts]||'#718096';
+
+    // 주요 하자 유형 (상위 3개)
+    var defTags=(p.defs||[]).slice(0,3).map(function(d){
+      var rCls=d.riskLevel==='상'?'br':d.riskLevel==='중'?'bo':'bg';
+      return '<span class="bdg '+rCls+'" style="font-size:10px;margin:1px">'+d.name+'</span>';
+    }).join('');
+    if(!defTags) defTags='<span style="font-size:10px;color:var(--t3)">—</span>';
+
+    // 필수 점검 항목 (해당 공종 코드의 체크리스트)
+    var clItems=DB.checklists.filter(function(c){return c.code===p.code&&c.req==='필수';});
+    var clDone=clItems.filter(function(c){return c.checked;}).length;
+    var clHtml=clItems.length
+      ?'<span style="font-size:11px;font-weight:700;color:'+(clDone===clItems.length?'#276749':'#C53030')+'">'+clDone+'/'+clItems.length+'</span>' +
+       '<span style="font-size:10px;color:var(--t5);margin-left:4px">완료</span>'
+      :'<span style="font-size:10px;color:var(--t3)">체크리스트 없음</span>';
+
+    tbl+='<tr style="border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s" data-id="'+p.id+'" onclick="openProcDetailDash(this.dataset.id)" onmouseover="this.style.background=\'var(--blue-l)\'" onmouseout="this.style.background=\'\'">' +
+      '<td style="padding:10px 12px;text-align:center">' +
+        '<div style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;background:'+lvl[2]+';border:1px solid '+lvl[3]+';font-size:10px;font-weight:700;color:'+lvl[1]+'">'+lvl[0]+' '+lvl[4]+'</div>' +
+      '</td>' +
+      '<td style="padding:10px 12px;font-weight:700;font-size:12px;color:var(--t9)">'+p.name+'</td>' +
+      '<td style="padding:10px 12px;font-size:11px;color:var(--t5)">'+((sm[p.siteId])||'')+'</td>' +
+      '<td style="padding:10px 12px"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></td>' +
+      '<td style="padding:10px 12px">' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<div style="width:60px;height:6px;background:var(--border);border-radius:3px;overflow:hidden">' +
+            '<div style="height:100%;width:'+(p.progress||0)+'%;background:'+pcColor2+';border-radius:3px"></div>' +
+          '</div>' +
+          '<span style="font-size:11px;font-weight:700;color:'+pcColor2+'">'+(p.progress||0)+'%</span>' +
+        '</div>' +
+      '</td>' +
+      '<td style="padding:10px 12px">'+defTags+'</td>' +
+      '<td style="padding:10px 12px">'+clHtml+'</td>' +
+      '<td style="padding:10px 12px;text-align:center"><button class="btn btn-ghost btn-sm" data-id="'+p.id+'" onclick="event.stopPropagation();openProcDetailDash(this.dataset.id)" style="padding:3px 10px;font-size:10px">상세 →</button></td>' +
+    '</tr>';
+  });
+
+  tbl+='</tbody></table>';
+  el.innerHTML=tbl;
+}
+
+function openProcDetailDash(pid) {
+  var p=DB.processes.find(function(x){return x.id===pid;}); if(!p) return;
+  var pe=enrich(p);
+  var sm=smMap();
+  var siteName=sm[p.siteId]||'—';
+
+  // 하자 유형 상세
+  var defHtml=(pe.defs||[]).map(function(d){
+    var rCls=d.riskLevel==='상'?'br':d.riskLevel==='중'?'bo':'bg';
+    return '<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--card)">' +
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">' +
+        '<span class="bdg '+rCls+'" style="font-size:10px">'+d.riskLevel+'</span>' +
+        '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+d.name+'</span>' +
+        '<span style="font-size:10px;color:var(--t5)">'+d.category+'</span>' +
+      '</div>' +
+      (d.mainCause?'<div style="font-size:11px;color:var(--t7);margin-bottom:4px"><span style="font-weight:700;color:var(--t5)">원인: </span>'+d.mainCause+'</div>':'') +
+      (d.prevention?'<div style="font-size:11px;color:var(--green);background:var(--green-l);border-radius:5px;padding:5px 8px"><span style="font-weight:700">✅ 예방대책: </span>'+d.prevention+'</div>':'') +
+    '</div>';
+  }).join('') || '<div style="text-align:center;padding:12px;color:var(--t5);font-size:12px">연계된 하자 유형 없음</div>';
+
+  // 체크리스트 현황
+  var clItems=DB.checklists.filter(function(c){return c.code===p.code;});
+  var clHtml=clItems.length
+    ?clItems.map(function(c){
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border)">' +
+          '<div style="width:16px;height:16px;border-radius:4px;border:1.5px solid '+(c.checked?'#276749':'var(--border2)')+';background:'+(c.checked?'#276749':'#fff')+';display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0">'+(c.checked?'✓':'')+'</div>' +
+          '<div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--t9)">'+c.item+'</div>' +
+          (c.pass?'<div style="font-size:10px;color:var(--t5)">합격기준: '+c.pass+'</div>':'')+
+          '</div>' +
+          '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:'+(c.req==='필수'?'#FFF5F5':'#F0FFF4')+';color:'+(c.req==='필수'?'#C53030':'#276749')+';border:1px solid '+(c.req==='필수'?'#FEB2B2':'#9AE6B4')+'">'+c.req+'</span>' +
+        '</div>';
+      }).join('')
+    :'<div style="text-align:center;padding:12px;color:var(--t5);font-size:12px">체크리스트 없음</div>';
+
+  var content=
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+      '<div style="background:var(--card2);border-radius:7px;padding:9px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px">현장</div><div style="font-size:13px;font-weight:700">'+siteName+'</div></div>' +
+      '<div style="background:var(--card2);border-radius:7px;padding:9px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px">진행률</div><div style="font-size:13px;font-weight:700">'+p.progress+'%</div></div>' +
+      '<div style="background:var(--card2);border-radius:7px;padding:9px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px">착공</div><div style="font-size:12px;font-weight:700">'+fmtDate(p.startDate)+'</div></div>' +
+      '<div style="background:var(--card2);border-radius:7px;padding:9px 12px"><div style="font-size:10px;color:var(--t3);font-weight:700;margin-bottom:2px">준공</div><div style="font-size:12px;font-weight:700">'+fmtDate(p.endDate)+'</div></div>' +
+    '</div>' +
+    '<div style="font-size:12px;font-weight:700;color:var(--t7);margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid var(--border)">🔍 주요 하자 사례 및 예방대책</div>' +
+    defHtml +
+    '<div style="font-size:12px;font-weight:700;color:var(--t7);margin:12px 0 8px;padding-bottom:6px;border-bottom:1.5px solid var(--border)">✅ 점검 체크리스트 ('+clItems.length+'개)</div>' +
+    '<div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px">'+clHtml+'</div>';
+
+  document.getElementById('detailTitle').textContent='📋 '+p.name+' · 하자 리스크 상세';
+  document.getElementById('detailBody').innerHTML=content+
+    '<div class="m-ft" style="border-top:1.5px solid var(--border);margin-top:14px;padding-top:12px;display:flex;justify-content:flex-end;gap:7px">' +
+    '<button class="btn btn-ghost" onclick="closeOv(\'ovDetail\')">닫기</button>' +
+    '<button class="btn btn-primary" data-sid="'+p.siteId+'" onclick="closeOv(\'ovDetail\');goSiteGantt(this.dataset.sid)">📅 간트 차트로 이동</button>' +
+    '</div>';
+  openOv('ovDetail');
 }
 function scClick(tgt, f) {
 nav(tgt);
@@ -795,7 +1035,7 @@ const procTabState = {};
 function rRisk() {
 let list = filtered(DB.riskProcs);
 if (DB.riskF !== 'all') list = list.filter(function(p){ return p.ts === DB.riskF; });
-document.getElementById('riskCount').textContent = list.length + '건';
+var rcEl=document.getElementById('riskCount'); if(rcEl) rcEl.textContent = list.length+'건';
 const sm = smMap();
 if (!list.length) {
 document.getElementById('riskList').innerHTML =
@@ -893,134 +1133,151 @@ if (c) c.checked = checked;
 ════════════════════════════════ */
 let dragId = null;
 function rGantt() {
-  var list = filtered(DB.processes.map(enrich)).sort(function(a,b){return new Date(a.startDate)-new Date(b.startDate);});
+  var list = filtered(DB.processes.map(enrich)).sort(function(a,b){
+    return new Date(a.startDate)-new Date(b.startDate);
+  });
   var bodyEl = document.getElementById('ganttBody');
   if (!list.length) {
-    bodyEl.innerHTML = '<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div></div>';
+    bodyEl.innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div></div>';
     return;
   }
 
   var today = new Date(); today.setHours(0,0,0,0);
-  var allDates = [];
-  list.forEach(function(p){
-    var s=new Date(p.startDate), e=new Date(p.endDate);
-    if(!isNaN(s)) allDates.push(s);
-    if(!isNaN(e)) allDates.push(e);
-  });
-  if (!allDates.length) return;
 
-  var minD = new Date(Math.min.apply(null,allDates));
-  var maxD = new Date(Math.max.apply(null,allDates));
+  // 전체 날짜 범위
+  var allDates=[];
+  list.forEach(function(p){
+    var s=new Date(p.startDate),e=new Date(p.endDate);
+    if(!isNaN(s))allDates.push(s);
+    if(!isNaN(e))allDates.push(e);
+  });
+  if(!allDates.length){bodyEl.innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">날짜 정보 없음</div></div>';return;}
+
+  var minD=new Date(Math.min.apply(null,allDates));
+  var maxD=new Date(Math.max.apply(null,allDates));
   minD.setDate(1); minD.setMonth(minD.getMonth()-1);
   maxD.setDate(1); maxD.setMonth(maxD.getMonth()+2);
 
-  var totalMs   = maxD - minD;
-  var totalDays = totalMs / 86400000;
+  var totalMs=maxD-minD;
 
-  function pct(d) {
-    var ms = new Date(d) - minD;
-    return Math.max(0, Math.min(100, ms / totalMs * 100));
+  function pct(d){ return Math.max(0,Math.min(100,(new Date(d)-minD)/totalMs*100)); }
+
+  // 가로 넓이: 월당 70px (최소 900px)
+  var totalMonths=Math.ceil(totalMs/86400000/30);
+  var BAR_PX=Math.max(900, totalMonths*70);
+
+  // 월 눈금 생성 (3개월 간격)
+  var months=[];
+  var c=new Date(minD);
+  var step=totalMonths>24?3:totalMonths>12?2:1;
+  var mi=0;
+  while(c<=maxD){if(mi%step===0)months.push(new Date(c));c.setMonth(c.getMonth()+1);mi++;}
+
+  // 오늘 위치 (픽셀)
+  var todayPx=(new Date(today)-minD)/totalMs*BAR_PX;
+
+  // 공종별 색상 팔레트 (상태 무관, 공종 인덱스 기반)
+  var PALETTE=['#2B6CB0','#276749','#553C9A','#C05621','#285E61','#B7791F',
+               '#2C7A7B','#744210','#1A365D','#22543D','#44337A','#7B341E',
+               '#065666','#2D3748','#9B2C2C'];
+  // 상태 오버라이드 색상
+  var STS_CLR={완료:'#276749',예정_1주:'#C05621',예정_2주:'#D69E2E',예정:'#718096'};
+
+  function barColor(p,i){return STS_CLR[p.ts]||PALETTE[i%PALETTE.length];}
+
+  // ── 날짜 헤더 (월 눈금) ──
+  var hdrInner='';
+  months.forEach(function(m){
+    var px=(new Date(m)-minD)/totalMs*BAR_PX;
+    var label=m.getFullYear()+'.'+(m.getMonth()+1+'').padStart(2,'0');
+    hdrInner+='<div style="position:absolute;left:'+px+'px;top:0;bottom:0;border-left:1px solid var(--border2);padding:5px 4px;font-size:10px;font-weight:700;color:var(--t5);white-space:nowrap">'+label+'</div>';
+  });
+  // 오늘 라인 (헤더)
+  if(todayPx>=0&&todayPx<=BAR_PX){
+    hdrInner+='<div style="position:absolute;left:'+todayPx+'px;top:0;bottom:0;width:2px;background:#C53030;z-index:10">' +
+      '<div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#C53030;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;z-index:11">오늘</div>' +
+      '</div>';
   }
 
-  var todayPct = pct(today);
-
-  // 월 눈금: 표시 간격 조정 (총 기간에 따라 2개월 또는 3개월 간격)
-  var monthStep = totalDays > 600 ? 3 : totalDays > 300 ? 2 : 1;
-  var months = [];
-  var cur = new Date(minD);
-  var idx = 0;
-  while (cur <= maxD) {
-    if (idx % monthStep === 0) months.push(new Date(cur));
-    cur.setMonth(cur.getMonth()+1);
-    idx++;
-  }
-
-  // 색상 팔레트
-  var palette = ['#2B6CB0','#276749','#553C9A','#C05621','#285E61','#B7791F','#2C7A7B','#744210','#1A365D','#22543D','#44337A','#7B341E','#065666','#5F370E','#1D4044'];
-  function getBarColor(p, i) {
-    if (p.ts==='완료') return '#276749';
-    if (p.ts==='예정_1주') return '#C05621';
-    if (p.ts==='예정_2주') return '#B7791F';
-    if (p.ts==='예정') return '#718096';
-    return palette[i % palette.length];
-  }
-
-  // ── 오늘 라인 (헤더+바 공통 CSS 변수로 위치 공유)
-  var todayLine = todayPct>=0 && todayPct<=100
-    ? '<div style="position:absolute;left:'+todayPct+'%;top:0;bottom:0;width:2px;background:#C53030;z-index:5;pointer-events:none">' +
-      '<div style="position:absolute;top:0;left:50%;transform:translateX(-50%);background:#C53030;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap">오늘</div>' +
-      '</div>'
-    : '';
-
-  // ── 월 눈금 헤더
-  var FIXED_W = 560; // 고정 컬럼 합계
-  var monthHdr =
-    '<div style="position:relative;height:28px;background:#F7FAFC;border-bottom:2px solid var(--border);overflow:hidden">' +
-    months.map(function(m){
-      var label = m.getFullYear()+'.'+(m.getMonth()+1+'').padStart(2,'0');
-      return '<div style="position:absolute;left:'+pct(m)+'%;top:0;bottom:0;border-left:1px solid var(--border2);padding:5px 3px;font-size:10px;font-weight:700;color:var(--t5);white-space:nowrap;overflow:hidden;max-width:60px">'+label+'</div>';
-    }).join('') +
-    todayLine +
+  // ── 컬럼 헤더 ──
+  var COL='180px 110px 70px 88px 88px';
+  var colHdr=
+    '<div style="display:flex;position:sticky;top:0;z-index:20;background:var(--card2);border-bottom:2px solid var(--border)">' +
+    '<div style="display:grid;grid-template-columns:'+COL+';flex-shrink:0">' +
+      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">공종명</div>' +
+      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">현장</div>' +
+      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">상태</div>' +
+      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">시작일</div>' +
+      '<div class="g-cell g-hdr" style="border-right:2px solid var(--border)">종료일</div>' +
+    '</div>' +
+    '<div style="position:relative;width:'+BAR_PX+'px;flex-shrink:0;height:36px;overflow:hidden">' +
+      hdrInner +
+    '</div>' +
     '</div>';
 
-  // ── 테이블 헤더
-  var tblHdr =
-    '<div style="display:grid;grid-template-columns:180px 110px 70px 90px 90px 1fr 76px;background:var(--card2);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10">' +
-    '<div class="g-cell g-hdr">공종명</div>' +
-    '<div class="g-cell g-hdr">현장</div>' +
-    '<div class="g-cell g-hdr">상태</div>' +
-    '<div class="g-cell g-hdr">시작일</div>' +
-    '<div class="g-cell g-hdr">종료일</div>' +
-    '<div class="g-cell g-hdr">일정 바</div>' +
-    '<div class="g-cell g-hdr">관리</div>' +
-    '</div>';
-
-  // ── 행 생성
-  var rows = list.map(function(p, i) {
-    var sm = smMap();
-    var stOk = p.startDate && !isNaN(new Date(p.startDate));
-    var enOk = p.endDate   && !isNaN(new Date(p.endDate));
-    var barArea = '<div style="position:relative;width:100%;height:100%">'+todayLine;
-    if (stOk && enOk) {
-      var left  = pct(p.startDate);
-      var right = pct(p.endDate);
-      var width = Math.max(0.5, right-left);
-      var color = getBarColor(p, i);
-      var progW = width*(p.progress||0)/100;
-      barArea +=
-        '<div style="position:absolute;left:'+left+'%;width:'+width+'%;height:20px;top:6px;background:'+color+'28;border-radius:4px;border:1px solid '+color+'60"></div>' +
-        '<div style="position:absolute;left:'+left+'%;width:'+progW+'%;height:20px;top:6px;background:'+color+';border-radius:4px;display:flex;align-items:center;overflow:hidden">' +
-          (progW>3?'<span style="font-size:9px;font-weight:700;color:#fff;padding:0 4px;white-space:nowrap">'+(p.progress?p.progress+'%':p.name)+'</span>':'') +
+  // ── 행 생성 ──
+  var sm=smMap();
+  var rowsHtml=list.map(function(p,i){
+    var stOk=p.startDate&&!isNaN(new Date(p.startDate));
+    var enOk=p.endDate&&!isNaN(new Date(p.endDate));
+    var color=barColor(p,i);
+    var barHtml='';
+    if(stOk&&enOk){
+      var leftPx=(new Date(p.startDate)-minD)/totalMs*BAR_PX;
+      var rightPx=(new Date(p.endDate)-minD)/totalMs*BAR_PX;
+      var wPx=Math.max(4,rightPx-leftPx);
+      var progPx=wPx*(p.progress||0)/100;
+      barHtml=
+        // 전체 기간 (연한)
+        '<div style="position:absolute;left:'+leftPx+'px;width:'+wPx+'px;height:18px;top:8px;background:'+color+'25;border-radius:4px;border:1px solid '+color+'50"></div>'+
+        // 진행 부분
+        '<div style="position:absolute;left:'+leftPx+'px;width:'+progPx+'px;height:18px;top:8px;background:'+color+';border-radius:4px;display:flex;align-items:center;overflow:hidden;min-width:'+(p.progress?'4':'0')+'px">' +
+          (progPx>24?'<span style="font-size:9px;font-weight:700;color:#fff;padding:0 5px;white-space:nowrap">'+(p.progress||0)+'%</span>':'') +
         '</div>';
     }
-    barArea += '</div>';
+    // 오늘 라인 (행)
+    var todayRowLine=(todayPx>=0&&todayPx<=BAR_PX)?
+      '<div style="position:absolute;left:'+todayPx+'px;top:0;bottom:0;width:2px;background:#C53030;z-index:4;pointer-events:none"></div>':'';
 
-    var stsCls = p.ts==='진행중'?'br':p.ts==='예정_1주'?'bo':p.ts==='완료'?'bg':p.ts==='예정_2주'?'by':'bb';
-    var stsTxt = {진행중:'진행중',예정_1주:'1주내',예정_2주:'2주내',완료:'완료',예정:'예정'}[p.ts]||'예정';
+    var stsCls=p.ts==='진행중'?'br':p.ts==='예정_1주'?'bo':p.ts==='완료'?'bg':p.ts==='예정_2주'?'by':'bb';
+    var stsTxt={진행중:'진행중',예정_1주:'1주내',예정_2주:'2주내',완료:'완료',예정:'예정'}[p.ts]||'예정';
 
-    return '<div style="display:grid;grid-template-columns:180px 110px 70px 90px 90px 1fr 76px;border-bottom:1px solid var(--border);min-height:36px" class="g-row">' +
-      '<div class="g-cell" style="font-weight:700;font-size:12px">'+p.name+'</div>' +
-      '<div class="g-cell" style="font-size:11px;color:var(--t5)">'+((smMap())[p.siteId]||'')+'</div>' +
-      '<div class="g-cell"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></div>' +
-      '<div class="g-cell" style="font-size:11px">'+fmtDate(p.startDate)+'</div>' +
-      '<div class="g-cell" style="font-size:11px">'+fmtDate(p.endDate)+'</div>' +
-      '<div class="g-cell" style="padding:0;overflow:hidden">'+barArea+'</div>' +
-      '<div class="g-cell" style="justify-content:center;gap:3px">' +
+    return '<div style="display:flex;border-bottom:1px solid var(--border);min-height:34px" class="g-row">' +
+      '<div style="display:grid;grid-template-columns:'+COL+';flex-shrink:0">' +
+        '<div class="g-cell" style="font-weight:700;font-size:12px;border-right:1px solid var(--border)">'+p.name+'</div>' +
+        '<div class="g-cell" style="font-size:11px;color:var(--t5);border-right:1px solid var(--border)">'+((sm[p.siteId])||'')+'</div>' +
+        '<div class="g-cell" style="border-right:1px solid var(--border)"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></div>' +
+        '<div class="g-cell" style="font-size:11px;border-right:1px solid var(--border)">'+fmtDate(p.startDate)+'</div>' +
+        '<div class="g-cell" style="font-size:11px;border-right:2px solid var(--border)">'+fmtDate(p.endDate)+'</div>' +
+      '</div>' +
+      '<div style="position:relative;width:'+BAR_PX+'px;flex-shrink:0;overflow:hidden">'+todayRowLine+barHtml+'</div>' +
+      '<div class="g-cell" style="padding:0 8px;width:76px;flex-shrink:0;justify-content:center;gap:3px">' +
         '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+p.id+'" onclick="editProc(this.dataset.id)">&#9998;</button>' +
         '<button class="btn btn-danger btn-icon btn-sm" data-id="'+p.id+'" data-nm="'+escQ(p.name)+'" onclick="askDel(\'process\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
       '</div>' +
     '</div>';
   }).join('');
 
-  bodyEl.innerHTML =
+  // ── 범례 ──
+  var legend=
+    '<div style="display:flex;gap:12px;padding:10px 14px;border-top:1px solid var(--border);background:var(--card2);flex-wrap:wrap">' +
+    [['#C53030','진행중'],['#C05621','1주내 예정'],['#D69E2E','2주내 예정'],['#718096','예정'],['#276749','완료']].map(function(x){
+      return '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t7)">' +
+        '<div style="width:14px;height:8px;border-radius:2px;background:'+x[0]+'"></div>'+x[1]+'</div>';
+    }).join('')+
+    '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t7)"><div style="width:2px;height:14px;background:#C53030"></div>오늘</div>' +
+    '</div>';
+
+  bodyEl.innerHTML=
     '<div class="card" style="padding:0;overflow:hidden">' +
-    // 고정컬럼 + 바 영역 같은 레이아웃으로 월 눈금 정렬
-    '<div style="display:grid;grid-template-columns:560px 1fr">' +
-      '<div style="background:#F7FAFC;border-bottom:2px solid var(--border);height:28px"></div>' +
-      monthHdr +
+    colHdr +
+    '<div style="overflow-x:auto;overflow-y:visible">' +
+      '<div style="min-width:'+(538+BAR_PX+76)+'px">' +
+        rowsHtml +
+      '</div>' +
     '</div>' +
-    tblHdr + rows +
     '<button class="gantt-add" onclick="openProcForm()">+ 공종 추가하기</button>' +
+    legend +
     '</div>';
 }
 function ddStart(e,id){dragId=id;e.currentTarget.classList.add("dragging");e.dataTransfer.effectAllowed="move";}
@@ -1618,8 +1875,7 @@ rCL(); toast(added+'개 체크항목이 추가되었습니다.'+(skipped?' ('+sk
 }
 function clearCLUpload(){DB.pendingCLRows=[];var p=document.getElementById("clUploadPreview");if(p)p.style.display="none";var b=document.getElementById("clImportBtn");if(b)b.style.display="none";}
 function rDefs() {
-  var el = document.getElementById('defCount');
-  if (el) el.textContent = DB.defects.length+'개';
+  var el = document.getElementById('defCount'); if (el) el.textContent = DB.defects.length+'개';
 
   // 공종 필터바: PROC_CODES 전체 표시 + 하자유형 카운트
   var fbEl = document.getElementById('defCodeFb');
@@ -3179,6 +3435,9 @@ function parseDate(v) {
   if (!isNaN(d)) return d.toISOString().split('T')[0];
   return v;
 }
+
+
+
 
 
 
