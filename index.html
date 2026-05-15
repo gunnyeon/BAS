@@ -267,7 +267,7 @@ button,input,select,textarea{font-family:inherit}
 /* 위험 리스크 테이블 행 hover */
 #dashRiskTable tr:hover td { background: var(--blue-l); }
 </style>
-</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> </div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div>
+</head> <body> <div class="load-bar"><div class="load-fill"></div></div> <div class="load-txt">하자 예방 관리 현황판 로딩 중...</div> <!-- TOAST --> <div class="toast-wrap" id="toastWrap"></div> <!-- ═══ OVERLAYS ═══ --> <!-- 현장 폼 --> <div class="ov" id="ovSite"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="siteFormTitle">🏗️ 현장 등록</div><button class="m-x" onclick="closeOv('ovSite')">✕</button></div>
 <div class="fgrid">
   <div class="fg fspan"><label class="f-lbl">현장명<span class="f-req">*</span></label><input class="fi" id="f-sNm" placeholder="예) ○○아파트 1단지"></div>
   <div class="fg"><label class="f-lbl">현장 위치</label><input class="fi" id="f-sLoc" placeholder="예) 서울시 강동구 천호동"></div>
@@ -415,7 +415,9 @@ button,input,select,textarea{font-family:inherit}
 </div>
 </div>
 
-<!-- ═══ APPdiv> </div> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content"> <!-- ===== DASHBOARD ===== --> <div class="panel on" id="panel-dashboard">
+<!-- ═══ APP --> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content">
+<!-- ===== DASHBOARD ===== -->
+<div class="panel on" id="panel-dashboard">
 <!-- 통계 카드 -->
 <div class="sg" id="statGrid" style="margin-bottom:16px"></div>
 
@@ -459,6 +461,9 @@ button,input,select,textarea{font-family:inherit}
 </div>
 
 <!-- ===== SITES ===== --> <!-- ===== RISK ===== -->
+</div>
+
+<!-- ===== RISK ===== -->
 <div class="panel" id="panel-risk">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div class="sec-title" style="margin-bottom:0">⚠️ 위험 공종 관리 <span class="sec-sub" id="riskCount"></span></div>
@@ -470,6 +475,8 @@ button,input,select,textarea{font-family:inherit}
   </div>
   <div id="riskList"></div>
 </div>
+<!-- ===== DEFECTS ===== -->
+
 <!-- ===== DEFECTS ===== -->
 <div class="panel" id="panel-defects">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -483,6 +490,8 @@ button,input,select,textarea{font-family:inherit}
   <div id="defAccordion"></div>
 </div>
 
+
+<!-- ===== CHECKLIST ===== -->
 
 <!-- ===== CHECKLIST ===== -->
 <div class="panel" id="panel-checklist">
@@ -501,6 +510,8 @@ button,input,select,textarea{font-family:inherit}
   <div id="clContent"></div>
 </div>
 <!-- ===== GANTT ===== -->
+
+<!-- ===== GANTT ===== -->
 <div class="panel" id="panel-gantt">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
     <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div>
@@ -512,6 +523,8 @@ button,input,select,textarea{font-family:inherit}
   </div>
   <div id="ganttBody"></div>
 </div>
+
+<!-- ===== SITES ===== -->
 <div class="panel" id="panel-sites">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
     <div class="sec-title" style="margin-bottom:0">🏗️ 현장 관리 <span class="sec-sub" id="siteCount"></span></div>
@@ -521,10 +534,14 @@ button,input,select,textarea{font-family:inherit}
 </div>
 
 <!-- ===== STATS ===== -->
+
+<!-- ===== STATS ===== -->
 <div class="panel" id="panel-stats">
   <div class="sec-title">📈 하자 리스크 통계 분석</div>
   <div class="cg" id="chartGrid"></div>
 </div>
+
+<!-- ===== ALERTS ===== -->
 
 <!-- ===== ALERTS ===== -->
 <div class="panel" id="panel-alerts">
@@ -545,10 +562,17 @@ button,input,select,textarea{font-family:inherit}
   <div id="alertsList"></div>
 </div>
 </div>
-</div>
+
+
+
+
+
 </div>
 </div>
 <script>
+
+
+
 
 
 
@@ -675,8 +699,11 @@ function init() {
   if (_su) CFG.APPS_SCRIPT_URL = _su;
   if (_sv) CFG.SPREADSHEET_URL = _sv;
 
+  // 모든 패널 초기 숨기기 (CSS display:none 보완)
+  document.querySelectorAll('.panel').forEach(function(p){ p.style.display='none'; });
   // 대시보드 패널 초기 표시
-  nav('dashboard');
+  var dp = document.getElementById('panel-dashboard');
+  if (dp) { dp.style.display='block'; dp.classList.add('on'); }
 
   if (sheetEnabled()) {
     showLoadingOverlay('구글 스프레드시트에서 데이터를 불러오는 중...');
@@ -806,14 +833,7 @@ function autoGenAlerts() {
 /* ═══ 전체 렌더링 ═══ */
 function renderAll() {
   DB.riskProcs = getRiskProcs();
-  try { rDash(); } catch(e) { console.warn('rDash', e); }
-  try { rRisk(); } catch(e) { console.warn('rRisk', e); }
-  try { rGantt(); } catch(e) { console.warn('rGantt', e); }
-  try { rCL(); } catch(e) { console.warn('rCL', e); }
-  try { rDefs(); } catch(e) { console.warn('rDefs', e); }
-  try { rSites(); } catch(e) { console.warn('rSites', e); }
-  try { rStats(); } catch(e) { console.warn('rStats', e); }
-  try { rAlerts(); } catch(e) { console.warn('rAlerts', e); }
+  rDash(); rRisk(); rGantt(); rCL(); rDefs(); rSites(); rStats(); rAlerts();
   updBadges();
 }
 function updBadges() {
@@ -1696,16 +1716,13 @@ function submitCL() {
 function printReport() {
   var el = document.getElementById('clReportPrint');
   if (!el) return;
-  var win = window.open('','_blank','width=800,height=900');
-  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">' +
-    '<title>점검 보고서</title>' +
-    '<style>body{margin:20px;font-family:"Apple SD Gothic Neo","맑은 고딕",sans-serif;color:#1A202C}' +
-    '@media print{body{margin:10mm}button{display:none!important}}' +
-    'table{width:100%;border-collapse:collapse}' +
-    '</style></head><body>' +
-    el.outerHTML +
-    '<script>window.onload=function(){window.print();}<\/script>' +
-    '</body></html>');
+  var bodyTag = '<' + '/body>';
+  var htmlTag = '<' + '/html>';
+  var scriptTag = '<scr' + 'ipt>window.onload=function(){window.print()}<' + '/scr' + 'ipt>';
+  var win = window.open('','_blank','width=820,height=960');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>점검 보고서</title>' +
+    '<style>body{margin:16mm;font-family:sans-serif;color:#1A202C}table{width:100%;border-collapse:collapse}</style>' +
+    '</head><body>' + el.outerHTML + scriptTag + bodyTag + htmlTag);
   win.document.close();
 }
 /* 선택 모드 */
@@ -2759,28 +2776,74 @@ toast('CSV로 내보내졌습니다.','ok');
 ════════════════════════════════ */
 const PANEL_TITLES={dashboard:'📊 대시보드',checklist:'✅ 체크리스트 관리',cl:'✅ 체크리스트 관리',risk:'⚠️ 주요 하자 공종 현황',gantt:'📅 공정 간트 차트',checklist:'✅ 체크리스트 관리',defects:'🔍 하자유형 관리',sites:'🏗️ 현장 관리',stats:'📈 통계 분석',alerts:'🔔 알림 현황'};
 function nav(name, btn) {
-  // 패널명 별칭 처리
-  var alias = {'checklist':'checklist', 'cl':'checklist'};
-  var panelName = alias[name] || name;
+  // 패널명 정규화
+  var panelMap = {'cl':'checklist'};
+  var panelName = panelMap[name] || name;
 
-  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
-  document.querySelectorAll('.sb-btn').forEach(function(b){ b.classList.remove('on'); });
+  // 모든 패널 숨기기
+  var allPanels = document.querySelectorAll('.panel');
+  allPanels.forEach(function(p) {
+    p.style.display = 'none';
+    p.classList.remove('on');
+  });
 
-  var p = document.getElementById('panel-' + panelName);
-  if (p) p.classList.add('on');
+  // 해당 패널 표시
+  var panel = document.getElementById('panel-' + panelName);
+  if (panel) {
+    panel.style.display = 'block';
+    panel.classList.add('on');
+  }
 
-  var titleEl = document.getElementById('topTitle');
-  if (titleEl) titleEl.textContent = PANEL_TITLES[name] || PANEL_TITLES[panelName] || name;
-
+  // 사이드바 버튼 상태
+  document.querySelectorAll('.sb-btn').forEach(function(b) { b.classList.remove('on'); });
   if (btn) {
     btn.classList.add('on');
   } else {
-    document.querySelectorAll('.sb-btn').forEach(function(b){
+    document.querySelectorAll('.sb-btn').forEach(function(b) {
       var oc = b.getAttribute('onclick') || '';
-      if (oc.includes("'" + name + "'") || oc.includes("'" + panelName + "'")) b.classList.add('on');
+      if (oc.indexOf("'" + name + "'") >= 0 || oc.indexOf("'" + panelName + "'") >= 0) {
+        b.classList.add('on');
+      }
     });
   }
-  document.getElementById('sb').classList.remove('open');
+
+  // 타이틀
+  var titleEl = document.getElementById('topTitle');
+  if (titleEl) {
+    var titles = {
+      dashboard: '📊 대시보드',
+      risk: '⚠️ 주요 하자 공종 현황',
+      gantt: '📅 공정 간트 차트',
+      checklist: '✅ 체크리스트 관리',
+      cl: '✅ 체크리스트 관리',
+      defects: '🔍 하자유형 관리',
+      sites: '🏗️ 현장 관리',
+      stats: '📈 통계 분석',
+      alerts: '🔔 알림 현황'
+    };
+    titleEl.textContent = titles[name] || titles[panelName] || name;
+  }
+
+  // 사이드바 닫기
+  var sb = document.getElementById('sb');
+  if (sb) sb.classList.remove('open');
+
+  // 해당 패널 렌더 함수 호출
+  var renderMap = {
+    dashboard: function() { rDash(); },
+    risk: function() { rRisk(); },
+    gantt: function() { rGantt(); },
+    checklist: function() { rCL(); },
+    cl: function() { rCL(); },
+    defects: function() { rDefs(); },
+    sites: function() { rSites(); },
+    stats: function() { rStats(); },
+    alerts: function() { rAlerts(); }
+  };
+  var renderFn = renderMap[name] || renderMap[panelName];
+  if (renderFn) {
+    try { renderFn(); } catch(e) { console.error('render error:', name, e); }
+  }
 }
 function setRF(btn,f){document.querySelectorAll('#riskFb .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.riskF=f;rRisk();}
 function setAF(btn,f){document.querySelectorAll('#panel-alerts .fb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');DB.alertF=f;rAlerts();}
@@ -3492,6 +3555,9 @@ function parseDate(v) {
   if (!isNaN(d)) return d.toISOString().split('T')[0];
   return v;
 }
+
+
+
 
 
 
