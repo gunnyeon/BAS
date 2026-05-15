@@ -343,87 +343,65 @@ button,input,select,textarea{font-family:inherit}
   </div>
 </div> <div class="fg fspan"><label class="f-lbl">주요원인</label><textarea class="fta" id="f-dCause" rows="2" placeholder="주요 발생 원인"></textarea></div> <div class="fg fspan"><label class="f-lbl">예방핵심사항</label><textarea class="fta" id="f-dPrev" rows="2" placeholder="예방 핵심 사항"></textarea></div> </div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDef')">취소</button><button class="btn btn-primary" onclick="saveDef()">💾 저장</button></div> </div> </div> <!-- 하자 분류 관리 모달 --> <div class="ov" id="ovDefCat"> <div class="modal sm"> <div class="m-hd"><div class="m-title">📂 하자 분류 관리</div><button class="m-x" onclick="closeOv('ovDefCat')">✕</button></div> <div style="display:flex;gap:7px;margin-bottom:10px"> <input class="fi" id="newDefCat" placeholder="새 분류명 (예: 바닥)"> <button class="btn btn-primary btn-sm" onclick="addDefCat()">＋ 추가</button> </div> <div id="defCatList" style="min-height:60px;border:1.5px solid var(--border);border-radius:8px;padding:10px"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovDefCat')">닫기</button></div> </div> </div> <!-- 상세 모달 --> <div class="ov" id="ovDetail"> <div class="modal lg"> <div class="m-hd"><div class="m-title" id="detailTitle">상세 정보</div><button class="m-x" onclick="closeOv('ovDetail')">✕</button></div> <div id="detailBody"></div> </div> </div> <!-- 알림 상세 --> <div class="ov" id="ovAlert"> <div class="modal md"> <div class="m-hd"><div class="m-title" id="alertDetailTitle">🔔 알림 상세</div><button class="m-x" onclick="closeOv('ovAlert')">✕</button></div> <div id="alertDetailBody"></div> <div class="m-ft"><button class="btn btn-ghost" onclick="closeOv('ovAlert')">닫기</button><button class="btn btn-success" id="alertReadBtn" onclick="markAlertRead()">✅ 확인 처리</button></div> </div> </div> <!-- 삭제 확인 --> <div class="ov" id="ovDel"> <div class="modal sm"> <div class="confirm-ic">🗑️</div> <div class="confirm-msg"><strong id="delName"></strong><br>을(를) 삭제하시겠습니까?<br><span style="font-size:10px;color:var(--t3)">삭제 후 복구할 수 없습니다.</span></div> <div class="m-ft" style="border-top:none;justify-content:center;margin-top:0"><button class="btn btn-ghost" onclick="closeOv('ovDel')">취소</button><button class="btn btn-danger" onclick="confirmDel()">🗑️ 삭제</button></div> </div> </div> <!-- 시트 동기화 -->
 <div class="ov" id="ovSync">
-<div class="modal lg">
-<div class="m-hd">
-  <div class="m-title">🔄 구글 스프레드시트 연동</div>
-  <button class="m-x" onclick="closeOv('ovSync')">✕</button>
-</div>
-<!-- URL 설정 -->
-<div style="background:var(--blue-l);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-  <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px">⚙️ Apps Script URL 설정</div>
-  <div class="fg" style="margin-bottom:8px">
-    <label class="f-lbl">Apps Script 웹앱 URL <span class="f-req">*</span></label>
-    <input class="fi" id="cfgScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+<div class="modal lg" style="max-width:580px">
+  <div class="m-hd">
+    <div class="m-title">⚙️ 구글 스프레드시트 연동 설정</div>
+    <button class="m-x" onclick="closeOv('ovSync')">✕</button>
   </div>
-  <div class="fg" style="margin-bottom:8px">
-    <label class="f-lbl">스프레드시트 URL (선택)</label>
-    <input class="fi" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+
+  <!-- 안내 -->
+  <div style="background:#EBF8FF;border:1px solid #BEE3F8;border-radius:8px;padding:12px 14px;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;color:#2B6CB0;margin-bottom:6px">📋 연동 방법</div>
+    <ol style="font-size:11px;color:#4299E1;margin:0;padding-left:18px;line-height:1.8">
+      <li>구글 Apps Script 프로젝트에서 <b>웹앱으로 배포</b>한 URL을 복사하세요</li>
+      <li>구글 스프레드시트의 <b>URL(주소창 전체)</b> 또는 <b>시트 ID</b>를 복사하세요</li>
+      <li>아래 입력창에 각각 붙여넣기 후 <b>저장 및 연결</b>을 클릭하세요</li>
+    </ol>
   </div>
-  <div style="display:flex;gap:7px;align-items:center">
-    <button class="btn btn-primary btn-sm" onclick="saveSheetCfg()">💾 URL 저장</button>
-    <button class="btn btn-ghost btn-sm" onclick="openSheet()">📋 스프레드시트 열기</button>
-    <span id="syncStatusBadge" style="font-size:11px;color:var(--t5)">● 미설정</span>
-  </div>
-</div>
-<!-- 데이터 동기화 -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
-    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">🏗️ 현장 관리</div>
-    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncSiteCnt">로컬: 0건</div>
-    <div style="display:flex;flex-direction:column;gap:5px">
-      <button class="btn btn-primary btn-sm" onclick="pushSheet('sites')">📤 시트에 올리기</button>
-      <button class="btn btn-ghost btn-sm" onclick="pullSheet('sites')">📥 시트에서 불러오기</button>
+
+  <!-- Apps Script URL -->
+  <div style="margin-bottom:14px">
+    <label style="display:block;font-size:12px;font-weight:700;color:var(--t7);margin-bottom:6px">
+      🔗 Apps Script 웹앱 URL <span style="color:#C53030">*</span>
+    </label>
+    <input class="fi" id="cfgScriptUrl"
+      placeholder="https://script.google.com/macros/s/........../exec"
+      style="font-size:12px;font-family:monospace">
+    <div style="font-size:10px;color:var(--t5);margin-top:4px">
+      Apps Script → 배포 → 웹 앱으로 배포 → URL 복사
     </div>
   </div>
-  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
-    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">🔍 하자유형</div>
-    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncDefCnt">로컬: 0건</div>
-    <div style="display:flex;flex-direction:column;gap:5px">
-      <button class="btn btn-primary btn-sm" onclick="pushSheet('defects')">📤 시트에 올리기</button>
-      <button class="btn btn-ghost btn-sm" onclick="pullSheet('defects')">📥 시트에서 불러오기</button>
+
+  <!-- 스프레드시트 URL -->
+  <div style="margin-bottom:16px">
+    <label style="display:block;font-size:12px;font-weight:700;color:var(--t7);margin-bottom:6px">
+      📊 스프레드시트 URL 또는 ID
+    </label>
+    <input class="fi" id="cfgSheetUrl"
+      placeholder="https://docs.google.com/spreadsheets/d/........../edit  또는  시트 ID만 입력"
+      style="font-size:12px;font-family:monospace">
+    <div style="font-size:10px;color:var(--t5);margin-top:4px">
+      스프레드시트 주소창의 URL 전체 또는 /d/ 뒤의 ID만 입력해도 됩니다
     </div>
   </div>
-  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
-    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">✅ 체크리스트</div>
-    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncClCnt">로컬: 0건</div>
-    <div style="display:flex;flex-direction:column;gap:5px">
-      <button class="btn btn-primary btn-sm" onclick="pushSheet('checklists')">📤 시트에 올리기</button>
-      <button class="btn btn-ghost btn-sm" onclick="pullSheet('checklists')">📥 시트에서 불러오기</button>
+
+  <!-- 현재 연결 상태 -->
+  <div id="syncStatusBox" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);margin-bottom:16px;font-size:11px">
+    <div id="syncStatusText" style="color:var(--t5)">연결 상태를 확인하려면 저장 후 테스트하세요</div>
+  </div>
+
+  <div class="m-ft" style="border-top:1.5px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+    <button class="btn btn-ghost btn-sm" onclick="testSyncConnection()" style="font-size:11px">🔍 연결 테스트</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" onclick="clearSyncConfig()">🗑️ 설정 초기화</button>
+      <button class="btn btn-primary" onclick="saveSyncConfig()">💾 저장 및 연결</button>
     </div>
   </div>
-  <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:13px">
-    <div style="font-size:12px;font-weight:700;color:var(--t9);margin-bottom:4px">⚙️ 공종코드 관리</div>
-    <div style="font-size:10px;color:var(--t5);margin-bottom:10px" id="syncCodeCnt">로컬: 0건</div>
-    <div style="display:flex;flex-direction:column;gap:5px">
-      <button class="btn btn-primary btn-sm" onclick="pushSheet('codes')">📤 시트에 올리기</button>
-      <button class="btn btn-ghost btn-sm" onclick="pullSheet('codes')">📥 시트에서 불러오기</button>
-    </div>
-  </div>
-</div>
-<!-- 로그 -->
-<div style="font-size:11px;font-weight:700;color:var(--t7);margin-bottom:5px">📋 동기화 로그</div>
-<div class="sync-log" id="syncLog">동기화 로그가 여기에 표시됩니다.</div>
-<!-- Apps Script 설치 안내 -->
-<details style="margin-top:10px">
-  <summary style="font-size:12px;font-weight:700;color:var(--t5);cursor:pointer;padding:6px 0">📖 Apps Script 설치 방법 보기</summary>
-  <div style="font-size:11px;color:var(--t7);line-height:1.9;padding:10px;background:var(--card2);border-radius:8px;margin-top:6px">
-    1. 구글 스프레드시트 새 파일 생성<br>
-    2. <strong>확장 프로그램 → Apps Script</strong> 클릭<br>
-    3. Code.gs 파일에 제공된 Apps Script 코드 전체 붙여넣기<br>
-    4. 저장(Ctrl+S) 후 <strong>배포 → 새 배포</strong><br>
-    5. 유형: <strong>웹 앱</strong> / 액세스: <strong>모든 사용자</strong> 설정<br>
-    6. 배포 URL을 위 입력란에 붙여넣기<br>
-    7. <strong>💾 URL 저장</strong> 클릭 후 각 항목 <strong>📤 시트에 올리기</strong> 클릭
-  </div>
-</details>
-<div class="m-ft">
-  <button class="btn btn-ghost" onclick="closeOv('ovSync')">닫기</button>
-  <button class="btn btn-success" onclick="pullAllNow()">🔄 지금 전체 동기화</button>
-</div>
 </div>
 </div>
 
-<!-- ═══ APP --> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOv('ovSync')"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content">
+
+<!-- ═══ APP --> <!-- ═══ APP LAYOUT ═══ --> <div class="app"> <nav class="sb" id="sb"> <div class="sb-head"> <div class="sb-brand"> <div class="sb-logo">🏗️</div> <div class="sb-nm"><h2>하자 예방<br>관리 현황판</h2><p>건축사업본부</p></div> </div> </div> <div class="sb-body"> <div class="sb-sec"> <div class="sb-lbl">메인</div> <button class="sb-btn on" onclick="nav('dashboard',this)"><span class="sb-ic">📊</span>대시보드</button> <button class="sb-btn" onclick="nav('risk',this)"><span class="sb-ic">⚠️</span>주요 하자 공종 현황<span class="sb-bdg" id="riskBdg">0</span></button> </div> <div class="sb-sec"> <div class="sb-lbl">공정 관리</div> <button class="sb-btn" onclick="nav('gantt',this)"><span class="sb-ic">📅</span>공정 간트 차트</button> <button class="sb-btn" onclick="nav('checklist',this)"><span class="sb-ic">✅</span>체크리스트 관리</button> </div> <div class="sb-sec"> <div class="sb-lbl">데이터 관리</div> <button class="sb-btn" onclick="nav('defects',this)"><span class="sb-ic">🔍</span>하자유형 관리</button> <button class="sb-btn" onclick="nav('sites',this)"><span class="sb-ic">🏗️</span>현장 관리</button> <button class="sb-btn" onclick="nav('stats',this)"><span class="sb-ic">📈</span>통계 분석</button> </div> <div class="sb-sec"> <div class="sb-lbl">알림 &amp; 설정</div> <button class="sb-btn" onclick="nav('alerts',this)"><span class="sb-ic">🔔</span>알림 현황<span class="sb-bdg" id="alertBdg">0</span></button> <button class="sb-btn" onclick="openOvSync()"><span class="sb-ic">🔄</span>시트 동기화</button> </div> </div> <div class="sb-foot"> <div class="sb-time">최종 업데이트</div> <div class="sb-date" id="sbDate">—</div> </div> </nav> <div class="main"> <div class="topbar"> <button class="mob-btn" onclick="toggleSb()">☰</button> <div class="topbar-title" id="topTitle">📊 대시보드</div> <select class="fs" id="siteSel" onchange="onSiteFilter()" style="max-width:165px;padding:5px 9px"><option value="all">전체 현장</option></select> <button class="btn btn-ghost btn-sm" onclick="refreshApp()">🔄</button> <button class="btn btn-primary btn-sm" onclick="openSheet()">📋 스프레드시트</button> </div> <div class="content">
 <!-- ===== DASHBOARD ===== -->
 <div class="panel on" id="panel-dashboard">
 <!-- 통계 카드 -->
@@ -490,7 +468,7 @@ button,input,select,textarea{font-family:inherit}
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div class="sec-title" style="margin-bottom:0">🔍 하자유형 관리 <span class="sec-sub" id="defCount"></span></div>
     <div style="display:flex;gap:6px">
-      <button class="btn btn-ghost btn-sm" onclick="openOv('ovSync')">🔄 동기화</button>
+      <button class="btn btn-ghost btn-sm" onclick="openOvSync()">🔄 동기화</button>
       <button class="btn btn-primary btn-sm" onclick="openDefForm()">＋ 유형 추가</button>
     </div>
   </div>
@@ -610,6 +588,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 var GANTT_ZOOM_LEVELS = [
   {label:'전체', px:50},
   {label:'기본', px:70},
@@ -705,7 +685,7 @@ var GANTT_ZOOM_LEVELS = [
 /* ═══ 설정 ═══ */
 const CFG = {
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzwPg883wCe3-tW73emaUyL-m9EiUXE5g6Janw-eNhupMYPxRHuoL8r7tNlHWHzeSF-/exec',
-  SPREADSHEET_URL: 'https://docs.google.com/spreadsheets/d/1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w/edit',
+  SPREADSHEET_URL: '1u-P-Ew3FNL4nIpBnX7YOUvUwTo3O7UdFLWL2G3mk24w',
   SHEET: { sites:'현장관리', defects:'하자유형', checklists:'체크리스트', codes:'공종코드', gantt:'공정간트', alerts:'알림', cats:'하자분류' }
 };
 /* ═══ 공종코드 레지스트리 (추가/삭제 가능) ═══ */
@@ -748,6 +728,10 @@ function init() {
 
   // 모든 패널 초기 숨기기 (CSS display:none 보완)
   document.querySelectorAll('.panel').forEach(function(p){ p.style.display='none'; });
+  // URL 미설정 시 자동으로 설정 모달 표시
+  if (!CFG.APPS_SCRIPT_URL && !CFG.SPREADSHEET_URL) {
+    setTimeout(function() { openOvSync(); }, 800);
+  }
   // 대시보드 패널 초기 표시
   var dp = document.getElementById('panel-dashboard');
   if (dp) { dp.style.display='block'; dp.classList.add('on'); }
@@ -4082,6 +4066,94 @@ document.addEventListener('click', function(e) {
 
 
 
+
+
+function openOvSync() {
+  // 저장된 값 불러오기
+  var su = localStorage.getItem('bas_script_url') || CFG.APPS_SCRIPT_URL || '';
+  var sv = localStorage.getItem('bas_sheet_url')  || CFG.SPREADSHEET_URL || '';
+  var el1 = document.getElementById('cfgScriptUrl');
+  var el2 = document.getElementById('cfgSheetUrl');
+  if (el1) el1.value = su;
+  if (el2) el2.value = sv;
+  // 연결 상태 표시
+  updateSyncStatusBox();
+  openOv('ovSync');
+}
+function clearSyncConfig() {
+  if (!confirm('연동 설정을 초기화하시겠습니까?')) return;
+  localStorage.removeItem('bas_script_url');
+  localStorage.removeItem('bas_sheet_url');
+  CFG.APPS_SCRIPT_URL = '';
+  CFG.SPREADSHEET_URL = '';
+  var el1 = document.getElementById('cfgScriptUrl');
+  var el2 = document.getElementById('cfgSheetUrl');
+  if (el1) el1.value = '';
+  if (el2) el2.value = '';
+  updateSyncStatusBox();
+  toast('설정이 초기화되었습니다.', 'ok');
+}
+
+function updateSyncStatusBox() {
+  var txt = document.getElementById('syncStatusText');
+  if (!txt) return;
+  var su = CFG.APPS_SCRIPT_URL || localStorage.getItem('bas_script_url') || '';
+  var sv = CFG.SPREADSHEET_URL || localStorage.getItem('bas_sheet_url')  || '';
+  if (su) {
+    txt.innerHTML =
+      '<span style="color:#276749;font-weight:700">🔗 연동 설정됨</span><br>' +
+      '<span style="font-size:10px;color:var(--t5)">' + su.slice(0,60) + '...</span>';
+  } else {
+    txt.innerHTML = '<span style="color:#C53030">⚠️ 아직 설정되지 않았습니다. URL을 입력해 주세요.</span>';
+  }
+}
+
+
+function saveSyncConfig() {
+  var su = (document.getElementById('cfgScriptUrl').value || '').trim();
+  var sv = (document.getElementById('cfgSheetUrl').value  || '').trim();
+  if (!su) { toast('Apps Script URL을 입력해 주세요.', 'err'); return; }
+  if (!su.includes('script.google.com')) {
+    toast('올바른 Apps Script 웹앱 URL 형식이 아닙니다.', 'err'); return;
+  }
+  var sheetId = sv;
+  var m = sv.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) sheetId = m[1];
+  var fullUrl = sheetId ? 'https://docs.google.com/spreadsheets/d/' + sheetId + '/edit' : sv;
+  CFG.APPS_SCRIPT_URL = su;
+  CFG.SPREADSHEET_URL = fullUrl;
+  localStorage.setItem('bas_script_url', su);
+  localStorage.setItem('bas_sheet_url',  fullUrl);
+  updateSyncStatusBox();
+  closeOv('ovSync');
+  toast('✅ 저장 완료! 데이터를 불러옵니다...', 'ok');
+  setTimeout(function() {
+    loadAllFromSheet(function() {
+      buildSiteSel(); DB.riskProcs = getRiskProcs();
+      renderAll(); autoGenAlerts(); startRealtimeSync();
+      toast('✅ 구글 시트 연동 완료!', 'ok');
+    });
+  }, 300);
+}
+
+function testSyncConnection() {
+  var su = (document.getElementById('cfgScriptUrl').value || '').trim();
+  if (!su) { toast('Apps Script URL을 먼저 입력해 주세요.', 'err'); return; }
+  var txt = document.getElementById('syncStatusText');
+  var box = document.getElementById('syncStatusBox');
+  if (txt) txt.innerHTML = '<span style="color:#2B6CB0">🔄 연결 테스트 중...</span>';
+  fetch(su + '?action=getAll&sheet=현장관리')
+    .then(function(r){
+      if(r.ok){
+        if(txt) txt.innerHTML='<span style="color:#276749;font-weight:700">✅ 연결 성공!</span>';
+        if(box) box.style.borderColor='#9AE6B4';
+      } else throw new Error('HTTP '+r.status);
+    })
+    .catch(function(e){
+      if(txt) txt.innerHTML='<span style="color:#C53030;font-weight:700">❌ 연결 실패: '+e.message+'</span><br><span style="font-size:10px;color:var(--t5)">URL 또는 배포 설정을 확인해 주세요</span>';
+      if(box) box.style.borderColor='#FEB2B2';
+    });
+}
 
 </script>
 
