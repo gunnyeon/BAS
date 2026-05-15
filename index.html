@@ -604,6 +604,10 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
+
+
 var GANTT_ZOOM_LEVELS = [
   {label:'전체', px:50},
   {label:'기본', px:70},
@@ -1353,38 +1357,36 @@ function rGantt() {
   if(todayPx>=0&&todayPx<=BAR_PX){
     rowsSvg += '<line x1="'+todayPx+'" y1="0" x2="'+todayPx+'" y2="'+(list.length*ROW_H)+'" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>';
   }
-  // 공종 바
+    // 공종 바 (실제 진행 + 계획진행률 비교 시각화)
   list.forEach(function(p,i){
     var y=i*ROW_H;
-    var stOk=p.startDate&&!isNaN(new Date(p.startDate));
-    var enOk=p.endDate&&!isNaN(new Date(p.endDate));
-    if(!stOk||!enOk) return;
-    var x1=px(p.startDate);
-    var x2=px(p.endDate);
+    if(!p.startDate||!p.endDate||isNaN(new Date(p.startDate))||isNaN(new Date(p.endDate))) return;
+    var x1=px(p.startDate), x2=px(p.endDate);
     var w=Math.max(4,x2-x1);
-    var bh=20; var by=y+(ROW_H-bh)/2;
+    var bh=18, by=y+(ROW_H-bh)/2;
     var color=getBarBg(p,i);
+    var planProg = p.planProgress!==undefined ? p.planProgress : calcPlanProgress(p.startDate,p.endDate);
+    var actualProg = p.progress||0;
 
-    // 전체 기간 바 (연한 배경)
-    rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="4" fill="'+color+'" opacity="0.2"/>';
-    // 진행률 바
-    var progW=Math.max(0,w*(p.progress||0)/100);
-    if(progW>0){
-      rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+progW+'" height="'+bh+'" rx="4" fill="'+color+'"/>';
+    // 전체 기간 (연한 배경)
+    rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="3" fill="'+color+'" opacity="0.15" stroke="'+color+'" stroke-opacity="0.3" stroke-width="1"/>';
+    // 실제 진행바
+    var progW=Math.max(0,w*actualProg/100);
+    if(progW>0) rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+progW+'" height="'+bh+'" rx="3" fill="'+color+'"/>';
+    // 계획진행률 세로선
+    if(planProg>0&&planProg<100){
+      var planX=x1+w*planProg/100;
+      var planClr=actualProg>=planProg?'#276749':'#C53030';
+      rowsSvg+='<line x1="'+planX+'" y1="'+(by-2)+'" x2="'+planX+'" y2="'+(by+bh+2)+'" stroke="'+planClr+'" stroke-width="2" stroke-dasharray="3,2"/>';
+      rowsSvg+='<text x="'+planX+'" y="'+(by-4)+'" text-anchor="middle" font-size="8" fill="'+planClr+'" font-weight="700">계획'+planProg+'%</text>';
     }
     // 진행률 텍스트
-    if(progW>20){
-      rowsSvg += '<text x="'+(x1+progW/2)+'" y="'+(by+bh/2+4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="white">'+(p.progress||0)+'%</text>';
-    } else if(w>24){
-      rowsSvg += '<text x="'+(x1+4)+'" y="'+(by+bh/2+4)+'" font-size="10" font-weight="700" fill="'+color+'">'+(p.progress||0)+'%</text>';
-    }
-    // 위험 공종 강조 테두리
-    if(p.riskLevel==='상'&&p.ts!=='완료'){
-      rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="4" fill="none" stroke="#C53030" stroke-width="1.5"/>';
-      rowsSvg += '<text x="'+(x1+w+3)+'" y="'+(by+bh/2+4)+'" font-size="9" fill="#C53030" font-weight="700">⚠</text>';
-    }
-    // hover용 투명 영역 (클릭 이벤트)
-    rowsSvg += '<rect x="0" y="'+y+'" width="'+BAR_PX+'" height="'+ROW_H+'" fill="transparent" data-id="'+p.id+'" style="cursor:pointer" onclick="openProcDetail(\''+p.id+'\')"/>';
+    if(progW>28) rowsSvg+='<text x="'+(x1+progW/2)+'" y="'+(by+bh/2+4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="white">'+actualProg+'%</text>';
+    else if(w>30) rowsSvg+='<text x="'+(progW>4?x1+progW+3:x1+3)+'" y="'+(by+bh/2+4)+'" font-size="10" font-weight="700" fill="'+color+'">'+actualProg+'%</text>';
+    // 위험등급 강조
+    if(p.riskLevel==='상'&&p.ts!=='완료') rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="3" fill="none" stroke="#C53030" stroke-width="1.5"/>';
+    // 클릭 영역
+    rowsSvg+='<rect x="0" y="'+y+'" width="'+BAR_PX+'" height="'+ROW_H+'" fill="transparent" data-id="'+p.id+'" class="gantt-row-click" style="cursor:pointer"/>';
   });
   rowsSvg += '</svg>';
 
@@ -3887,8 +3889,8 @@ function showGanttUploadPreview(rows, fileName) {
   // 미리보기 테이블
   if (titleEl) titleEl.textContent = '📋 업로드 미리보기 (유효 '+valid.length+'건)';
   if (tableEl) {
-    var cols = ['공종명','공종코드','시작일','종료일','진행률','담당업체','담당자','비고'];
-    var colKeys = ['공종명','공종코드','시작일','종료일','진행률','담당업체','담당자','비고'];
+    var cols = ['공종명','공종코드','시작일','종료일','입력진행률','계획진행률','담당업체','담당자'];
+    var colKeys = ['공종명','공종코드','시작일','종료일','진행률','_plan','담당업체','담당자'];
     tableEl.innerHTML =
       '<thead><tr style="background:var(--blue-l)">' +
       cols.map(function(c){ return '<th style="padding:6px 8px;font-size:10px;font-weight:700;color:var(--blue)">'+c+'</th>'; }).join('') +
@@ -3897,6 +3899,10 @@ function showGanttUploadPreview(rows, fileName) {
         var bg = i%2===0?'var(--card)':'var(--card2)';
         return '<tr style="background:'+bg+'">'+
           colKeys.map(function(k){
+            if (k==='_plan') {
+              var planP = calcPlanProgress(parseDate(r['시작일']||''), parseDate(r['종료일']||''));
+              return '<td style="padding:5px 8px;font-size:11px;color:#2B6CB0;font-weight:700">'+planP+'%</td>';
+            }
             return '<td style="padding:5px 8px;font-size:11px">'+((r[k]||'')+'').slice(0,30)+'</td>';
           }).join('')+
         '</tr>';
@@ -3936,38 +3942,62 @@ function confirmGanttImport() {
   if (btn) { btn.disabled = true; btn.textContent = '반영 중...'; }
 
   var added = 0, skipped = 0;
-  DB.pendingGanttRows.forEach(function(r, idx) {
-    var nm  = (r['공종명']||r['name']||'').trim();
-    var st  = parseDate(r['시작일']||r['startDate']||'');
-    var en  = parseDate(r['종료일']||r['endDate']||'');
-    if (!nm||!st||!en) { skipped++; return; }
+  var baseTime = Date.now();  // 기준 타임스탬프
 
-    var codeRaw = (r['공종코드']||r['code']||'').trim().toUpperCase();
+  DB.pendingGanttRows.forEach(function(r, idx) {
+    var nm  = (r['공종명']||r['name']||r['공종']||'').trim();
+    var stR = r['시작일']||r['startDate']||r['start']||'';
+    var enR = r['종료일']||r['endDate']||r['end']||'';
+    var st  = parseDate(stR);
+    var en  = parseDate(enR);
+
+    if (!nm)  { skipped++; console.warn('누락(공종명없음) 행'+(idx+2)); return; }
+    if (!st)  { skipped++; console.warn('누락(시작일오류) '+nm+': '+stR); return; }
+    if (!en)  { skipped++; console.warn('누락(종료일오류) '+nm+': '+enR); return; }
+
+    // ── 고유 ID: 기준시간 + 4자리 인덱스 (절대 중복 없음)
+    var newId = 'P' + baseTime + '_' + String(idx).padStart(4,'0');
+
+    var codeRaw = (r['공종코드']||r['code']||r['코드']||'').trim().toUpperCase();
     var code = '';
     if (codeRaw && PROC_CODES[codeRaw]) {
       code = codeRaw;
     } else {
+      // 공종명으로 역매핑
       Object.entries(PROC_CODES).forEach(function(e){
-        if (e[1]===nm||nm.indexOf(e[1])>=0) code=e[0];
+        if (e[1]===nm || nm.indexOf(e[1])>=0) code = e[0];
       });
-      code = code || codeRaw || 'OTHER';
+      code = code || codeRaw || 'ETC';
     }
-    var prog = Math.min(100, Math.max(0, parseInt((r['진행률']||'0').toString().replace('%',''))||0));
-    var newId = 'P'+Date.now()+'_'+idx;
+
+    // ── 진행률: 입력값 사용, 없으면 계획진행률로 자동계산
+    var progStr = (r['진행률']||r['progress']||'').toString().replace('%','').trim();
+    var inputProg = progStr !== '' ? Math.min(100, Math.max(0, parseInt(progStr)||0)) : null;
+    var planProg  = calcPlanProgress(st, en);
+    var finalProg = (inputProg !== null) ? inputProg : planProg;
+
     var row = {
-      id:newId, siteId:siteId, name:nm, code:code,
-      startDate:st, endDate:en, progress:prog,
-      riskLevel:'중',
-      company:r['담당업체']||r['company']||'',
-      manager:r['담당자']||r['manager']||'',
-      note:r['비고']||r['note']||''
+      id:         newId,
+      siteId:     siteId,
+      name:       nm,
+      code:       code,
+      startDate:  st,
+      endDate:    en,
+      progress:   finalProg,
+      planProgress: planProg,   // 계획진행률 별도 저장
+      riskLevel:  '중',
+      company:    r['담당업체']||r['company']||'',
+      manager:    r['담당자']||r['manager']||'',
+      note:       r['비고']||r['note']||''
     };
+
     DB.processes.push(row);
     if (sheetEnabled()) {
-      setWriteLock('gantt', 8000);
-      syncToSheet('upsertRow',{sheet:CFG.SHEET.gantt,id:newId,row:row});
+      setWriteLock('gantt', 10000);
+      syncToSheet('upsertRow', {sheet: CFG.SHEET.gantt, id: newId, row: row});
     }
     added++;
+    console.log('추가됨:', idx+1, nm, st, en, finalProg+'%');
   });
 
   DB.pendingGanttRows = [];
@@ -3977,7 +4007,8 @@ function confirmGanttImport() {
 
   closeOv('ovGanttUpload');
   var skipMsg = skipped ? ' ('+skipped+'개 건너뜀)' : '';
-  toast(added+'개 공종이 간트차트에 반영되었습니다.'+skipMsg,'ok');
+  toast(added+'개 공종이 간트차트에 반영되었습니다.'+skipMsg, added>0?'ok':'err');
+  if (btn) { btn.disabled = false; btn.textContent = '✅ 간트에 반영'; }
 }
 
 // ── CSV 양식 다운로드
@@ -4005,6 +4036,27 @@ function downloadGanttTemplate() {
 
 
 
+
+
+
+function calcPlanProgress(startDate, endDate) {
+  // TODAY 기준 계획 진행률 (%)
+  if (!startDate || !endDate) return 0;
+  var s = new Date(startDate), e = new Date(endDate);
+  if (isNaN(s) || isNaN(e)) return 0;
+  var today = new Date(); today.setHours(0,0,0,0);
+  if (today <= s) return 0;
+  if (today >= e) return 100;
+  return Math.round((today - s) / (e - s) * 100);
+}
+
+
+
+// 간트 행 클릭 이벤트 위임
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('.gantt-row-click');
+  if (el) openProcDetail(el.getAttribute('data-id'));
+});
 
 
 </script>
