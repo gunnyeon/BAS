@@ -608,6 +608,8 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
+
 var GANTT_ZOOM_LEVELS = [
   {label:'전체', px:50},
   {label:'기본', px:70},
@@ -836,10 +838,29 @@ if (ds <= 14) return '예정_2주';
 return '예정';
 }
 function enrich(p) {
-const ts = timeStatus(p);
-const dmap = getDMAP();
-const defs = (dmap[p.code]||[]).map(id => DB.defects.find(d=>d.id===id)).filter(Boolean);
-return Object.assign({},p,{ts:ts,defs:defs});
+  var today = new Date(); today.setHours(0,0,0,0);
+  var s = p.startDate ? new Date(p.startDate) : null;
+  var e = p.endDate   ? new Date(p.endDate)   : null;
+  var ts = '예정';
+  if (s && e) {
+    if (today > e) ts = '완료';
+    else if (today >= s) {
+      var diff = (e - today) / 86400000;
+      ts = diff <= 7 ? '예정_1주' : diff <= 14 ? '예정_2주' : '진행중';
+    } else {
+      var diff2 = (s - today) / 86400000;
+      ts = diff2 <= 7 ? '예정_1주' : diff2 <= 14 ? '예정_2주' : '예정';
+    }
+  }
+  // TODAY 기준 진행률 자동 계산
+  var todayProg = (s && e) ? calcPlanProgress(p.startDate, p.endDate) : 0;
+  // 연계 하자 유형
+  var code = p.code || '';
+  var defs = DB.defects.filter(function(d){
+    var lc = Array.isArray(d.linkedCodes) ? d.linkedCodes : (d.linkedCodes||'').split('|').map(function(x){return x.trim();});
+    return lc.indexOf(code) >= 0;
+  });
+  return Object.assign({}, p, {ts: ts, progress: todayProg, defs: defs});
 }
 function getRiskProcs() {
 return DB.processes.map(enrich)
@@ -1357,38 +1378,43 @@ function rGantt() {
   if(todayPx>=0&&todayPx<=BAR_PX){
     rowsSvg += '<line x1="'+todayPx+'" y1="0" x2="'+todayPx+'" y2="'+(list.length*ROW_H)+'" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>';
   }
-    // 공종 바 (실제 진행 + 계획진행률 비교 시각화)
-  list.forEach(function(p,i){
-    var y=i*ROW_H;
-    if(!p.startDate||!p.endDate||isNaN(new Date(p.startDate))||isNaN(new Date(p.endDate))) return;
-    var x1=px(p.startDate), x2=px(p.endDate);
-    var w=Math.max(4,x2-x1);
-    var bh=18, by=y+(ROW_H-bh)/2;
-    var color=getBarBg(p,i);
-    var planProg = p.planProgress!==undefined ? p.planProgress : calcPlanProgress(p.startDate,p.endDate);
-    var actualProg = p.progress||0;
+    // 공종 바 (TODAY 기준 진행률 자동 계산)
+  list.forEach(function(p, i) {
+    var y = i * ROW_H;
+    if (!p.startDate || !p.endDate || isNaN(new Date(p.startDate)) || isNaN(new Date(p.endDate))) return;
+    var x1 = px(p.startDate), x2 = px(p.endDate);
+    var w  = Math.max(4, x2 - x1);
+    var bh = 18, by = y + (ROW_H - bh) / 2;
+    var color = getBarBg(p, i);
 
-    // 전체 기간 (연한 배경)
-    rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="3" fill="'+color+'" opacity="0.15" stroke="'+color+'" stroke-opacity="0.3" stroke-width="1"/>';
-    // 실제 진행바
-    var progW=Math.max(0,w*actualProg/100);
-    if(progW>0) rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+progW+'" height="'+bh+'" rx="3" fill="'+color+'"/>';
-    // 계획진행률 세로선
-    if(planProg>0&&planProg<100){
-      var planX=x1+w*planProg/100;
-      var planClr=actualProg>=planProg?'#276749':'#C53030';
-      rowsSvg+='<line x1="'+planX+'" y1="'+(by-2)+'" x2="'+planX+'" y2="'+(by+bh+2)+'" stroke="'+planClr+'" stroke-width="2" stroke-dasharray="3,2"/>';
-      rowsSvg+='<text x="'+planX+'" y="'+(by-4)+'" text-anchor="middle" font-size="8" fill="'+planClr+'" font-weight="700">계획'+planProg+'%</text>';
+    // TODAY 기준 진행률 자동 계산
+    var todayProg = calcPlanProgress(p.startDate, p.endDate);
+    var progW = Math.max(0, w * todayProg / 100);
+
+    // 전체 기간 바 (연한 배경)
+    rowsSvg += '<rect x="' + x1 + '" y="' + by + '" width="' + w + '" height="' + bh + '" rx="3" fill="' + color + '" opacity="0.18" stroke="' + color + '" stroke-opacity="0.4" stroke-width="1"/>';
+
+    // 진행 바
+    if (progW > 0) {
+      rowsSvg += '<rect x="' + x1 + '" y="' + by + '" width="' + progW + '" height="' + bh + '" rx="3" fill="' + color + '"/>';
     }
+
     // 진행률 텍스트
-    if(progW>28) rowsSvg+='<text x="'+(x1+progW/2)+'" y="'+(by+bh/2+4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="white">'+actualProg+'%</text>';
-    else if(w>30) rowsSvg+='<text x="'+(progW>4?x1+progW+3:x1+3)+'" y="'+(by+bh/2+4)+'" font-size="10" font-weight="700" fill="'+color+'">'+actualProg+'%</text>';
-    // 위험등급 강조
-    if(p.riskLevel==='상'&&p.ts!=='완료') rowsSvg+='<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="3" fill="none" stroke="#C53030" stroke-width="1.5"/>';
+    if (progW > 28) {
+      rowsSvg += '<text x="' + (x1 + progW / 2) + '" y="' + (by + bh / 2 + 4) + '" text-anchor="middle" font-size="10" font-weight="700" fill="white">' + todayProg + '%</text>';
+    } else if (w > 30) {
+      var tx = progW > 4 ? x1 + progW + 3 : x1 + 3;
+      rowsSvg += '<text x="' + tx + '" y="' + (by + bh / 2 + 4) + '" font-size="10" font-weight="700" fill="' + color + '">' + todayProg + '%</text>';
+    }
+
+    // 위험등급 상 → 빨간 테두리
+    if (p.riskLevel === '상' && p.ts !== '완료') {
+      rowsSvg += '<rect x="' + x1 + '" y="' + by + '" width="' + w + '" height="' + bh + '" rx="3" fill="none" stroke="#C53030" stroke-width="1.5"/>';
+    }
+
     // 클릭 영역
-    rowsSvg+='<rect x="0" y="'+y+'" width="'+BAR_PX+'" height="'+ROW_H+'" fill="transparent" data-id="'+p.id+'" class="gantt-row-click" style="cursor:pointer"/>';
+    rowsSvg += '<rect x="0" y="' + y + '" width="' + BAR_PX + '" height="' + ROW_H + '" fill="transparent" data-id="' + p.id + '" class="gantt-row-click" style="cursor:pointer"/>';
   });
-  rowsSvg += '</svg>';
 
   // ── 좌측 고정 컬럼 행
   var COL='140px 100px 70px 90px 90px';
@@ -3889,8 +3915,8 @@ function showGanttUploadPreview(rows, fileName) {
   // 미리보기 테이블
   if (titleEl) titleEl.textContent = '📋 업로드 미리보기 (유효 '+valid.length+'건)';
   if (tableEl) {
-    var cols = ['공종명','공종코드','시작일','종료일','입력진행률','계획진행률','담당업체','담당자'];
-    var colKeys = ['공종명','공종코드','시작일','종료일','진행률','_plan','담당업체','담당자'];
+    var cols = ['공종명','공종코드','시작일','종료일','TODAY진행률','담당업체','담당자'];
+    var colKeys = ['공종명','공종코드','시작일','종료일','_plan','담당업체','담당자'];
     tableEl.innerHTML =
       '<thead><tr style="background:var(--blue-l)">' +
       cols.map(function(c){ return '<th style="padding:6px 8px;font-size:10px;font-weight:700;color:var(--blue)">'+c+'</th>'; }).join('') +
@@ -3901,7 +3927,7 @@ function showGanttUploadPreview(rows, fileName) {
           colKeys.map(function(k){
             if (k==='_plan') {
               var planP = calcPlanProgress(parseDate(r['시작일']||''), parseDate(r['종료일']||''));
-              return '<td style="padding:5px 8px;font-size:11px;color:#2B6CB0;font-weight:700">'+planP+'%</td>';
+              return '<td style="padding:5px 8px;font-size:11px;color:#2B6CB0;font-weight:700">'+planP+'%<span style="font-size:9px;color:var(--t5);margin-left:3px">(오늘기준)</span></td>';
             }
             return '<td style="padding:5px 8px;font-size:11px">'+((r[k]||'')+'').slice(0,30)+'</td>';
           }).join('')+
@@ -3970,11 +3996,8 @@ function confirmGanttImport() {
       code = code || codeRaw || 'ETC';
     }
 
-    // ── 진행률: 입력값 사용, 없으면 계획진행률로 자동계산
-    var progStr = (r['진행률']||r['progress']||'').toString().replace('%','').trim();
-    var inputProg = progStr !== '' ? Math.min(100, Math.max(0, parseInt(progStr)||0)) : null;
-    var planProg  = calcPlanProgress(st, en);
-    var finalProg = (inputProg !== null) ? inputProg : planProg;
+    // ── TODAY 기준 진행률 자동 계산
+    var finalProg = calcPlanProgress(st, en);
 
     var row = {
       id:         newId,
@@ -3983,8 +4006,7 @@ function confirmGanttImport() {
       code:       code,
       startDate:  st,
       endDate:    en,
-      progress:   finalProg,
-      planProgress: planProg,   // 계획진행률 별도 저장
+      progress:   finalProg,   // TODAY 기준 자동 계산
       riskLevel:  '중',
       company:    r['담당업체']||r['company']||'',
       manager:    r['담당자']||r['manager']||'',
@@ -4057,6 +4079,8 @@ document.addEventListener('click', function(e) {
   var el = e.target.closest('.gantt-row-click');
   if (el) openProcDetail(el.getAttribute('data-id'));
 });
+
+
 
 
 </script>
