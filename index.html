@@ -513,15 +513,31 @@ button,input,select,textarea{font-family:inherit}
 
 <!-- ===== GANTT ===== -->
 <div class="panel" id="panel-gantt">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div>
-    <div style="display:flex;gap:6px">
-      <label class="btn btn-ghost btn-sm" style="cursor:pointer">📁 파일 업로드<input type="file" accept=".csv" style="display:none" onchange="handleGanttFile(this)"></label>
-      <button class="btn btn-ghost btn-sm" onclick="exportGanttCSV()">📊 CSV 내보내기</button>
-      <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+  <div class="sec-title" style="margin-bottom:0">📅 공정 간트 차트</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <!-- 줌 컨트롤 -->
+    <div style="display:flex;align-items:center;gap:4px;border:1px solid var(--border2);border-radius:6px;padding:3px 6px;background:var(--card)">
+      <span style="font-size:11px;color:var(--t5);font-weight:700">줌</span>
+      <button onclick="ganttZoom(-1)" style="width:22px;height:22px;border:none;background:none;cursor:pointer;font-size:14px;color:var(--t7);border-radius:3px" title="축소">－</button>
+      <span id="ganttZoomLabel" style="font-size:11px;font-weight:700;color:var(--blue);min-width:28px;text-align:center">기본</span>
+      <button onclick="ganttZoom(1)" style="width:22px;height:22px;border:none;background:none;cursor:pointer;font-size:14px;color:var(--t7);border-radius:3px" title="확대">＋</button>
     </div>
+    <!-- 오늘로 이동 -->
+    <button class="btn btn-ghost btn-sm" onclick="ganttScrollToday()" title="오늘 날짜로 이동">📍 오늘</button>
+    <!-- 상태 필터 -->
+    <select id="ganttStatusFilter" class="fs" style="font-size:11px;padding:5px 8px;width:auto" onchange="rGantt()">
+      <option value="all">전체 공종</option>
+      <option value="진행중">진행중</option>
+      <option value="완료">완료</option>
+      <option value="예정">예정 / 1주내</option>
+    </select>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer">📁 업로드<input type="file" accept=".csv" style="display:none" onchange="handleGanttFile(this)"></label>
+    <button class="btn btn-ghost btn-sm" onclick="exportGanttCSV()">📊 CSV</button>
+    <button class="btn btn-primary btn-sm" onclick="openProcForm()">＋ 공종 추가</button>
   </div>
-  <div id="ganttBody"></div>
+</div>
+<div id="ganttBody"></div>
 </div>
 
 <!-- ===== SITES ===== -->
@@ -570,6 +586,18 @@ button,input,select,textarea{font-family:inherit}
 </div>
 </div>
 <script>
+
+
+
+
+
+var GANTT_ZOOM_LEVELS = [
+  {label:'전체', px:50},
+  {label:'기본', px:70},
+  {label:'넓게', px:100},
+  {label:'상세', px:140},
+  {label:'주간', px:200}
+];
 
 
 
@@ -676,7 +704,7 @@ const DB = {
 sites:[], processes:[], defects:[], checklists:[], alerts:[],
 riskProcs:[],
 charts:{},
-selSite:'all', riskF:'all', alertF:'all', clCode:'', defCodeF:'all',
+selSite:'all', riskF:'all', alertF:'all', clCode:'', defCodeF:'all', ganttZoom:0,
 defCat:'all', editId:null, delTarget:null, curAlertId:null,
 bulkMode:false, selCLIds:new Set(),
 pendingGanttRows:[], pendingCLRows:[],
@@ -1194,20 +1222,40 @@ if (c) c.checked = checked;
 ════════════════════════════════ */
 let dragId = null;
 function rGantt() {
-  var list = filtered(DB.processes.map(enrich)).sort(function(a,b){
+  var statusFilter = (document.getElementById('ganttStatusFilter')||{}).value || 'all';
+  var zoomLevel = GANTT_ZOOM_LEVELS[DB.ganttZoom||1];
+  var PX_PER_MONTH = zoomLevel.px;
+
+  var allList = filtered(DB.processes.map(enrich)).sort(function(a,b){
     return new Date(a.startDate)-new Date(b.startDate);
   });
+
+  // 상태 필터 적용
+  var list = allList.filter(function(p){
+    if (statusFilter === 'all') return true;
+    if (statusFilter === '진행중') return p.ts === '진행중';
+    if (statusFilter === '완료') return p.ts === '완료';
+    if (statusFilter === '예정') return p.ts === '예정' || p.ts === '예정_1주' || p.ts === '예정_2주';
+    return true;
+  });
+
   var bodyEl = document.getElementById('ganttBody');
+  if (!bodyEl) return;
+
+  if (!allList.length) {
+    bodyEl.innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div><div class="empty-s">+ 공종 추가 버튼을 클릭하세요</div></div>';
+    return;
+  }
   if (!list.length) {
-    bodyEl.innerHTML='<div class="empty"><div class="empty-ic">📅</div><div class="empty-t">공종을 추가하세요</div></div>';
+    bodyEl.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">해당 조건의 공종이 없습니다</div></div>';
     return;
   }
 
   var today = new Date(); today.setHours(0,0,0,0);
 
-  // 전체 날짜 범위
+  // 날짜 범위
   var allDates=[];
-  list.forEach(function(p){
+  allList.forEach(function(p){
     var s=new Date(p.startDate),e=new Date(p.endDate);
     if(!isNaN(s))allDates.push(s);
     if(!isNaN(e))allDates.push(e);
@@ -1216,130 +1264,222 @@ function rGantt() {
 
   var minD=new Date(Math.min.apply(null,allDates));
   var maxD=new Date(Math.max.apply(null,allDates));
-  minD.setDate(1); minD.setMonth(minD.getMonth()-1);
-  maxD.setDate(1); maxD.setMonth(maxD.getMonth()+2);
+  minD=new Date(minD.getFullYear(), minD.getMonth()-1, 1);
+  maxD=new Date(maxD.getFullYear(), maxD.getMonth()+2, 1);
 
   var totalMs=maxD-minD;
+  var totalMonths=Math.ceil(totalMs/86400000/30.4);
+  var BAR_PX=Math.max(800, totalMonths*PX_PER_MONTH);
+  var ROW_H=36;
+  var HDR_H=28;
+  var FIXED_W=540; // 고정 컬럼 합계
 
   function pct(d){ return Math.max(0,Math.min(100,(new Date(d)-minD)/totalMs*100)); }
+  function px(d){ return Math.max(0,Math.min(BAR_PX,(new Date(d)-minD)/totalMs*BAR_PX)); }
 
-  // 가로 넓이: 월당 70px (최소 900px)
-  var totalMonths=Math.ceil(totalMs/86400000/30);
-  var BAR_PX=Math.max(900, totalMonths*70);
+  // 오늘 위치
+  var todayPx = (today-minD)/totalMs*BAR_PX;
 
-  // 월 눈금 생성 (3개월 간격)
+  // 월 눈금 (단계별 간격)
+  var monthStep = totalMonths>36?6:totalMonths>24?3:totalMonths>12?2:1;
   var months=[];
-  var c=new Date(minD);
-  var step=totalMonths>24?3:totalMonths>12?2:1;
-  var mi=0;
-  while(c<=maxD){if(mi%step===0)months.push(new Date(c));c.setMonth(c.getMonth()+1);mi++;}
+  var mc=new Date(minD); var mi=0;
+  while(mc<=maxD){
+    if(mi%monthStep===0) months.push(new Date(mc));
+    mc.setMonth(mc.getMonth()+1); mi++;
+  }
 
-  // 오늘 위치 (픽셀)
-  var todayPx=(new Date(today)-minD)/totalMs*BAR_PX;
-
-  // 공종별 색상 팔레트 (상태 무관, 공종 인덱스 기반)
+  // 색상 팔레트
   var PALETTE=['#2B6CB0','#276749','#553C9A','#C05621','#285E61','#B7791F',
                '#2C7A7B','#744210','#1A365D','#22543D','#44337A','#7B341E',
                '#065666','#2D3748','#9B2C2C'];
-  // 상태 오버라이드 색상
-  var STS_CLR={완료:'#276749',예정_1주:'#C05621',예정_2주:'#D69E2E',예정:'#718096'};
-
+  var STS_CLR={완료:'#276749',예정_1주:'#DD6B20',예정_2주:'#D69E2E',예정:'#718096'};
   function barColor(p,i){return STS_CLR[p.ts]||PALETTE[i%PALETTE.length];}
 
-  // ── 날짜 헤더 (월 눈금) ──
-  var hdrInner='';
+  // 위험 공종 색상 오버라이드
+  function getBarBg(p,i){
+    var c=barColor(p,i);
+    if(p.riskLevel==='상'&&p.ts!=='완료') return '#C53030';
+    return c;
+  }
+
+  var sm=smMap();
+
+  // ── 날짜 헤더 SVG
+  var hdrSvg = '<svg width="'+BAR_PX+'" height="'+HDR_H+'" style="display:block;overflow:visible">';
+  // 배경
+  hdrSvg += '<rect width="'+BAR_PX+'" height="'+HDR_H+'" fill="#F7FAFC"/>';
+  // 월 눈금선 + 라벨
   months.forEach(function(m){
-    var px=(new Date(m)-minD)/totalMs*BAR_PX;
+    var x=(new Date(m)-minD)/totalMs*BAR_PX;
     var label=m.getFullYear()+'.'+(m.getMonth()+1+'').padStart(2,'0');
-    hdrInner+='<div style="position:absolute;left:'+px+'px;top:0;bottom:0;border-left:1px solid var(--border2);padding:5px 4px;font-size:10px;font-weight:700;color:var(--t5);white-space:nowrap">'+label+'</div>';
+    hdrSvg += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+HDR_H+'" stroke="#CBD5E0" stroke-width="1"/>';
+    hdrSvg += '<text x="'+(x+4)+'" y="17" font-size="10" font-weight="700" fill="#718096">'+label+'</text>';
   });
   // 오늘 라인 (헤더)
   if(todayPx>=0&&todayPx<=BAR_PX){
-    hdrInner+='<div style="position:absolute;left:'+todayPx+'px;top:0;bottom:0;width:2px;background:#C53030;z-index:10">' +
-      '<div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#C53030;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;z-index:11">오늘</div>' +
-      '</div>';
+    hdrSvg += '<line x1="'+todayPx+'" y1="0" x2="'+todayPx+'" y2="'+HDR_H+'" stroke="#C53030" stroke-width="2"/>';
+    hdrSvg += '<rect x="'+(todayPx-12)+'" y="1" width="24" height="14" rx="3" fill="#C53030"/>';
+    hdrSvg += '<text x="'+todayPx+'" y="12" text-anchor="middle" font-size="9" font-weight="800" fill="white">TODAY</text>';
   }
+  hdrSvg += '</svg>';
 
-  // ── 컬럼 헤더 ──
-  var COL='180px 110px 70px 88px 88px';
-  var colHdr=
-    '<div style="display:flex;position:sticky;top:0;z-index:20;background:var(--card2);border-bottom:2px solid var(--border)">' +
-    '<div style="display:grid;grid-template-columns:'+COL+';flex-shrink:0">' +
-      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">공종명</div>' +
-      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">현장</div>' +
-      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">상태</div>' +
-      '<div class="g-cell g-hdr" style="border-right:1px solid var(--border)">시작일</div>' +
-      '<div class="g-cell g-hdr" style="border-right:2px solid var(--border)">종료일</div>' +
-    '</div>' +
-    '<div style="position:relative;width:'+BAR_PX+'px;flex-shrink:0;height:36px;overflow:hidden">' +
-      hdrInner +
-    '</div>' +
-    '</div>';
-
-  // ── 행 생성 ──
-  var sm=smMap();
-  var rowsHtml=list.map(function(p,i){
+  // ── 행 SVG 생성
+  var rowsSvg = '<svg id="ganttRowsSvg" width="'+BAR_PX+'" height="'+(list.length*ROW_H)+'" style="display:block">';
+  // 배경 줄무늬
+  list.forEach(function(p,i){
+    var y=i*ROW_H;
+    rowsSvg += '<rect x="0" y="'+y+'" width="'+BAR_PX+'" height="'+ROW_H+'" fill="'+(i%2===0?'#FFFFFF':'#F7FAFC')+'"/>';
+    // 월 눈금 세로선
+    months.forEach(function(m){
+      var x=(new Date(m)-minD)/totalMs*BAR_PX;
+      rowsSvg += '<line x1="'+x+'" y1="'+y+'" x2="'+x+'" y2="'+(y+ROW_H)+'" stroke="#EDF2F7" stroke-width="1"/>';
+    });
+  });
+  // 오늘 라인 (전체 높이)
+  if(todayPx>=0&&todayPx<=BAR_PX){
+    rowsSvg += '<line x1="'+todayPx+'" y1="0" x2="'+todayPx+'" y2="'+(list.length*ROW_H)+'" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>';
+  }
+  // 공종 바
+  list.forEach(function(p,i){
+    var y=i*ROW_H;
     var stOk=p.startDate&&!isNaN(new Date(p.startDate));
     var enOk=p.endDate&&!isNaN(new Date(p.endDate));
-    var color=barColor(p,i);
-    var barHtml='';
-    if(stOk&&enOk){
-      var leftPx=(new Date(p.startDate)-minD)/totalMs*BAR_PX;
-      var rightPx=(new Date(p.endDate)-minD)/totalMs*BAR_PX;
-      var wPx=Math.max(4,rightPx-leftPx);
-      var progPx=wPx*(p.progress||0)/100;
-      barHtml=
-        // 전체 기간 (연한)
-        '<div style="position:absolute;left:'+leftPx+'px;width:'+wPx+'px;height:18px;top:8px;background:'+color+'25;border-radius:4px;border:1px solid '+color+'50"></div>'+
-        // 진행 부분
-        '<div style="position:absolute;left:'+leftPx+'px;width:'+progPx+'px;height:18px;top:8px;background:'+color+';border-radius:4px;display:flex;align-items:center;overflow:hidden;min-width:'+(p.progress?'4':'0')+'px">' +
-          (progPx>24?'<span style="font-size:9px;font-weight:700;color:#fff;padding:0 5px;white-space:nowrap">'+(p.progress||0)+'%</span>':'') +
-        '</div>';
+    if(!stOk||!enOk) return;
+    var x1=px(p.startDate);
+    var x2=px(p.endDate);
+    var w=Math.max(4,x2-x1);
+    var bh=20; var by=y+(ROW_H-bh)/2;
+    var color=getBarBg(p,i);
+
+    // 전체 기간 바 (연한 배경)
+    rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="4" fill="'+color+'" opacity="0.2"/>';
+    // 진행률 바
+    var progW=Math.max(0,w*(p.progress||0)/100);
+    if(progW>0){
+      rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+progW+'" height="'+bh+'" rx="4" fill="'+color+'"/>';
     }
-    // 오늘 라인 (행)
-    var todayRowLine=(todayPx>=0&&todayPx<=BAR_PX)?
-      '<div style="position:absolute;left:'+todayPx+'px;top:0;bottom:0;width:2px;background:#C53030;z-index:4;pointer-events:none"></div>':'';
+    // 진행률 텍스트
+    if(progW>20){
+      rowsSvg += '<text x="'+(x1+progW/2)+'" y="'+(by+bh/2+4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="white">'+(p.progress||0)+'%</text>';
+    } else if(w>24){
+      rowsSvg += '<text x="'+(x1+4)+'" y="'+(by+bh/2+4)+'" font-size="10" font-weight="700" fill="'+color+'">'+(p.progress||0)+'%</text>';
+    }
+    // 위험 공종 강조 테두리
+    if(p.riskLevel==='상'&&p.ts!=='완료'){
+      rowsSvg += '<rect x="'+x1+'" y="'+by+'" width="'+w+'" height="'+bh+'" rx="4" fill="none" stroke="#C53030" stroke-width="1.5"/>';
+      rowsSvg += '<text x="'+(x1+w+3)+'" y="'+(by+bh/2+4)+'" font-size="9" fill="#C53030" font-weight="700">⚠</text>';
+    }
+    // hover용 투명 영역 (클릭 이벤트)
+    rowsSvg += '<rect x="0" y="'+y+'" width="'+BAR_PX+'" height="'+ROW_H+'" fill="transparent" data-id="'+p.id+'" style="cursor:pointer" onclick="openProcDetail(\''+p.id+'\')"/>';
+  });
+  rowsSvg += '</svg>';
 
-    var stsCls=p.ts==='진행중'?'br':p.ts==='예정_1주'?'bo':p.ts==='완료'?'bg':p.ts==='예정_2주'?'by':'bb';
-    var stsTxt={진행중:'진행중',예정_1주:'1주내',예정_2주:'2주내',완료:'완료',예정:'예정'}[p.ts]||'예정';
-
-    return '<div style="display:flex;border-bottom:1px solid var(--border);min-height:34px" class="g-row">' +
-      '<div style="display:grid;grid-template-columns:'+COL+';flex-shrink:0">' +
-        '<div class="g-cell" style="font-weight:700;font-size:12px;border-right:1px solid var(--border)">'+p.name+'</div>' +
-        '<div class="g-cell" style="font-size:11px;color:var(--t5);border-right:1px solid var(--border)">'+((sm[p.siteId])||'')+'</div>' +
-        '<div class="g-cell" style="border-right:1px solid var(--border)"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></div>' +
-        '<div class="g-cell" style="font-size:11px;border-right:1px solid var(--border)">'+fmtDate(p.startDate)+'</div>' +
-        '<div class="g-cell" style="font-size:11px;border-right:2px solid var(--border)">'+fmtDate(p.endDate)+'</div>' +
+  // ── 좌측 고정 컬럼 행
+  var COL='140px 100px 70px 90px 90px';
+  var fixedRows=list.map(function(p,i){
+    var stsCls=p.ts==='진행중'?'br':p.ts==='완료'?'bg':p.ts==='예정_1주'?'bo':'bb';
+    var stsTxt={진행중:'진행중',완료:'완료',예정_1주:'1주내',예정_2주:'2주내',예정:'예정'}[p.ts]||'예정';
+    var isRisk=p.riskLevel==='상'&&p.ts!=='완료';
+    var bg=i%2===0?'#fff':'#F7FAFC';
+    return '<div style="display:grid;grid-template-columns:'+COL+';min-height:'+ROW_H+'px;background:'+bg+';border-bottom:1px solid #EDF2F7;align-items:center;cursor:pointer" data-id="'+p.id+'" onclick="openProcDetail(this.dataset.id)">' +
+      '<div style="padding:6px 10px;font-size:12px;font-weight:700;color:var(--t9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px">' +
+        (isRisk?'<span style="font-size:10px;color:#C53030">⚠️</span>':'')+
+        '<span>'+p.name+'</span>' +
       '</div>' +
-      '<div style="position:relative;width:'+BAR_PX+'px;flex-shrink:0;overflow:hidden">'+todayRowLine+barHtml+'</div>' +
-      '<div class="g-cell" style="padding:0 8px;width:76px;flex-shrink:0;justify-content:center;gap:3px">' +
-        '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+p.id+'" onclick="editProc(this.dataset.id)">&#9998;</button>' +
-        '<button class="btn btn-danger btn-icon btn-sm" data-id="'+p.id+'" data-nm="'+escQ(p.name)+'" onclick="askDel(\'process\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
-      '</div>' +
+      '<div style="padding:6px 8px;font-size:10px;color:var(--t5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+((sm[p.siteId])||'')+'</div>' +
+      '<div style="padding:6px 8px"><span class="bdg '+stsCls+'" style="font-size:10px">'+stsTxt+'</span></div>' +
+      '<div style="padding:6px 8px;font-size:11px;color:var(--t7)">'+fmtDate(p.startDate)+'</div>' +
+      '<div style="padding:6px 8px;font-size:11px;color:var(--t7)">'+fmtDate(p.endDate)+'</div>' +
     '</div>';
   }).join('');
 
-  // ── 범례 ──
-  var legend=
-    '<div style="display:flex;gap:12px;padding:10px 14px;border-top:1px solid var(--border);background:var(--card2);flex-wrap:wrap">' +
-    [['#C53030','진행중'],['#C05621','1주내 예정'],['#D69E2E','2주내 예정'],['#718096','예정'],['#276749','완료']].map(function(x){
-      return '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t7)">' +
-        '<div style="width:14px;height:8px;border-radius:2px;background:'+x[0]+'"></div>'+x[1]+'</div>';
-    }).join('')+
-    '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t7)"><div style="width:2px;height:14px;background:#C53030"></div>오늘</div>' +
+  // ── 관리 버튼 컬럼
+  var actRows=list.map(function(p,i){
+    var bg=i%2===0?'#fff':'#F7FAFC';
+    return '<div style="min-height:'+ROW_H+'px;background:'+bg+';border-bottom:1px solid #EDF2F7;display:flex;align-items:center;justify-content:center;gap:3px;padding:4px 6px">' +
+      '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+p.id+'" onclick="editProc(this.dataset.id)" title="수정">&#9998;</button>' +
+      '<button class="btn btn-danger btn-icon btn-sm" data-id="'+p.id+'" data-nm="'+escQ(p.name)+'" onclick="askDel(\'process\',this.dataset.id,this.dataset.nm)" title="삭제">&#128465;</button>' +
+    '</div>';
+  }).join('');
+
+  // ── 통계 요약
+  var done=list.filter(function(p){return p.ts==='완료';}).length;
+  var inProg=list.filter(function(p){return p.ts==='진행중';}).length;
+  var risk1w=list.filter(function(p){return p.ts==='예정_1주';}).length;
+  var highR=list.filter(function(p){return p.riskLevel==='상'&&p.ts!=='완료';}).length;
+
+  var summary=
+    '<div style="display:flex;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card2);flex-wrap:wrap">' +
+    '<div style="font-size:11px;color:var(--t5)">전체 <b style="color:var(--t9)">'+list.length+'</b>개</div>' +
+    '<div style="font-size:11px;color:#C53030">진행중 <b>'+inProg+'</b>개</div>' +
+    '<div style="font-size:11px;color:#276749">완료 <b>'+done+'</b>개</div>' +
+    (risk1w?'<div style="font-size:11px;color:#DD6B20">1주내 예정 <b>'+risk1w+'</b>개</div>':'')+
+    (highR?'<div style="font-size:11px;color:#C53030;font-weight:700">⚠️ 위험 공종 <b>'+highR+'</b>개</div>':'')+
     '</div>';
 
-  bodyEl.innerHTML=
-    '<div class="card" style="padding:0;overflow:hidden">' +
-    colHdr +
-    '<div style="overflow-x:auto;overflow-y:visible">' +
-      '<div style="min-width:'+(538+BAR_PX+76)+'px">' +
-        rowsHtml +
+  // ── 범례
+  var legend=
+    '<div style="display:flex;gap:14px;padding:8px 14px;border-top:1px solid var(--border);background:var(--card2);flex-wrap:wrap">' +
+    [['#C53030','⚠️ 위험(상)/진행중'],['#2B6CB0','진행중'],['#276749','완료'],
+     ['#DD6B20','1주내 예정'],['#D69E2E','2주내 예정'],['#718096','예정']].map(function(x){
+      return '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t7)">' +
+        '<div style="width:16px;height:8px;border-radius:2px;background:'+x[0]+'"></div>'+x[1]+'</div>';
+    }).join('')+
+    '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t7)"><div style="width:2px;height:12px;background:#C53030;opacity:.7"></div>오늘</div>' +
+    '</div>';
+
+  // ── 조립
+  bodyEl.innerHTML =
+    '<div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--s1)">' +
+    summary +
+    // 헤더행 (고정 + 날짜 헤더)
+    '<div style="display:flex;position:sticky;top:0;z-index:20;border-bottom:2px solid var(--border)">' +
+      // 고정 컬럼 헤더
+      '<div style="flex-shrink:0;display:grid;grid-template-columns:'+COL+';background:var(--card2)">' +
+        '<div style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);border-right:1px solid var(--border)">공종명</div>' +
+        '<div style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);border-right:1px solid var(--border)">현장</div>' +
+        '<div style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);border-right:1px solid var(--border)">상태</div>' +
+        '<div style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);border-right:1px solid var(--border)">시작일</div>' +
+        '<div style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);border-right:2px solid var(--border)">종료일</div>' +
       '</div>' +
+      // 날짜 헤더
+      '<div id="ganttHdrWrap" style="flex:1;overflow:hidden;background:var(--card2)">'+hdrSvg+'</div>' +
+      // 관리 헤더
+      '<div style="flex-shrink:0;width:76px;padding:8px 6px;font-size:11px;font-weight:700;color:var(--t5);text-align:center;background:var(--card2);border-left:2px solid var(--border)">관리</div>' +
     '</div>' +
-    '<button class="gantt-add" onclick="openProcForm()">+ 공종 추가하기</button>' +
+    // 데이터 영역 (가로 스크롤)
+    '<div style="display:flex">' +
+      // ① 고정 컬럼 - 스크롤 밖 (움직이지 않음)
+      '<div style="flex-shrink:0;border-right:2px solid var(--border)">'+fixedRows+'</div>' +
+      // ② 바 영역만 가로 스크롤
+      '<div id="ganttScrollWrap" style="flex:1;overflow-x:auto" onscroll="syncGanttScroll(this)">' +
+        '<div style="min-width:'+BAR_PX+'px">'+rowsSvg+'</div>' +
+      '</div>' +
+      // ③ 관리 버튼 - 스크롤 밖 (움직이지 않음)
+      '<div style="flex-shrink:0;border-left:2px solid var(--border);width:76px">'+actRows+'</div>' +
+    '</div>' +
+    '<button class="gantt-add" onclick="openProcForm()">＋ 공종 추가하기</button>' +
     legend +
     '</div>';
+
+  // 줌 라벨 갱신
+  var lbl=document.getElementById('ganttZoomLabel');
+  if(lbl) lbl.textContent=zoomLevel.label;
+
+  // 오늘 위치로 자동 스크롤
+  setTimeout(function(){
+    var wrap=document.getElementById('ganttScrollWrap');
+    if(wrap&&todayPx>0){
+      wrap.scrollLeft=Math.max(0,todayPx-wrap.clientWidth*0.4);
+    }
+  },50);
+}
+
+// 헤더-바 동기화
+function syncGanttScroll(el) {
+  var hdr = document.getElementById('ganttHdrWrap');
+  if (hdr) hdr.scrollLeft = el.scrollLeft;
 }
 function ddStart(e,id){dragId=id;e.currentTarget.classList.add("dragging");e.dataTransfer.effectAllowed="move";}
 function ddOver(e){e.preventDefault();e.currentTarget.classList.add("drop-here");}
@@ -3561,6 +3701,27 @@ function parseDate(v) {
 
 
 
+
+
+
+
+
+
+
+function ganttZoom(dir) {
+  DB.ganttZoom = Math.max(0, Math.min(GANTT_ZOOM_LEVELS.length-1, (DB.ganttZoom||1) + dir));
+  var lbl = document.getElementById('ganttZoomLabel');
+  if (lbl) lbl.textContent = GANTT_ZOOM_LEVELS[DB.ganttZoom].label;
+  rGantt();
+}
+
+function ganttScrollToday() {
+  var wrap = document.getElementById('ganttScrollWrap');
+  var todayLine = document.getElementById('ganttTodayLine');
+  if (!wrap || !todayLine) return;
+  var lineLeft = parseInt(todayLine.style.left) || 0;
+  wrap.scrollLeft = Math.max(0, lineLeft - wrap.clientWidth/2);
+}
 
 
 
