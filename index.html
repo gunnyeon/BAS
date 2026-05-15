@@ -602,6 +602,7 @@ button,input,select,textarea{font-family:inherit}
 
 
 
+
 var GANTT_ZOOM_LEVELS = [
   {label:'전체', px:50},
   {label:'기본', px:70},
@@ -2080,12 +2081,12 @@ rCL(); toast(added+'개 체크항목이 추가되었습니다.'+(skipped?' ('+sk
 }
 function clearCLUpload(){DB.pendingCLRows=[];var p=document.getElementById("clUploadPreview");if(p)p.style.display="none";var b=document.getElementById("clImportBtn");if(b)b.style.display="none";}
 function rDefs() {
-  var el = document.getElementById('defCount'); if (el) el.textContent = DB.defects.length+'개';
+  var el = document.getElementById('defCount');
+  if (el) el.textContent = DB.defects.length+'개';
 
-  // 공종 필터바: PROC_CODES 전체 표시 + 하자유형 카운트
+  // 공종 필터바
   var fbEl = document.getElementById('defCodeFb');
   if (fbEl) {
-    // 공종별 하자유형 카운트
     var cntMap = {};
     DB.defects.forEach(function(d){
       var raw = d.linkedCodes;
@@ -2104,7 +2105,7 @@ function rDefs() {
       }).join('');
   }
 
-  // 하자유형 폼 분류 셀렉트 갱신
+  // 하자유형 폼 분류 셀렉트
   var defCatSel = document.getElementById('f-dCat');
   if (defCatSel) defCatSel.innerHTML = DEF_CATS.map(function(c){
     return '<option value="'+c+'">'+c+'</option>';
@@ -2116,40 +2117,26 @@ function rDefs() {
   if (!accEl) return;
 
   if (!allDefs.length) {
-    accEl.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">등록된 하자유형이 없습니다</div><div class="empty-s">＋ 유형 추가 버튼을 눌러 등록하세요</div></div>';
+    accEl.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">등록된 하자유형이 없습니다</div></div>';
     return;
   }
 
-  // 공종별로 그룹화 (linkedCodes 기준) - 형태 무관하게 정규화
+  // 공종별 그룹화
   var groups = {};
-  groups['_none'] = [];
   Object.keys(PROC_CODES).forEach(function(k){ groups[k] = []; });
+  groups['_none'] = [];
 
   allDefs.forEach(function(d){
-    // linkedCodes 정규화: 배열, | 구분 문자열, 빈값 모두 처리
     var raw = d.linkedCodes;
-    var codes = [];
-    if (Array.isArray(raw)) {
-      codes = raw.filter(Boolean);
-    } else if (typeof raw === 'string' && raw.trim()) {
-      codes = raw.split('|').map(function(c){return c.trim();}).filter(Boolean);
-    }
-
+    var codes = Array.isArray(raw) ? raw : (typeof raw==='string' && raw ? raw.split('|').map(function(c){return c.trim();}) : []);
+    codes = codes.filter(Boolean);
     if (!codes.length) {
       groups['_none'].push(d);
     } else {
-      var matched = false;
       codes.forEach(function(c){
-        if (groups[c] !== undefined) {
-          groups[c].push(d);
-          matched = true;
-        } else {
-          // PROC_CODES에 없는 코드도 동적 추가
-          groups[c] = [d];
-          matched = true;
-        }
+        if (groups[c]) groups[c].push(d);
+        else { groups[c] = [d]; }
       });
-      if (!matched) groups['_none'].push(d);
     }
   });
 
@@ -2162,59 +2149,79 @@ function rDefs() {
     filterKeys = [DB.defCodeF];
   }
 
-  if (!filterKeys.length || filterKeys.every(function(k){ return !groups[k] || !groups[k].length; })) {
+  if (!filterKeys.length || filterKeys.every(function(k){ return !groups[k]||!groups[k].length; })) {
     accEl.innerHTML = '<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">해당 공종의 하자유형이 없습니다</div></div>';
     return;
+  }
+
+  // 컬럼 정의 (헤더·행 동일하게 적용)
+  var COLS = [
+    {key:'id',    label:'코드(ID)',  w:'80px',  align:'left'},
+    {key:'name',  label:'하자명',    w:'auto',  align:'left',  flex:true},
+    {key:'cat',   label:'분류',      w:'110px', align:'center'},
+    {key:'risk',  label:'위험등급',  w:'80px',  align:'center'},
+    {key:'cause', label:'주요원인',  w:'200px', align:'left'},
+    {key:'time',  label:'발생시기',  w:'90px',  align:'center'},
+    {key:'cost',  label:'보수비용',  w:'80px',  align:'right'},
+    {key:'mgmt',  label:'관리',      w:'72px',  align:'center'}
+  ];
+
+  // colgroup 문자열
+  function makeColgroup() {
+    return '<colgroup>' + COLS.map(function(c){
+      return '<col style="width:'+c.w+(c.flex?';min-width:120px':'')+'">';
+    }).join('') + '</colgroup>';
+  }
+
+  // 헤더 행
+  function makeHeader() {
+    return '<thead><tr style="background:var(--card2)">' +
+      COLS.map(function(c){
+        return '<th style="padding:8px 10px;font-size:11px;font-weight:700;color:var(--t5);text-align:'+c.align+';white-space:nowrap;border-bottom:1.5px solid var(--border)">'+c.label+'</th>';
+      }).join('') +
+    '</tr></thead>';
   }
 
   accEl.innerHTML = filterKeys.map(function(key){
     var list = groups[key] || [];
     if (!list.length) return '';
-    var grpNm = key === '_none' ? '공종 미지정' : (PROC_CODES[key] || key);
-    var grpCls = key === '_none' ? 'var(--t3)' : 'var(--blue)';
-    var rows = list.map(function(d){
+    var grpNm = key==='_none' ? '공종 미지정' : (PROC_CODES[key]||key);
+    var grpColor = key==='_none' ? 'var(--t3)' : 'var(--blue)';
+
+    var rows = list.map(function(d, i){
       var cost = d.avgCost && String(d.avgCost).replace(/[^0-9]/g,'') !== '0' && String(d.avgCost).trim() !== ''
         ? (parseInt(d.avgCost)||0).toLocaleString()+'만원'
-        : '—';
-      var riskCls = d.riskLevel==='상'?'br':d.riskLevel==='중'?'bo':'bg';
-      return '<tr data-id="'+d.id+'" onclick="openDefDetail(this.dataset.id)" style="cursor:pointer">' +
-        '<td style="font-size:10px;color:var(--t3);font-family:monospace;white-space:nowrap">'+d.id+'</td>' +
-        '<td style="font-weight:700;color:var(--t9)">'+d.name+'</td>' +
-        '<td><span class="bdg bt" style="font-size:10px">'+d.category+'</span></td>' +
-        '<td>'+rkBdg(d.riskLevel)+'</td>' +
-        '<td style="color:var(--t7);font-size:11px;max-width:160px">'+d.mainCause+'</td>' +
-        '<td style="font-size:11px;color:var(--t5)">'+d.occurrenceTime+'</td>' +
-        '<td style="font-weight:700;color:var(--t9)">'+cost+'</td>' +
-        '<td style="white-space:nowrap">' +
-          '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+d.id+'" onclick="event.stopPropagation();editDef(this.dataset.id)">&#9998;</button>' +
-          '<button class="btn btn-danger btn-icon btn-sm" data-id="'+d.id+'" data-nm="'+escQ(d.name)+'" onclick="event.stopPropagation();askDel(\'defect\',this.dataset.id,this.dataset.nm)">&#128465;</button>' +
+        : '&#8212;';
+      return '<tr data-id="'+d.id+'" onclick="openDefDetail(this.dataset.id)" style="cursor:pointer;'+(i%2===0?'':'background:var(--card2)')+'">' +
+        '<td style="padding:8px 10px;font-size:10px;color:var(--t3);font-family:monospace;white-space:nowrap">'+d.id+'</td>' +
+        '<td style="padding:8px 10px;font-weight:700;color:var(--t9)">'+d.name+'</td>' +
+        '<td style="padding:8px 10px;text-align:center"><span class="bdg bt" style="font-size:10px">'+d.category+'</span></td>' +
+        '<td style="padding:8px 10px;text-align:center">'+rkBdg(d.riskLevel)+'</td>' +
+        '<td style="padding:8px 10px;font-size:11px;color:var(--t7)">'+d.mainCause+'</td>' +
+        '<td style="padding:8px 10px;font-size:11px;color:var(--t5);text-align:center">'+d.occurrenceTime+'</td>' +
+        '<td style="padding:8px 10px;font-size:11px;font-weight:700;text-align:right">'+cost+'</td>' +
+        '<td style="padding:8px 4px;text-align:center;white-space:nowrap">' +
+          '<button class="btn btn-ghost btn-icon btn-sm" data-id="'+d.id+'" onclick="event.stopPropagation();editDef(this.dataset.id)" title="수정">&#9998;</button>' +
+          '<button class="btn btn-danger btn-icon btn-sm" data-id="'+d.id+'" data-nm="'+escQ(d.name)+'" onclick="event.stopPropagation();askDel(\'defect\',this.dataset.id,this.dataset.nm)" title="삭제">&#128465;</button>' +
         '</td>' +
       '</tr>';
     }).join('');
 
     return '<div class="card" style="padding:0;margin-bottom:10px;overflow:hidden">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card2);border-bottom:1.5px solid var(--border);cursor:pointer" data-grp="'+key+'" onclick="toggleDefGrp(this)">' +
-        '<div style="display:flex;align-items:center;gap:10px">' +
-          '<div style="width:10px;height:10px;border-radius:50%;background:'+grpCls+';flex-shrink:0"></div>' +
-          '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+grpNm+'</span>' +
-          '<span style="font-size:11px;color:var(--t5)">하자유형 '+list.length+'개</span>' +
-        '</div>' +
-        '<span style="font-size:12px;color:var(--t3)" id="defGrpArr-'+key+'">▼</span>' +
+      // 그룹 헤더
+      '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card2);border-bottom:1.5px solid var(--border);cursor:pointer" data-grp="'+key+'" onclick="toggleDefGrp(this)">' +
+        '<div style="width:10px;height:10px;border-radius:50%;background:'+grpColor+';flex-shrink:0"></div>' +
+        '<span style="font-size:13px;font-weight:700;color:var(--t9)">'+grpNm+'</span>' +
+        '<span style="font-size:11px;color:var(--t5)">하자유형 '+list.length+'개</span>' +
+        '<span style="margin-left:auto;font-size:12px;color:var(--t3)" id="defGrpArr-'+key+'">▼</span>' +
       '</div>' +
-      '<div id="defGrpBody-'+key+'">' +
-        '<div class="tw"><table class="tbl">' +
-          '<thead><tr>' +
-            '<th style="width:80px">코드(ID)</th>' +
-            '<th>하자명</th>' +
-            '<th style="width:90px">분류</th>' +
-            '<th style="width:80px">위험등급</th>' +
-            '<th>주요원인</th>' +
-            '<th style="width:100px">발생시기</th>' +
-            '<th style="width:90px">보수비용</th>' +
-            '<th style="width:76px">관리</th>' +
-          '</tr></thead>' +
+      // 테이블 (table-layout:fixed로 컬럼 고정)
+      '<div id="defGrpBody-'+key+'" style="overflow-x:auto">' +
+        '<table style="width:100%;border-collapse:collapse;table-layout:fixed">' +
+          makeColgroup() +
+          makeHeader() +
           '<tbody>'+rows+'</tbody>' +
-        '</table></div>' +
+        '</table>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -3994,6 +4001,7 @@ function downloadGanttTemplate() {
     document.head.appendChild(st);
   }
 })();
+
 
 
 
